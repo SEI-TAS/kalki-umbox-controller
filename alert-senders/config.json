@@ -1,6 +1,0 @@
-{
-  "control_node_ip": "192.168.58.101",
-  "log_file": "../credential-sniffer/sniffer.log",
-  "patterns": [{"search_text": "DEFAULT_CRED", "alert_text": "default-login"},
-               {"search_text": "MULTIPLE_LOGIN", "alert_text": "max-login-attempts"}]
-}
