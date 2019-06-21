@@ -35,6 +35,7 @@ public class IntegrationTestProgram
 
         Config.data.put("db_recreate", "true");
         Config.data.put("db_setup", "true");
+
         Config.data.put("db_name", "kalkidb_test");
         Config.data.put("db_user", "kalkiuser_test");
 
