@@ -18,10 +18,10 @@ OK_VALUE = "ok"
 class ImageClone(Resource):
     """Resource for handling cloning of images."""
 
-    def post(self, image_name, instance_name):
+    def post(self, image_file_name, instance_name):
         """Clones an existing disk image for a new instance."""
         # Create a new disk image object based on the given image filename.
-        image_path = os.path.join(DATA_NODE_IMAGES_PATH, image_name + ".qcow2")
+        image_path = os.path.join(DATA_NODE_IMAGES_PATH, image_file_name)
         template_image = diskimage.DiskImage(image_path)
 
         # Clone the image for a new instance image.

@@ -9,6 +9,7 @@ import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
 import edu.cmu.sei.ttg.kalki.models.DeviceType;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
+import edu.cmu.sei.ttg.kalki.models.UmboxLookup;
 
 import java.io.IOException;
 
@@ -23,7 +24,7 @@ public class IntegrationTestProgram
 
     private static final int SUSP_DEVICE_STATE_ID = 2;
     private static final String TEST_IMAGE_NAME = "umbox-sniffer";
-    private static final String TEST_IMAGE_PATH = "/home/kalki/images/umbox-sniffer.qcow2";
+    private static final String TEST_IMAGE_FILENAME = "umbox-sniffer.qcow2";
 
     /**
      * Sets up test DB, main program threads, and config singleton data.
@@ -34,7 +35,6 @@ public class IntegrationTestProgram
 
         Config.data.put("db_recreate", "true");
         Config.data.put("db_setup", "true");
-        Config.data.put("db_rootuser", "kalkiuser");
         Config.data.put("db_name", "kalkidb_test");
         Config.data.put("db_user", "kalkiuser_test");
 
@@ -63,11 +63,16 @@ public class IntegrationTestProgram
         Postgres.insertDevice(newDevice).whenComplete((deviceId, devException) -> {
             testDeviceId = deviceId;
 
-            UmboxImage image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_PATH);
+            UmboxImage image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_FILENAME);
             Postgres.insertUmboxImage(image).whenComplete((umboxImageId, umException) ->
             {
                 testUmboxImageId = umboxImageId;
-                testUmboxLookupId = Postgres.insertUmboxLookup(umboxImageId, defaultType, SUSP_DEVICE_STATE_ID, 1);
+                UmboxLookup lookup = new UmboxLookup();
+                lookup.setUmboxImageId(umboxImageId);
+                lookup.setDeviceTypeId(defaultType);
+                lookup.setStateId(SUSP_DEVICE_STATE_ID);
+                lookup.setDagOrder(1);
+                testUmboxLookupId = Postgres.insertUmboxLookup(lookup);
             });
         });
     }

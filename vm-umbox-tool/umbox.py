@@ -49,8 +49,8 @@ def setup_custom_logger(name):
     return logger
 
 
-def create_and_start_umbox(data_node_ip, umbox_id, image_name, image_path, control_bridge, data_bridge):
-    umbox = VmUmbox(umbox_id, image_name, image_path, control_bridge, data_bridge)
+def create_and_start_umbox(data_node_ip, umbox_id, image_name, image_file_name, control_bridge, data_bridge):
+    umbox = VmUmbox(umbox_id, image_name, image_file_name, control_bridge, data_bridge)
     #umbox.create_linked_image()
     umbox.start(data_node_ip)
     logger.info("Umbox started.")
@@ -79,13 +79,13 @@ def generate_mac(instance_id):
 class VmUmbox(object):
     """Class that stores information about a VM that is working as a umbox."""
 
-    def __init__(self, umbox_id, image_name, image_path=None, control_bridge=None, data_bridge=None):
+    def __init__(self, umbox_id, image_name, image_file_name, control_bridge=None, data_bridge=None):
         """Default constructor."""
         self.umbox_id = umbox_id
         self.image_name = image_name
+        self.image_file_name = image_file_name
         self.instance_name = image_name + NUM_SEPARATOR + self.umbox_id
 
-        self.image_path = image_path
         self.control_bridge = control_bridge
         self.data_bridge = data_bridge
         self.control_iface_name = CONTROL_TUN_PREFIX + self.umbox_id
@@ -129,7 +129,7 @@ class VmUmbox(object):
         self._connect_to_remote_hypervisor(hypervisor_host_ip)
 
         # First clone remote image for new instance.
-        json_reply = self.__send_api_command(hypervisor_host_ip, API_CLONE_METHOD, "{0}/{1}".format(self.image_name, self.instance_name))
+        json_reply = self.__send_api_command(hypervisor_host_ip, API_CLONE_METHOD, "{0}/{1}".format(self.image_file_name, self.instance_name))
         self.instance_path = json.loads(json_reply)[INSTANCE_PATH_KEY]
 
         # Set up VM information from template and umbox data.
@@ -208,7 +208,7 @@ def parse_arguments():
     parser.add_argument("-s", "--server", dest="datanodeip", required=True, help="IP of the data node server")
     parser.add_argument("-u", "--umbox", dest="umboxid", required=False, help="id of the umbox instance")
     parser.add_argument("-i", "--image", dest="imagename", required=False, help="name of the umbox image")
-    parser.add_argument("-p", "--imagepath", dest="imagepath", required=False, help="the path to the image file")
+    parser.add_argument("-f", "--imagefile", dest="imagefile", required=False, help="the name of the image file")
     parser.add_argument("-bc", "--bridgecontrol", dest="controlbr", required=False, help="name of the control virtual bridge")
     parser.add_argument("-bd", "--bridgedata", dest="databr", required=False, help="name of the data ovs virtual bridge")
     args = parser.parse_args()
@@ -225,11 +225,11 @@ def main():
     if args.command == "start":
         logger.info("Umbox ID: " + args.umboxid)
         logger.info("Image name: " + args.imagename)
-        logger.info("Image path: " + args.imagepath)
+        logger.info("Image file: " + args.imagefile)
         logger.info("Control bridge: " + args.controlbr)
         logger.info("Data bridge: " + args.databr)
 
-        umbox = create_and_start_umbox(args.datanodeip, args.umboxid, args.imagename, args.imagepath, args.controlbr, args.databr)
+        umbox = create_and_start_umbox(args.datanodeip, args.umboxid, args.imagename, args.imagefile, args.controlbr, args.databr)
 
         # Print the TAP device name so that it can be returned and used by ovs commands if needed.
         print(umbox.data_iface_name)

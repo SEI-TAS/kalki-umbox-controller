@@ -54,7 +54,7 @@ public class VMUmbox extends Umbox
         {
             commandInfo.add("-i");
             commandInfo.add(image.getName());
-            commandInfo.add("-p");
+            commandInfo.add("-f");
             commandInfo.add(image.getPath());
         }
         commandInfo.add("-bc");
