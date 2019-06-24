@@ -36,7 +36,7 @@ docker {
     copySpec.with {
         from('.') {
             include 'vm-umbox-tool/**'
-            into 'vm-umbox-tool'
+            into '.'
         }
     }
 }
