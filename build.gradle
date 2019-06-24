@@ -32,5 +32,11 @@ test {
 
 docker {
     name 'kalki/kalki-dni'
-    files tasks.distTar.outputs, "config.json", "vm-umbox-tool"
+    files tasks.distTar.outputs, "config.json"
+    copySpec.with {
+        from('.') {
+            include 'vm-umbox-tool/**'
+            into 'vm-umbox-tool'
+        }
+    }
 }
