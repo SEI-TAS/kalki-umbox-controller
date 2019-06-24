@@ -26,15 +26,11 @@ dependencies {
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.4.2'
 }
 
-// Prevent tests from being executed when building or running the project.
-check.dependsOn.remove("test")
-
 test {
     useJUnitPlatform()
 }
 
 docker {
     name 'kalki/kalki-dni'
-    files tasks.distTar.outputs, "config.json"
-    copySpec.from("vm-umbox-tool").into("vm-umbox-tool")
+    files tasks.distTar.outputs, "config.json", "vm-umbox-tool"
 }
