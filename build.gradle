@@ -36,4 +36,5 @@ test {
 docker {
     name 'kalki/kalki-dni'
     files tasks.distTar.outputs, "config.json"
+    copySpec.from("vm-umbox-tool").into("vm-umbox-tool")
 }
