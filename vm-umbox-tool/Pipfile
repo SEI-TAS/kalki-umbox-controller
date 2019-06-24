@@ -4,7 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-libvirt-python = "==1.3.1"
+#libvirt-python = "==1.3.1"  # Needed for Ubuntu 16.04
+libvirt-python = "==4.0.0"   # Needed for Ubuntu 18.04
 requests = "==2.18.4"
 
 [dev-packages]
