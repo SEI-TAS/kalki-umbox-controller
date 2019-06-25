@@ -34,7 +34,7 @@ class ImageClone(Resource):
 
         return {INSTANCE_PATH_KEY: instance_disk_path}
 
-    def delete(self, instance_name):
+    def delete(self, image_file_name, instance_name):
         """Remove an exising instance image."""
         # Clone the image for a new instance image.
         instance_disk_path = get_instance_path(instance_name)
