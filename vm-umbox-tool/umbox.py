@@ -60,7 +60,7 @@ def create_and_start_umbox(data_node_ip, umbox_id, image_name, image_file_name, 
 
 def stop_umbox(data_node_ip, umbox_id, image_name):
     """Stops a running instance of an umbox."""
-    umbox = VmUmbox(umbox_id, image_name)
+    umbox = VmUmbox(umbox_id, image_name, None)
     umbox.stop(data_node_ip)
     logger.info("Umbox stopped.")
 
