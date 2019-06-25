@@ -2,4 +2,4 @@
 
 export PIPENV_VENV_IN_PROJECT="enabled"
 pipenv install
-pipenv run python clone_image_apy.py
+pipenv run python clone_image_api.py
