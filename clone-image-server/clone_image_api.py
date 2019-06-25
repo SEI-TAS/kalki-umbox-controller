@@ -15,6 +15,10 @@ STATUS_KEY = "status"
 OK_VALUE = "ok"
 
 
+def get_instance_path(instance_name):
+    return os.path.join(DATA_NODE_IMAGES_PATH, INSTANCES_FOLDER, instance_name + ".qcow2")
+
+
 class ImageClone(Resource):
     """Resource for handling cloning of images."""
 
@@ -25,7 +29,7 @@ class ImageClone(Resource):
         template_image = diskimage.DiskImage(image_path)
 
         # Clone the image for a new instance image.
-        instance_disk_path = os.path.join(DATA_NODE_IMAGES_PATH, INSTANCES_FOLDER, instance_name + ".qcow2")
+        instance_disk_path = get_instance_path(instance_name)
         template_image.create_linked_qcow2_image(instance_disk_path)
 
         return {INSTANCE_PATH_KEY: instance_disk_path}
@@ -33,7 +37,8 @@ class ImageClone(Resource):
     def delete(self, instance_name):
         """Remove an exising instance image."""
         # Clone the image for a new instance image.
-        instance_disk_path = os.path.join(DATA_NODE_IMAGES_PATH, INSTANCES_FOLDER, instance_name)
+        instance_disk_path = get_instance_path(instance_name)
+        print("Removing disk image in following path: " + instance_disk_path)
         os.remove(instance_disk_path)
 
         return {STATUS_KEY: OK_VALUE}

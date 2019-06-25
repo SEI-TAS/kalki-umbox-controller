@@ -182,7 +182,7 @@ class VmUmbox(object):
             vm.destroy()
 
             # Destroy instance image file.
-            json_reply = self.__send_api_command(hypervisor_host_ip, API_CLEAN_METHOD, "{0}".format(self.instance_name))
+            json_reply = self.__send_api_command(hypervisor_host_ip, API_CLEAN_METHOD, "{0}/{1}".format("non", self.instance_name))
             print "Remote instance image deletion response: " + json_reply
         except:
             logger.warning("VM not found.")
