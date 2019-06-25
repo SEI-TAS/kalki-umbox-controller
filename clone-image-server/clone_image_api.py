@@ -43,7 +43,7 @@ def main():
     app = Flask(__name__)
 
     api = Api(app)
-    api.add_resource(ImageClone, BASE_URL + "/<string:image_name>/<string:instance_name>")
+    api.add_resource(ImageClone, BASE_URL + "/<string:image_file_name>/<string:instance_name>")
 
     app.run(host="0.0.0.0", debug=True)
 
