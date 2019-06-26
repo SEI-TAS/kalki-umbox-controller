@@ -11,9 +11,9 @@ COPY diskimage.py /app/
 COPY Pipfile /app/
 COPY Pipfile.lock /app/
 
-# Setup pipenv for VM Umbox tool
-ENV PIPENV_VENV_IN_PROJECT "enabled"
+# Installing Python deps without a venv.
 WORKDIR /app
 RUN pipenv install --system --deploy --ignore-pipfile
 
-CMD ["pipenv", "run", "python", "clone_image_api.py"]
+# Calling directly.
+CMD ["python", "clone_image_api.py"]
