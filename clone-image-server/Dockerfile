@@ -8,7 +8,7 @@ RUN pip install pipenv
 # CloneImage server is listening here.
 EXPOSE 5000
 
-COPY clone-image-server/ /app/
+COPY . /app
 
 # Setup pipenv for VM Umbox tool
 ENV PIPENV_VENV_IN_PROJECT "enabled"
