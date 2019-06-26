@@ -15,5 +15,4 @@ ENV PIPENV_VENV_IN_PROJECT "enabled"
 WORKDIR /app
 RUN pipenv install
 
-WORKDIR /app/$DIST_NAME
 CMD ["pipenv", "run", "python", "clone_image_api.py"]
