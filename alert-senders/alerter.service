@@ -1,9 +1,0 @@
-[Unit]
-Description=Alert Sender service
-
-[Service]
-ExecStart=/home/umbox/alert-senders/alerter.sh
-WorkingDirectory=/home/umbox/alert-senders/
-
-[Install]
-WantedBy=multi-user.target
