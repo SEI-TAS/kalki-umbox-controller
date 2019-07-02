@@ -80,11 +80,9 @@ public abstract class Umbox
         {
             stop();
 
-            Postgres.findUmboxInstance(String.valueOf(umboxId)).whenComplete((umboxInstance, exception) ->
-            {
-                System.out.println("Deleting umbox instance from DB.");
-                Postgres.deleteUmboxInstance(umboxInstance.getId());
-            });
+            UmboxInstance umboxInstance = Postgres.findUmboxInstance(String.valueOf(umboxId));
+            System.out.println("Deleting umbox instance from DB.");
+            Postgres.deleteUmboxInstance(umboxInstance.getId());
         }
         catch (RuntimeException e)
         {

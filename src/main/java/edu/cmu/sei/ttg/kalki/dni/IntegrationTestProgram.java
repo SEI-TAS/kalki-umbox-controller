@@ -61,21 +61,18 @@ public class IntegrationTestProgram
         DeviceType defType = new DeviceType(1, "test");
         String deviceIp = "192.168.56.103";
         Device newDevice = new Device("testDevice", "test device", defType, deviceIp, 10, 10);
-        Postgres.insertDevice(newDevice).whenComplete((deviceId, devException) -> {
-            testDeviceId = deviceId;
+        int deviceId = Postgres.insertDevice(newDevice);
+        testDeviceId = deviceId;
 
-            UmboxImage image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_FILENAME);
-            Postgres.insertUmboxImage(image).whenComplete((umboxImageId, umException) ->
-            {
-                testUmboxImageId = umboxImageId;
-                UmboxLookup lookup = new UmboxLookup();
-                lookup.setUmboxImageId(umboxImageId);
-                lookup.setDeviceTypeId(defaultType);
-                lookup.setStateId(SUSP_DEVICE_STATE_ID);
-                lookup.setDagOrder(1);
-                testUmboxLookupId = Postgres.insertUmboxLookup(lookup);
-            });
-        });
+        UmboxImage image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_FILENAME);
+        int umboxImageId = Postgres.insertUmboxImage(image);
+        testUmboxImageId = umboxImageId;
+        UmboxLookup lookup = new UmboxLookup();
+        lookup.setUmboxImageId(umboxImageId);
+        lookup.setDeviceTypeId(defaultType);
+        lookup.setStateId(SUSP_DEVICE_STATE_ID);
+        lookup.setDagOrder(1);
+        testUmboxLookupId = Postgres.insertUmboxLookup(lookup);
     }
 
     /***
@@ -83,28 +80,24 @@ public class IntegrationTestProgram
      */
     void runVmTest()
     {
-        Postgres.findDevice(testDeviceId).whenComplete((device, exception) ->
+        Device device = Postgres.findDevice(testDeviceId);
+        UmboxImage image = Postgres.findUmboxImage(testUmboxImageId);
+        Umbox umbox = new VMUmbox(image, device);
+        System.out.println("Starting VM.");
+        umbox.startAndStore();
+
+        int sleepInSeconds = 20;
+        try
         {
-            Postgres.findUmboxImage(testUmboxImageId).whenComplete((image, imageExc) ->
-            {
-                Umbox umbox = new VMUmbox(image, device);
-                System.out.println("Starting VM.");
-                umbox.startAndStore();
+            Thread.sleep(sleepInSeconds * 1000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
 
-                int sleepInSeconds = 20;
-                try
-                {
-                    Thread.sleep(sleepInSeconds * 1000);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-
-                System.out.println("Stopping VM");
-                umbox.stopAndClear();
-            });
-        });
+        System.out.println("Stopping VM");
+        umbox.stopAndClear();
     }
 
     /***
@@ -112,28 +105,24 @@ public class IntegrationTestProgram
      */
     void runOvsTest()
     {
-        Postgres.findDevice(testDeviceId).whenComplete((device, exception) ->
+        Device device = Postgres.findDevice(testDeviceId);
+        UmboxImage image = Postgres.findUmboxImage(testUmboxImageId);
+        System.out.println("Starting umbox and setting rules.");
+        Umbox umbox = DAGManager.setupUmboxForDevice(image, device);
+
+        System.out.println("Waiting for some seconds...");
+        int sleepInSeconds = 20;
+        try
         {
-            Postgres.findUmboxImage(testUmboxImageId).whenComplete((image, imageExc) ->
-            {
-                System.out.println("Starting umbox and setting rules.");
-                Umbox umbox = DAGManager.setupUmboxForDevice(image, device);
+            Thread.sleep(sleepInSeconds * 1000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
 
-                System.out.println("Waiting for some seconds...");
-                int sleepInSeconds = 20;
-                try
-                {
-                    Thread.sleep(sleepInSeconds * 1000);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-
-                System.out.println("Clearing rules and stopping umbox");
-                DAGManager.clearUmboxForDevice(umbox, device);
-            });
-        });
+        System.out.println("Clearing rules and stopping umbox");
+        DAGManager.clearUmboxForDevice(umbox, device);
     }
 
     /***
@@ -150,10 +139,8 @@ public class IntegrationTestProgram
         System.out.println("Finished sleeping.");
 
         System.out.println("Clearing rules and stopping umbox");
-        Postgres.findDevice(testDeviceId).whenComplete((device, e) ->
-        {
-            DAGManager.clearUmboxesForDevice(device);
-        });
+        Device device = Postgres.findDevice(testDeviceId);
+        DAGManager.clearUmboxesForDevice(device);
 
         System.out.println("Waiting for async cleanup");
         try

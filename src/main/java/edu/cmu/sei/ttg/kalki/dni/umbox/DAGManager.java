@@ -66,19 +66,15 @@ public class DAGManager
 
         clearRedirectForDevice(device.getIp());
 
-        Postgres.findUmboxInstances(device.getId()).whenComplete((instances, e) ->
+        List<UmboxInstance> instances = Postgres.findUmboxInstances(device.getId());
+        System.out.println("Stopping all umboxes for this device.");
+        for(UmboxInstance instance : instances)
         {
-            System.out.println("Stopping all umboxes for this device.");
-            for(UmboxInstance instance : instances)
-            {
-                System.out.println("Stopping umbox.");
-                Postgres.findUmboxImage(instance.getUmboxImageId()).whenComplete((image, eImage) ->
-                {
-                    Umbox umbox = new VMUmbox(image, Integer.parseInt(instance.getAlerterId()));
-                    umbox.stopAndClear();
-                });
-            }
-        });
+            System.out.println("Stopping umbox.");
+            UmboxImage image = Postgres.findUmboxImage(instance.getUmboxImageId());
+            Umbox umbox = new VMUmbox(image, Integer.parseInt(instance.getAlerterId()));
+            umbox.stopAndClear();
+        }
     }
 
     /**
