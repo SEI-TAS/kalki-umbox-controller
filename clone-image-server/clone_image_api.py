@@ -45,6 +45,8 @@ class ImageClone(Resource):
 
 
 def main():
+    print("Images path: " + os.path.abspath(DATA_NODE_IMAGES_PATH))
+
     app = Flask(__name__)
 
     api = Api(app)
