@@ -1,4 +1,5 @@
 import os
+import sys
 
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
@@ -31,6 +32,7 @@ class ImageClone(Resource):
         # Clone the image for a new instance image.
         instance_disk_path = get_instance_path(instance_name)
         print("Cloning image file " + image_path + " as " + instance_disk_path)
+        sys.stdout.flush()
         template_image.create_linked_qcow2_image(instance_disk_path)
 
         return {INSTANCE_PATH_KEY: instance_disk_path}
