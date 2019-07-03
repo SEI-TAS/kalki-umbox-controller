@@ -4,6 +4,7 @@ FROM python:2.7
 RUN pip install pipenv
 
 # Install qemu-img
+RUN apt-get update
 RUN apt-get install -yqq qemu-utils
 
 # CloneImage server is listening here.
