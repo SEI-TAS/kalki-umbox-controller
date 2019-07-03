@@ -16,8 +16,12 @@ STATUS_KEY = "status"
 OK_VALUE = "ok"
 
 
+def get_instance_folder():
+    return os.path.join(os.path.abspath(DATA_NODE_IMAGES_PATH), INSTANCES_FOLDER)
+
+
 def get_instance_path(instance_name):
-    return os.path.join(os.path.abspath(DATA_NODE_IMAGES_PATH), INSTANCES_FOLDER, instance_name + ".qcow2")
+    return os.path.join(get_instance_folder(), instance_name + ".qcow2")
 
 
 class ImageClone(Resource):
@@ -28,6 +32,10 @@ class ImageClone(Resource):
         # Create a new disk image object based on the given image filename.
         image_path = os.path.join(os.path.abspath(DATA_NODE_IMAGES_PATH), image_file_name)
         template_image = diskimage.DiskImage(image_path)
+
+        # Check if folder doesn't exist, and create it if so.
+        if not os.path.exists(get_instance_folder()):
+            os.makedirs(get_instance_folder())
 
         # Clone the image for a new instance image.
         instance_disk_path = get_instance_path(instance_name)
