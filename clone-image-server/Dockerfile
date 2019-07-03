@@ -1,8 +1,9 @@
-FROM ubuntu:16.04
+#FROM ubuntu:16.04
+FROM python:2.7
 
 # Install Python, pip andpipenv
 RUN apt-get update
-RUN apt-get install -yqq python python-pip
+#RUN apt-get install -yqq python python-pip
 RUN pip install pipenv
 
 # Install qemu-img
