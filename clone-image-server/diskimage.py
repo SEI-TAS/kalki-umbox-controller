@@ -38,6 +38,8 @@ class DiskImage(object):
 
     def __run_image_creation_tool(self, image_tool_command):
         """ Starts the image creation tool in a separate process, and waits for it."""
+        print("Executing command: " + image_tool_command)
+        sys.stdout.flush()
         tool_pipe = subprocess.PIPE
         tool_process = subprocess.Popen(image_tool_command, shell=True, stdin=tool_pipe, stdout=tool_pipe, stderr=tool_pipe)
         normal_output, error_output = tool_process.communicate()
