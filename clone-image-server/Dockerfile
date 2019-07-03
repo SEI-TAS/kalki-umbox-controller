@@ -3,6 +3,9 @@ FROM python:2.7
 # Install pipenv
 RUN pip install pipenv
 
+# Install qemu-img
+RUN apt-get install -yqq qemu-utils
+
 # CloneImage server is listening here.
 EXPOSE 5000
 
