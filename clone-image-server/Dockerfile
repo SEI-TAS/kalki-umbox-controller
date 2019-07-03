@@ -1,10 +1,11 @@
-FROM python:2.7
+FROM ubuntu:16.04
 
-# Install pipenv
+# Install Python, pip andpipenv
+RUN apt-get update
+RUN apt-get install -yqq python python-pip
 RUN pip install pipenv
 
 # Install qemu-img
-RUN apt-get update
 RUN apt-get install -yqq qemu-utils
 
 # CloneImage server is listening here.
