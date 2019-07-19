@@ -1,6 +1,7 @@
 package edu.cmu.sei.ttg.kalki.dni;
 
 import edu.cmu.sei.ttg.kalki.dni.alerts.AlertServerStartup;
+import edu.cmu.sei.ttg.kalki.dni.umbox.DAGManager;
 import edu.cmu.sei.ttg.kalki.dni.umbox.DeviceSecurityStateInsertHandler;
 import edu.cmu.sei.ttg.kalki.dni.utils.Config;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
@@ -21,6 +22,8 @@ public class DNISetup
         try
         {
             DNISetup.setupDatabase();
+
+            DAGManager.bootstrap();
 
             InsertListener.startUpListener(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
 

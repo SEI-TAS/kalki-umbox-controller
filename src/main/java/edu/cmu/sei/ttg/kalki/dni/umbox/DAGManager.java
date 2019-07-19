@@ -6,6 +6,7 @@ import edu.cmu.sei.ttg.kalki.dni.ovs.RemoteOVSDB;
 import edu.cmu.sei.ttg.kalki.dni.ovs.RemoteOVSSwitch;
 import edu.cmu.sei.ttg.kalki.dni.utils.Config;
 import edu.cmu.sei.ttg.kalki.models.Device;
+import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
 
@@ -13,6 +14,67 @@ import java.util.List;
 
 public class DAGManager
 {
+    /**
+     * Goes over all devices and sets up umboxes for each of them based on their current state.
+     */
+    public static void bootstrap()
+    {
+        List<Device> devices = Postgres.findAllDevices();
+        for(Device device : devices)
+        {
+            DeviceSecurityState state = device.getCurrentState();
+            setupUmboxesForDevice(device, state);
+        }
+    }
+
+    /**
+     * Sets up all umboxes for a given device and state. Also clears up previous umboxes if needed.
+     * @param device
+     * @param currentState
+     */
+    public static void setupUmboxesForDevice(Device device, DeviceSecurityState currentState)
+    {
+        // Find umboxes for given state and device
+        // Get umbox image info.
+        List<UmboxInstance> umboxInstances = Postgres.findUmboxInstances(device.getId());
+        System.out.println("Found umbox instances info for device, umboxes running: " + umboxInstances.size());
+
+        // First clear the current umboxes.
+        for (UmboxInstance instance : umboxInstances)
+        {
+            // Image is not really needed for existing umboxes that we just want to stop, thus null.
+            Umbox umbox = new VMUmbox(null, Integer.parseInt(instance.getAlerterId()));
+            DAGManager.clearUmboxForDevice(umbox, device);
+        }
+
+        // TODO: better sync this? Maybe first create new umboxes, then clear previous rules,
+        //  then redirect and then stop old ones?
+        // Now create the new ones.
+        List<UmboxImage> umboxImages = Postgres.findUmboxImagesByDeviceTypeAndSecState(device.getType().getId(), currentState.getStateId());
+
+        // TODO: add support for multiple umbox images in one DAG, at least as a pipe, one after another.
+        System.out.println("Found umboxes for device type " + device.getType().getId() + " and current state " + currentState.getStateId() + " , number of umboxes: " + umboxImages.size());
+        if (umboxImages.size() > 0)
+        {
+            UmboxImage image = umboxImages.get(0);
+            System.out.println("Starting umbox and setting rules.");
+
+            try
+            {
+                DAGManager.setupUmboxForDevice(image, device);
+            }
+            catch (RuntimeException e)
+            {
+                System.out.println("Error setting up umbox: " + e.toString());
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            System.out.println("No umbox associated to this state.");
+        }
+    }
+
     /**
      * Starts an umbox with the given image and device, and redirects traffic to/from that device to it.
      * @param image
