@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM i386/openjdk:8
 
 # Install Python 2.7, pip and pipenv
 RUN apt-get update \
