@@ -1,4 +1,4 @@
-package edu.cmu.sei.ttg.kalki.dni.utils;
+package edu.cmu.sei.kalki.uc.utils;
 
 import org.json.JSONObject;
 import org.json.JSONTokener;

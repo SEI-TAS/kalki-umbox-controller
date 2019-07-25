@@ -1,7 +1,6 @@
-package edu.cmu.sei.ttg.kalki.dni;
+package edu.cmu.sei.kalki.uc;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 

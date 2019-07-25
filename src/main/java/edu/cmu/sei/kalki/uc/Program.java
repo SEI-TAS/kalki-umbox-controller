@@ -1,6 +1,6 @@
-package edu.cmu.sei.ttg.kalki.dni;
+package edu.cmu.sei.kalki.uc;
 
-import edu.cmu.sei.ttg.kalki.dni.utils.Config;
+import edu.cmu.sei.kalki.uc.utils.Config;
 
 /**
  * Entry point for the program.
@@ -16,8 +16,8 @@ public class Program
         try
         {
             Config.load("config.json");
-            DNISetup.startupDBandAlertComponents();
-            DNISetup.startupUmboxComponents();
+            UCSetup.startupDBandAlertComponents();
+            UCSetup.startupUmboxComponents();
         }
         catch(Exception e)
         {

@@ -1,9 +1,9 @@
-package edu.cmu.sei.ttg.kalki.dni;
+package edu.cmu.sei.kalki.uc;
 
-import edu.cmu.sei.ttg.kalki.dni.umbox.DAGManager;
-import edu.cmu.sei.ttg.kalki.dni.umbox.Umbox;
-import edu.cmu.sei.ttg.kalki.dni.umbox.VMUmbox;
-import edu.cmu.sei.ttg.kalki.dni.utils.Config;
+import edu.cmu.sei.kalki.uc.umbox.DAGManager;
+import edu.cmu.sei.kalki.uc.umbox.Umbox;
+import edu.cmu.sei.kalki.uc.umbox.VMUmbox;
+import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
@@ -40,8 +40,8 @@ public class IntegrationTestProgram
         Config.data.put("db_name", "kalkidb_test");
         Config.data.put("db_user", "kalkiuser_test");
 
-        DNISetup.startupDBandAlertComponents();
-        //DNISetup.startupUmboxComponents();
+        UCSetup.startupDBandAlertComponents();
+        UCSetup.startupUmboxComponents();
 
         insertTestData();
 
@@ -162,7 +162,7 @@ public class IntegrationTestProgram
     static void runBootupTest()
     {
         System.out.println("Bootup test!");
-        DNISetup.startupUmboxComponents();
+        UCSetup.startupUmboxComponents();
     }
 
     public static void main(String[] args)
@@ -170,8 +170,8 @@ public class IntegrationTestProgram
         try
         {
             setUpEnvironment();
-            //runTriggerTest();
-            runBootupTest();
+            runTriggerTest();
+            //runBootupTest();
         }
         catch (InterruptedException | IOException e)
         {

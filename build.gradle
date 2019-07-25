@@ -8,7 +8,7 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'edu.cmu.sei.ttg.kalki.dni.IntegrationTestProgram'
+mainClassName = 'edu.cmu.sei.kalki.uc.IntegrationTestProgram'
 
 sourceCompatibility = 1.8
 
@@ -31,7 +31,7 @@ test {
 }
 
 docker {
-    name 'kalki/kalki-dni'
+    name 'kalki/kalki-uc'
     files tasks.distTar.outputs, "config.json"
     copySpec.with {
         from('.') {

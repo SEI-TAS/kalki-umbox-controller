@@ -1,4 +1,4 @@
-package edu.cmu.sei.ttg.kalki.dni.umbox;
+package edu.cmu.sei.kalki.uc.umbox;
 
 import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.listeners.InsertHandler;

@@ -1,10 +1,10 @@
-package edu.cmu.sei.ttg.kalki.dni.umbox;
+package edu.cmu.sei.kalki.uc.umbox;
 
+import edu.cmu.sei.kalki.uc.ovs.OpenFlowRule;
+import edu.cmu.sei.kalki.uc.ovs.RemoteOVSDB;
+import edu.cmu.sei.kalki.uc.ovs.RemoteOVSSwitch;
+import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
-import edu.cmu.sei.ttg.kalki.dni.ovs.OpenFlowRule;
-import edu.cmu.sei.ttg.kalki.dni.ovs.RemoteOVSDB;
-import edu.cmu.sei.ttg.kalki.dni.ovs.RemoteOVSSwitch;
-import edu.cmu.sei.ttg.kalki.dni.utils.Config;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;

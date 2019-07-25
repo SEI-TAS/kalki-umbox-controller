@@ -1,18 +1,18 @@
-package edu.cmu.sei.ttg.kalki.dni;
+package edu.cmu.sei.kalki.uc;
 
-import edu.cmu.sei.ttg.kalki.dni.alerts.AlertServerStartup;
-import edu.cmu.sei.ttg.kalki.dni.umbox.DAGManager;
-import edu.cmu.sei.ttg.kalki.dni.umbox.DeviceSecurityStateInsertHandler;
-import edu.cmu.sei.ttg.kalki.dni.utils.Config;
+import edu.cmu.sei.kalki.uc.alerts.AlertServerStartup;
+import edu.cmu.sei.kalki.uc.umbox.DAGManager;
+import edu.cmu.sei.kalki.uc.umbox.DeviceSecurityStateInsertHandler;
+import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.listeners.InsertListener;
 
 import java.sql.SQLException;
 
 /**
- * Entry point for the program.
+ * Methods to setup and bootstrap subcomponents.
  */
-public class DNISetup
+public class UCSetup
 {
     /**
      * Sets up the DB and a connection to it, plus the alert handler.
@@ -21,7 +21,7 @@ public class DNISetup
     {
         try
         {
-            DNISetup.setupDatabase();
+            UCSetup.setupDatabase();
             AlertServerStartup.start();
         }
         catch(Exception e)

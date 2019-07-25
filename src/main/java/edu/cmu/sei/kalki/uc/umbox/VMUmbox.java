@@ -1,7 +1,7 @@
-package edu.cmu.sei.ttg.kalki.dni.umbox;
+package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.ttg.kalki.dni.utils.CommandExecutor;
-import edu.cmu.sei.ttg.kalki.dni.utils.Config;
+import edu.cmu.sei.kalki.uc.utils.CommandExecutor;
+import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 
