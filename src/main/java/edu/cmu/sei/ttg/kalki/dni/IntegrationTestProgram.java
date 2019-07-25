@@ -22,6 +22,7 @@ public class IntegrationTestProgram
     private static int testUmboxImageId = -1;
     private static int testUmboxLookupId = -1;
 
+    private static final int NORM_DEVICE_STATE_ID = 1;
     private static final int SUSP_DEVICE_STATE_ID = 2;
     private static final String TEST_IMAGE_NAME = "umbox-sniffer";
     private static final String TEST_IMAGE_FILENAME = "umbox-sniffer.qcow2";
@@ -64,6 +65,9 @@ public class IntegrationTestProgram
         Device newDevice = new Device("testDevice", "test device", defType, deviceIp, 10, 10);
         int deviceId = Postgres.insertDevice(newDevice);
         testDeviceId = deviceId;
+
+        DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
+        Postgres.insertDeviceSecurityState(secState);
 
         UmboxImage image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_FILENAME);
         int umboxImageId = Postgres.insertUmboxImage(image);
