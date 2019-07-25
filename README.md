@@ -1,4 +1,4 @@
-# Data Node Interface
+# Umbox Controller
 
 ## Prerequisites
 To compile this program, Java JDK 8 is required. This program uses Gradle as its build system, 
