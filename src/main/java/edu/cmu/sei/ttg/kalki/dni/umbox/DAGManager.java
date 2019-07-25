@@ -22,6 +22,7 @@ public class DAGManager
         List<Device> devices = Postgres.findAllDevices();
         for(Device device : devices)
         {
+            System.out.println("Checking if there are umboxes to be started for device " + device.getName() + ", state " + device.getCurrentState().getName());
             DeviceSecurityState state = device.getCurrentState();
             setupUmboxesForDevice(device, state);
         }
@@ -34,15 +35,12 @@ public class DAGManager
      */
     public static void setupUmboxesForDevice(Device device, DeviceSecurityState currentState)
     {
-        // Find umboxes for given state and device
-        // Get umbox image info.
+        // First clear the current umboxes.
         List<UmboxInstance> umboxInstances = Postgres.findUmboxInstances(device.getId());
         System.out.println("Found umbox instances info for device, umboxes running: " + umboxInstances.size());
-
-        // First clear the current umboxes.
         for (UmboxInstance instance : umboxInstances)
         {
-            // Image is not really needed for existing umboxes that we just want to stop, thus null.
+            // Image param is not really needed for existing umboxes that we just want to stop, thus null.
             Umbox umbox = new VMUmbox(null, Integer.parseInt(instance.getAlerterId()));
             DAGManager.clearUmboxForDevice(umbox, device);
         }
