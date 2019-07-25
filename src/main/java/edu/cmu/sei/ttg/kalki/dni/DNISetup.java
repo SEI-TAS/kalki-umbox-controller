@@ -15,19 +15,30 @@ import java.sql.SQLException;
 public class DNISetup
 {
     /**
-     * Sets up the Config and Postgres singletons, starts up the AlertHandler http server.
+     * Sets up the DB and a connection to it, plus the alert handler.
      */
-    public static void startUpComponents()
+    public static void startupDBandAlertComponents()
     {
         try
         {
             DNISetup.setupDatabase();
-
-            DAGManager.bootstrap();
-
-            InsertListener.startUpListener(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
-
             AlertServerStartup.start();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sets up umbox-related components and listeners.
+     */
+    public static void startupUmboxComponents()
+    {
+        try
+        {
+            DAGManager.bootstrap();
+            InsertListener.startUpListener(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
         }
         catch(Exception e)
         {

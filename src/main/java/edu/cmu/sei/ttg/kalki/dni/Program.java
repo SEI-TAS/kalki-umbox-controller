@@ -16,7 +16,8 @@ public class Program
         try
         {
             Config.load("config.json");
-            DNISetup.startUpComponents();
+            DNISetup.startupDBandAlertComponents();
+            DNISetup.startupUmboxComponents();
         }
         catch(Exception e)
         {

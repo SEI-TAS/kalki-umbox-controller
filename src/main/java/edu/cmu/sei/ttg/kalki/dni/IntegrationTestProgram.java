@@ -39,7 +39,8 @@ public class IntegrationTestProgram
         Config.data.put("db_name", "kalkidb_test");
         Config.data.put("db_user", "kalkiuser_test");
 
-        DNISetup.startUpComponents();
+        DNISetup.startupDBandAlertComponents();
+        //DNISetup.startupUmboxComponents();
 
         insertTestData();
 
@@ -154,12 +155,19 @@ public class IntegrationTestProgram
 
     }
 
+    static void runBootupTest()
+    {
+        System.out.println("Bootup test!");
+        DNISetup.startupUmboxComponents();
+    }
+
     public static void main(String[] args)
     {
         try
         {
             setUpEnvironment();
-            runTriggerTest();
+            //runTriggerTest();
+            runBootupTest();
         }
         catch (InterruptedException | IOException e)
         {
