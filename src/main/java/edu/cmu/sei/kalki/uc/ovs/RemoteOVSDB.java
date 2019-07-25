@@ -1,6 +1,6 @@
-package edu.cmu.sei.ttg.kalki.dni.ovs;
+package edu.cmu.sei.kalki.uc.ovs;
 
-import edu.cmu.sei.ttg.kalki.dni.utils.CommandExecutor;
+import edu.cmu.sei.kalki.uc.utils.CommandExecutor;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
