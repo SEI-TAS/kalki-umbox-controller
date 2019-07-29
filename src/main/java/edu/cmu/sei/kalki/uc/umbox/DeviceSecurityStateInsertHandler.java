@@ -25,6 +25,8 @@ public class DeviceSecurityStateInsertHandler implements InsertHandler
         Device device = Postgres.findDevice(deviceId);
         System.out.println("Found device info for device with id " + deviceId);
 
+        // TODO: check if state is the same as before, and if so, ignore trigger.
+
         DAGManager.setupUmboxesForDevice(device, currentState);
     }
 }

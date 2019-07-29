@@ -26,4 +26,13 @@ public class ProgramTests
     {
         IntegrationTestProgram.runTriggerTest();
     }
+
+    /***
+     * Full test based on trigger. Inserts a new sec state for a device, simulating that its state has changed.
+     */
+    //@Test
+    void runBootupTest() throws InterruptedException
+    {
+        IntegrationTestProgram.runBootupTest();
+    }
 }

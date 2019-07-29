@@ -17,7 +17,8 @@ public class Program
         {
             Config.load("config.json");
             UCSetup.startupDBandAlertComponents();
-            UCSetup.startupUmboxComponents();
+            UCSetup.startupUmboxBootstrap();
+            UCSetup.startupUmboxStateListener();
         }
         catch(Exception e)
         {

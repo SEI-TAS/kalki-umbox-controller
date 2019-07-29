@@ -30,7 +30,7 @@ public class IntegrationTestProgram
     /**
      * Sets up test DB, main program threads, and config singleton data.
      */
-    static void setUpEnvironment() throws IOException, InterruptedException
+    static void setUpEnvironment() throws IOException
     {
         Config.load("config.json");
 
@@ -41,17 +41,6 @@ public class IntegrationTestProgram
         Config.data.put("db_user", "kalkiuser_test");
 
         UCSetup.startupDBandAlertComponents();
-        UCSetup.startupUmboxComponents();
-
-        insertTestData();
-
-        // Wait for data to be inserted.
-        while(testUmboxLookupId == -1)
-        {
-            Thread.sleep(100);
-        }
-
-        System.out.println("Test data finished inserting.");
     }
 
     /***
@@ -59,6 +48,8 @@ public class IntegrationTestProgram
      */
     private static void insertTestData()
     {
+        System.out.println("Inserting test device, security state, umbox image and lookup.");
+
         int defaultType = 1;
         DeviceType defType = new DeviceType(1, "test");
         String deviceIp = "192.168.56.103";
@@ -78,6 +69,8 @@ public class IntegrationTestProgram
         lookup.setStateId(SUSP_DEVICE_STATE_ID);
         lookup.setDagOrder(1);
         testUmboxLookupId = Postgres.insertUmboxLookup(lookup);
+
+        System.out.println("Test data finished inserting.");
     }
 
     /***
@@ -135,6 +128,14 @@ public class IntegrationTestProgram
      */
     static void runTriggerTest() throws InterruptedException
     {
+        // Execute bootup umbox stuff.
+        UCSetup.startupUmboxBootstrap();
+
+        // Insert test data.
+        insertTestData();
+
+        // Set up listener and insert test trigger.
+        UCSetup.startupUmboxStateListener();
         DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
         Postgres.insertDeviceSecurityState(secState);
 
@@ -162,7 +163,12 @@ public class IntegrationTestProgram
     static void runBootupTest()
     {
         System.out.println("Bootup test!");
-        UCSetup.startupUmboxComponents();
+
+        // Insert test data.
+        insertTestData();
+
+        // Execute bootup umbox stuff, and start listeners for triggers.
+        UCSetup.startupUmboxBootstrap();
     }
 
     public static void main(String[] args)

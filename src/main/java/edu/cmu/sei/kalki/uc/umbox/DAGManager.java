@@ -5,6 +5,7 @@ import edu.cmu.sei.kalki.uc.ovs.RemoteOVSDB;
 import edu.cmu.sei.kalki.uc.ovs.RemoteOVSSwitch;
 import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
+import edu.cmu.sei.ttg.kalki.listeners.InsertListener;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
@@ -26,6 +27,14 @@ public class DAGManager
             DeviceSecurityState state = device.getCurrentState();
             setupUmboxesForDevice(device, state);
         }
+    }
+
+    /**
+     * Starts up the listener for device state changes.
+     */
+    public static void startUpStateListener()
+    {
+        InsertListener.startUpListener(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
     }
 
     /**

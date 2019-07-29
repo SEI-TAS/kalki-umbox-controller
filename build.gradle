@@ -8,7 +8,7 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'edu.cmu.sei.kalki.uc.IntegrationTestProgram'
+mainClassName = 'edu.cmu.sei.kalki.uc.Program'
 
 sourceCompatibility = 1.8
 

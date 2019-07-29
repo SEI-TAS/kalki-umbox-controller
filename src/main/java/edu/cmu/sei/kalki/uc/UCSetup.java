@@ -2,10 +2,8 @@ package edu.cmu.sei.kalki.uc;
 
 import edu.cmu.sei.kalki.uc.alerts.AlertServerStartup;
 import edu.cmu.sei.kalki.uc.umbox.DAGManager;
-import edu.cmu.sei.kalki.uc.umbox.DeviceSecurityStateInsertHandler;
 import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
-import edu.cmu.sei.ttg.kalki.listeners.InsertListener;
 
 import java.sql.SQLException;
 
@@ -33,12 +31,23 @@ public class UCSetup
     /**
      * Sets up umbox-related components and listeners.
      */
-    public static void startupUmboxComponents()
+    public static void startupUmboxBootstrap()
     {
         try
         {
             DAGManager.bootstrap();
-            InsertListener.startUpListener(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startupUmboxStateListener()
+    {
+        try
+        {
+            DAGManager.startUpStateListener();
         }
         catch(Exception e)
         {
