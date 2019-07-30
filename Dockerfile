@@ -11,7 +11,7 @@ RUN apt-get -yqq install libvirt-dev
 # Install ovs-tools
 RUN apt-get -yqq install openvswitch-common openvswitch-switch
 
-ENV PROJECT_NAME uc
+ENV PROJECT_NAME umbox_controller
 ENV DIST_NAME $PROJECT_NAME-1.0-SNAPSHOT
 
 # AlertServer is listening here.
