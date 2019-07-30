@@ -52,7 +52,7 @@ public class IntegrationTestProgram
 
         int defaultType = 1;
         DeviceType defType = new DeviceType(1, "test");
-        String deviceIp = "192.168.56.103";
+        String deviceIp = "10.27.151.101";
         Device newDevice = new Device("testDevice", "test device", defType, deviceIp, 10, 10);
         Device insertedDevice = Postgres.insertDevice(newDevice);
         testDeviceId = insertedDevice.getId();
