@@ -176,10 +176,10 @@ public class IntegrationTestProgram
         try
         {
             setUpEnvironment();
-            runTriggerTest();
-            //runBootupTest();
+            //runTriggerTest();
+            runBootupTest();
         }
-        catch (InterruptedException | IOException e)
+        catch (IOException e)
         {
             e.printStackTrace();
         }
