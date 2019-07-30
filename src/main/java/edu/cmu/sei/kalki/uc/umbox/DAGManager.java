@@ -34,7 +34,8 @@ public class DAGManager
      */
     public static void startUpStateListener()
     {
-        InsertListener.startUpListener(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
+        InsertListener.addHandler(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
+        InsertListener.startListening();
     }
 
     /**

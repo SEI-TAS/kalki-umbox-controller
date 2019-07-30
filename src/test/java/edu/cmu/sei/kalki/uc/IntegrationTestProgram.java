@@ -54,8 +54,8 @@ public class IntegrationTestProgram
         DeviceType defType = new DeviceType(1, "test");
         String deviceIp = "192.168.56.103";
         Device newDevice = new Device("testDevice", "test device", defType, deviceIp, 10, 10);
-        int deviceId = Postgres.insertDevice(newDevice);
-        testDeviceId = deviceId;
+        Device insertedDevice = Postgres.insertDevice(newDevice);
+        testDeviceId = insertedDevice.getId();
 
         DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
         Postgres.insertDeviceSecurityState(secState);
