@@ -62,6 +62,8 @@ public class DAGManager
 
         // TODO: add support for multiple umbox images in one DAG, at least as a pipe, one after another.
         System.out.println("Found umboxes for device type " + device.getType().getId() + " and current state " + currentState.getStateId() + " , number of umboxes: " + umboxImages.size());
+        String ovsInternalPort = Config.data.get("ovs_devices_network_port");
+        String ovsExternalPort = Config.data.get("ovs_external_network_port");
         if (umboxImages.size() > 0)
         {
             UmboxImage image = umboxImages.get(0);
@@ -69,7 +71,7 @@ public class DAGManager
 
             try
             {
-                DAGManager.setupUmboxForDevice(image, device);
+                DAGManager.setupUmboxForDevice(image, device, ovsInternalPort, ovsExternalPort);
             }
             catch (RuntimeException e)
             {
@@ -88,7 +90,7 @@ public class DAGManager
      * @param image
      * @param device
      */
-    public static Umbox setupUmboxForDevice(UmboxImage image, Device device)
+    public static Umbox setupUmboxForDevice(UmboxImage image, Device device, String ovsInternalPort, String ovsExternalPort)
     {
         // Here we are explicitly stating we are using VMUmboxes. If we wanted to change to another implementation,
         // for now it would be enough to change it here.
@@ -115,8 +117,7 @@ public class DAGManager
         String umboxOutPortId = ovsdb.getPortId(portNames[1]);
         if(umboxInPortId != null && umboxOutPortId != null)
         {
-            redirectToUmbox(device.getIp(), Config.data.get("ovs_devices_network_port"), umboxInPortId, umboxOutPortId,
-                    Config.data.get("ovs_external_network_port"));
+            redirectToUmbox(device.getIp(), ovsInternalPort, umboxInPortId, umboxOutPortId, ovsExternalPort);
         }
 
         return umbox;
@@ -157,22 +158,22 @@ public class DAGManager
     /**
      * Sends all OpenFlow rules needed to redirect traffic from and to a device to a given umbox.
      * @param deviceIp
-     * @param ovsDevicePort
+     * @param ovsInternalPort
      * @param ovsUmboxInPort
      * @param ovsUmboxOutPort     *
      * @param ovsExternalPort
      */
-    private static void redirectToUmbox(String deviceIp, String ovsDevicePort, String ovsUmboxInPort, String ovsUmboxOutPort, String ovsExternalPort)
+    private static void redirectToUmbox(String deviceIp, String ovsInternalPort, String ovsUmboxInPort, String ovsUmboxOutPort, String ovsExternalPort)
     {
         OpenFlowRule extToUmbox = new OpenFlowRule(ovsExternalPort, ovsUmboxInPort, "100", null, deviceIp);
-        OpenFlowRule umboxToDev = new OpenFlowRule(ovsUmboxOutPort, ovsDevicePort, "110", null, deviceIp);
-        OpenFlowRule devToUmbox = new OpenFlowRule(ovsDevicePort, ovsUmboxInPort, "100", deviceIp, null);
+        OpenFlowRule umboxToInt = new OpenFlowRule(ovsUmboxOutPort, ovsInternalPort, "110", null, deviceIp);
+        OpenFlowRule intToUmbox = new OpenFlowRule(ovsInternalPort, ovsUmboxInPort, "100", deviceIp, null);
         OpenFlowRule umboxToExt = new OpenFlowRule(ovsUmboxOutPort, ovsExternalPort, "110", deviceIp, null);
 
         RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.data.get("data_node_ip"));
         vSwitch.addRule(extToUmbox);
-        vSwitch.addRule(umboxToDev);
-        vSwitch.addRule(devToUmbox);
+        vSwitch.addRule(umboxToInt);
+        vSwitch.addRule(intToUmbox);
         vSwitch.addRule(umboxToExt);
     }
 
@@ -184,8 +185,6 @@ public class DAGManager
     {
         System.out.println("Clearing up rules for device: " + deviceIp);
 
-        // TODO: get device and external OVS ports, and have 4 specific removals here to match the 4 that are added.
-        // Otherwise, when we add rules from control node to device, this would end up being removed here as well.
         OpenFlowRule allFromDevice = new OpenFlowRule(null, null, null, deviceIp, null);
         OpenFlowRule allToDevice = new OpenFlowRule(null, null, null, null, deviceIp);
 
