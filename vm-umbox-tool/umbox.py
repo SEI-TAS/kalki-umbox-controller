@@ -89,11 +89,13 @@ class VmUmbox(object):
         self.control_bridge = control_bridge
         self.data_bridge = data_bridge
         self.control_iface_name = CONTROL_TUN_PREFIX + self.umbox_id
-        self.data_iface_name = DATA_TUN_PREFIX + self.umbox_id
+        self.data_in_iface_name = DATA_TUN_PREFIX + "_in_" + self.umbox_id
+        self.data_out_iface_name = DATA_TUN_PREFIX + "_out_" + self.umbox_id
 
         # Only to be used for newly started VMs.
         self.control_mac_address = generate_mac(self.umbox_id)
-        self.data_mac_address = generate_mac(self.umbox_id)
+        self.data_in_mac_address = generate_mac(self.umbox_id)
+        self.data_out_mac_address = generate_mac(self.umbox_id)
 
         logger.info("VM name: " + self.instance_name)
 
@@ -108,8 +110,11 @@ class VmUmbox(object):
 
         xml_descriptor.set_disk_image(self.instance_path, 'qcow2')
 
-        logger.info('Adding OVS connected network interface, using tap: ' + self.data_iface_name)
-        xml_descriptor.add_bridge_interface(self.data_bridge, self.data_mac_address, target=self.data_iface_name, ovs=True)
+        logger.info('Adding OVS connected network interface, incoming, using tap: ' + self.data_in_iface_name)
+        xml_descriptor.add_bridge_interface(self.data_bridge, self.data_in_mac_address, target=self.data_in_iface_name, ovs=True)
+
+        logger.info('Adding OVS connected network interface, outgoing, using tap: ' + self.data_out_iface_name)
+        xml_descriptor.add_bridge_interface(self.data_bridge, self.data_out_mac_address, target=self.data_out_iface_name, ovs=True)
 
         logger.info('Adding control plane network interface, using tap: ' + self.control_iface_name)
         xml_descriptor.add_bridge_interface(self.control_bridge, self.control_mac_address, target=self.control_iface_name)
@@ -232,7 +237,7 @@ def main():
         umbox = create_and_start_umbox(args.datanodeip, args.umboxid, args.imagename, args.imagefile, args.controlbr, args.databr)
 
         # Print the TAP device name so that it can be returned and used by ovs commands if needed.
-        print(umbox.data_iface_name)
+        print(umbox.data_in_face_name + " " + umbox.data_out_face_name)
     else:
         logger.info("Umbox ID: " + args.umboxid)
         logger.info("Image name: " + str(args.imagename))

@@ -96,20 +96,27 @@ public class DAGManager
 
         System.out.println("Starting Umbox.");
         String portName = umbox.startAndStore();
-        System.out.println("Port name : " + portName);
-
+        System.out.println("Port names : " + portName);
         if(portName == null)
         {
             throw new RuntimeException("Could not get umbox OVS port!");
         }
 
+        String[] portNames = portName.split(" ");
+        if(portNames.length != 2)
+        {
+            throw new RuntimeException("Could not get 2 OVS port names!");
+        }
+
         clearRedirectForDevice(device.getIp());
 
         RemoteOVSDB ovsdb = new RemoteOVSDB(Config.data.get("data_node_ip"));
-        String umboxPortId = ovsdb.getPortId(portName);
-        if(umboxPortId != null)
+        String umboxInPortId = ovsdb.getPortId(portNames[0]);
+        String umboxOutPortId = ovsdb.getPortId(portNames[1]);
+        if(umboxInPortId != null && umboxOutPortId != null)
         {
-            redirectToUmbox(device.getIp(), Config.data.get("ovs_devices_network_port"), umboxPortId, Config.data.get("ovs_external_network_port"));
+            redirectToUmbox(device.getIp(), Config.data.get("ovs_devices_network_port"), umboxInPortId, umboxOutPortId,
+                    Config.data.get("ovs_external_network_port"));
         }
 
         return umbox;
@@ -151,15 +158,16 @@ public class DAGManager
      * Sends all OpenFlow rules needed to redirect traffic from and to a device to a given umbox.
      * @param deviceIp
      * @param ovsDevicePort
-     * @param ovsUmboxPort
+     * @param ovsUmboxInPort
+     * @param ovsUmboxOutPort     *
      * @param ovsExternalPort
      */
-    private static void redirectToUmbox(String deviceIp, String ovsDevicePort, String ovsUmboxPort, String ovsExternalPort)
+    private static void redirectToUmbox(String deviceIp, String ovsDevicePort, String ovsUmboxInPort, String ovsUmboxOutPort, String ovsExternalPort)
     {
-        OpenFlowRule extToUmbox = new OpenFlowRule(ovsExternalPort, ovsUmboxPort, "100", null, deviceIp);
-        OpenFlowRule umboxToDev = new OpenFlowRule(ovsUmboxPort, ovsDevicePort, "110", null, deviceIp);
-        OpenFlowRule devToUmbox = new OpenFlowRule(ovsDevicePort, ovsUmboxPort, "100", deviceIp, null);
-        OpenFlowRule umboxToExt = new OpenFlowRule(ovsUmboxPort, ovsExternalPort, "110", deviceIp, null);
+        OpenFlowRule extToUmbox = new OpenFlowRule(ovsExternalPort, ovsUmboxInPort, "100", null, deviceIp);
+        OpenFlowRule umboxToDev = new OpenFlowRule(ovsUmboxOutPort, ovsDevicePort, "110", null, deviceIp);
+        OpenFlowRule devToUmbox = new OpenFlowRule(ovsDevicePort, ovsUmboxInPort, "100", deviceIp, null);
+        OpenFlowRule umboxToExt = new OpenFlowRule(ovsUmboxOutPort, ovsExternalPort, "110", deviceIp, null);
 
         RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.data.get("data_node_ip"));
         vSwitch.addRule(extToUmbox);
