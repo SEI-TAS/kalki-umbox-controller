@@ -146,7 +146,7 @@ public class IntegrationTestProgram
 
         System.out.println("Clearing rules and stopping umbox");
         Device device = Postgres.findDevice(testDeviceId);
-        DAGManager.clearUmboxesForDevice(device);
+        DAGManager.clearAllUmboxesForDevice(device);
 
         System.out.println("Waiting for async cleanup");
         try

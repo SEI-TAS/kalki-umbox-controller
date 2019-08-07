@@ -11,6 +11,7 @@ import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DAGManager
@@ -43,35 +44,30 @@ public class DAGManager
      * @param device
      * @param currentState
      */
-    public static void setupUmboxesForDevice(Device device, DeviceSecurityState currentState)
+    public static synchronized void setupUmboxesForDevice(Device device, DeviceSecurityState currentState)
     {
-        // First clear the current umboxes.
-        List<UmboxInstance> umboxInstances = Postgres.findUmboxInstances(device.getId());
-        System.out.println("Found umbox instances info for device, umboxes running: " + umboxInstances.size());
-        for (UmboxInstance instance : umboxInstances)
+        // First store the currently running umboxes.
+        List<UmboxInstance> oldUmboxInstances = Postgres.findUmboxInstances(device.getId());
+        System.out.println("Found old umbox instances info for device, umboxes running: " + oldUmboxInstances.size());
+
+        // First find umbox images for this device/state.
+        List<UmboxImage> umboxImages = Postgres.findUmboxImagesByDeviceTypeAndSecState(device.getType().getId(), currentState.getStateId());
+        System.out.println("Found umboxes for device type " + device.getType().getId() + " and current state " + currentState.getStateId() + ", number of umboxes: " + umboxImages.size());
+        if(umboxImages.size() == 0)
         {
-            // Image param is not really needed for existing umboxes that we just want to stop, thus null.
-            Umbox umbox = new VMUmbox(null, Integer.parseInt(instance.getAlerterId()));
-            DAGManager.clearUmboxForDevice(umbox, device);
+            System.out.println("No umboxes associated to this state for this device.");
+            return;
         }
 
-        // TODO: better sync this? Maybe first create new umboxes, then clear previous rules,
-        //  then redirect and then stop old ones?
-        // Now create the new ones.
-        List<UmboxImage> umboxImages = Postgres.findUmboxImagesByDeviceTypeAndSecState(device.getType().getId(), currentState.getStateId());
-
-        // TODO: add support for multiple umbox images in one DAG, at least as a pipe, one after another.
-        System.out.println("Found umboxes for device type " + device.getType().getId() + " and current state " + currentState.getStateId() + " , number of umboxes: " + umboxImages.size());
-        String ovsInternalPort = Config.data.get("ovs_devices_network_port");
-        String ovsExternalPort = Config.data.get("ovs_external_network_port");
-        if (umboxImages.size() > 0)
+        // Then create new umbox instances.
+        List<Umbox> newUmboxes = new ArrayList<>();
+        for (UmboxImage image : umboxImages)
         {
-            UmboxImage image = umboxImages.get(0);
-            System.out.println("Starting umbox and setting rules.");
-
             try
             {
-                DAGManager.setupUmboxForDevice(image, device, ovsInternalPort, ovsExternalPort);
+                System.out.println("Starting umbox instance.");
+                Umbox newUmbox = DAGManager.setupUmboxForDevice(image, device);
+                newUmboxes.add(newUmbox);
             }
             catch (RuntimeException e)
             {
@@ -79,45 +75,45 @@ public class DAGManager
                 e.printStackTrace();
             }
         }
-        else
+
+        // Now set up rules between umboxes and networks, and between themselves.
+        System.out.println("Setting up rules for umboxes.");
+        String ovsDeviceNetworkPort = Config.data.get("ovs_devices_network_port");
+        String ovsExternalNetworkPort = Config.data.get("ovs_external_network_port");
+        clearRedirectForDevice(device.getIp());
+        setRedirectForDevice(device.getIp(), ovsDeviceNetworkPort, ovsExternalNetworkPort, newUmboxes);
+
+        // Finally clear the old umboxes.
+        for (UmboxInstance instance : oldUmboxInstances)
         {
-            System.out.println("No umbox associated to this state.");
+            // Image param is not really needed for existing umboxes that we just want to stop, thus null.
+            Umbox umbox = new VMUmbox(null, Integer.parseInt(instance.getAlerterId()));
+            DAGManager.clearUmboxForDevice(umbox, device);
         }
     }
 
     /**
-     * Starts an umbox with the given image and device, and redirects traffic to/from that device to it.
+     * Starts an umbox with the given image and device, getting info about how it is connected.
      * @param image
      * @param device
      */
-    public static Umbox setupUmboxForDevice(UmboxImage image, Device device, String ovsInternalPort, String ovsExternalPort)
+    public static Umbox setupUmboxForDevice(UmboxImage image, Device device)
     {
         // Here we are explicitly stating we are using VMUmboxes. If we wanted to change to another implementation,
         // for now it would be enough to change it here.
         Umbox umbox = new VMUmbox(image, device);
 
         System.out.println("Starting Umbox.");
-        String portName = umbox.startAndStore();
-        System.out.println("Port names : " + portName);
-        if(portName == null)
-        {
-            throw new RuntimeException("Could not get umbox OVS port!");
-        }
+        umbox.startAndStore();
 
-        String[] portNames = portName.split(" ");
-        if(portNames.length != 2)
-        {
-            throw new RuntimeException("Could not get 2 OVS port names!");
-        }
-
-        clearRedirectForDevice(device.getIp());
-
+        // Get the port ids from the names with a remote API call.
         RemoteOVSDB ovsdb = new RemoteOVSDB(Config.data.get("data_node_ip"));
-        String umboxInPortId = ovsdb.getPortId(portNames[0]);
-        String umboxOutPortId = ovsdb.getPortId(portNames[1]);
+        String umboxInPortId = ovsdb.getPortId(umbox.getOvsInPortName());
+        String umboxOutPortId = ovsdb.getPortId(umbox.getOvsOutPortName());
         if(umboxInPortId != null && umboxOutPortId != null)
         {
-            redirectToUmbox(device.getIp(), ovsInternalPort, umboxInPortId, umboxOutPortId, ovsExternalPort);
+            umbox.setOvsInPortId(umboxInPortId);
+            umbox.setOvsOutPortId(umboxOutPortId);
         }
 
         return umbox;
@@ -128,8 +124,6 @@ public class DAGManager
      */
     public static void clearUmboxForDevice(Umbox umbox, Device device)
     {
-        clearRedirectForDevice(device.getIp());
-
         System.out.println("Stopping umbox.");
         umbox.stopAndClear();
     }
@@ -138,7 +132,7 @@ public class DAGManager
      * Stops all umboxes for the given device, and clears all rules to them.
      * @param device
      */
-    public static void clearUmboxesForDevice(Device device)
+    public static void clearAllUmboxesForDevice(Device device)
     {
         System.out.println("Clearing all umboxes for this device.");
 
@@ -156,25 +150,48 @@ public class DAGManager
     }
 
     /**
-     * Sends all OpenFlow rules needed to redirect traffic from and to a device to a given umbox.
-     * @param deviceIp
-     * @param ovsInternalPort
-     * @param ovsUmboxInPort
-     * @param ovsUmboxOutPort     *
-     * @param ovsExternalPort
      */
-    private static void redirectToUmbox(String deviceIp, String ovsInternalPort, String ovsUmboxInPort, String ovsUmboxOutPort, String ovsExternalPort)
+    private static void setRedirectForDevice(String deviceIp, String ovsDevicePort, String ovsExternalPort, List<Umbox> umboxes)
     {
-        OpenFlowRule extToUmbox = new OpenFlowRule(ovsExternalPort, ovsUmboxInPort, "100", null, deviceIp);
-        OpenFlowRule umboxToInt = new OpenFlowRule(ovsUmboxOutPort, ovsInternalPort, "110", null, deviceIp);
-        OpenFlowRule intToUmbox = new OpenFlowRule(ovsInternalPort, ovsUmboxInPort, "100", deviceIp, null);
-        OpenFlowRule umboxToExt = new OpenFlowRule(ovsUmboxOutPort, ovsExternalPort, "110", deviceIp, null);
+        if(umboxes.size() == 0)
+        {
+            System.out.println("No umboxes, no rules to set up.");
+            return;
+        }
 
+        List<OpenFlowRule> rules = new ArrayList<>();
+
+        // Setup entry rules for umbox chain.
+        System.out.println("Creating entry rules for device: " + deviceIp);
+        Umbox firstUmbox = umboxes.get(0);
+        rules.add(new OpenFlowRule(ovsExternalPort, firstUmbox.getOvsInPortId(), "100", null, deviceIp));
+        rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null));
+
+        // Setup intermediate rules for umbox chain.
+        System.out.println("Creating intermediate rules for device: " + deviceIp);
+        String prevUmboxOutPortId = firstUmbox.getOvsOutPortId();
+        for(int i = 1; i < umboxes.size(); i++)
+        {
+            // We could use only 1 rule here without src/dest IP, but we use two to make it easier later to delete all rules associated to the device IP.
+            Umbox currUmbox = umboxes.get(i);
+            rules.add(new OpenFlowRule(prevUmboxOutPortId, currUmbox.getOvsInPortId(), "100", null, deviceIp));
+            rules.add(new OpenFlowRule(prevUmboxOutPortId, currUmbox.getOvsInPortId(), "100", deviceIp, null));
+            prevUmboxOutPortId = currUmbox.getOvsOutPortId();
+        }
+
+        // Setup exit rules for umbox chain.
+        System.out.println("Creating exit rules for device: " + deviceIp);
+        Umbox lastUmbox = umboxes.get(umboxes.size() - 1);
+        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp));
+        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsExternalPort, "100", deviceIp, null));
+
+        // Set the OVS switch to actually store the rules.
+        System.out.println("Sending rules for device: " + deviceIp);
         RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.data.get("data_node_ip"));
-        vSwitch.addRule(extToUmbox);
-        vSwitch.addRule(umboxToInt);
-        vSwitch.addRule(intToUmbox);
-        vSwitch.addRule(umboxToExt);
+        for(OpenFlowRule rule : rules)
+        {
+            vSwitch.addRule(rule);
+        }
     }
 
     /**
