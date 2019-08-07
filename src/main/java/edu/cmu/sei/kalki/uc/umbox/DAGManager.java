@@ -110,12 +110,13 @@ public class DAGManager
         RemoteOVSDB ovsdb = new RemoteOVSDB(Config.data.get("data_node_ip"));
         String umboxInPortId = ovsdb.getPortId(umbox.getOvsInPortName());
         String umboxOutPortId = ovsdb.getPortId(umbox.getOvsOutPortName());
-        if(umboxInPortId != null && umboxOutPortId != null)
+        if(umboxInPortId == null || umboxOutPortId == null)
         {
-            umbox.setOvsInPortId(umboxInPortId);
-            umbox.setOvsOutPortId(umboxOutPortId);
+            throw new RuntimeException("Could not get port ids!");
         }
 
+        umbox.setOvsInPortId(umboxInPortId);
+        umbox.setOvsOutPortId(umboxOutPortId);
         return umbox;
     }
 
