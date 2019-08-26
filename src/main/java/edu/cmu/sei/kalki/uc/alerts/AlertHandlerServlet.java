@@ -1,6 +1,7 @@
 package edu.cmu.sei.kalki.uc.alerts;
 
 import java.io.BufferedReader;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.models.Alert;
+import edu.cmu.sei.ttg.kalki.models.AlertType;
 import org.eclipse.jetty.http.HttpStatus;
 
 import org.json.JSONException;
@@ -51,14 +53,30 @@ public class AlertHandlerServlet extends HttpServlet
         {
             // Get information about the alert.
             int umboxId = alertData.getInt("umbox");
-            String alertText = alertData.getString("alert");
+            String alertTypeName = alertData.getString("alert");
 
             // Store info in DB
             System.out.println("umboxId: " + umboxId);
-            System.out.println("alert: " + alertText);
-            Alert currentAlert = new Alert();
-            currentAlert.setAlerterId(String.valueOf(umboxId));
-            currentAlert.setName(alertText);
+            System.out.println("alert: " + alertTypeName);
+
+            // Find the alert type in the DB.
+            AlertType alertTypeFound = null;
+            List<AlertType> types = Postgres.findAllAlertTypes();
+            for(AlertType type : types)
+            {
+                if(type.getName().equals(alertTypeName))
+                {
+                    alertTypeFound = type;
+                    break;
+                }
+            }
+
+            if(alertTypeFound == null)
+            {
+                throw new ServletException("Alert type received <" + alertTypeName + "> not found in DB.");
+            }
+
+            Alert currentAlert = new Alert(alertTypeName, umboxId, alertTypeFound.getId());
             Postgres.insertAlert(currentAlert);
         }
         catch (JSONException e)
