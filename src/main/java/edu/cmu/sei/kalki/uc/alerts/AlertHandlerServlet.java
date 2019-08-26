@@ -52,7 +52,7 @@ public class AlertHandlerServlet extends HttpServlet
         try
         {
             // Get information about the alert.
-            int umboxId = alertData.getInt("umbox");
+            String umboxId = String.valueOf(alertData.getInt("umbox"));
             String alertTypeName = alertData.getString("alert");
 
             // Store info in DB
@@ -76,8 +76,11 @@ public class AlertHandlerServlet extends HttpServlet
                 throw new ServletException("Alert type received <" + alertTypeName + "> not found in DB.");
             }
 
-            Alert currentAlert = new Alert(alertTypeName, umboxId, alertTypeFound.getId());
-            Postgres.insertAlert(currentAlert);
+            synchronized (this)
+            {
+                Alert currentAlert = new Alert(alertTypeName, umboxId, alertTypeFound.getId());
+                Postgres.insertAlert(currentAlert);
+            }
         }
         catch (JSONException e)
         {
