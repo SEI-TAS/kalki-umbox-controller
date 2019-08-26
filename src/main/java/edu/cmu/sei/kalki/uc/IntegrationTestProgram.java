@@ -65,6 +65,10 @@ public class IntegrationTestProgram
         UmboxImage image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_FILENAME);
         int umboxImageId = Postgres.insertUmboxImage(image);
 
+        // Second fake Umbox image.
+        image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_FILENAME);
+        int umboxImage2Id = Postgres.insertUmboxImage(image);
+
         // Umboxes lookups for device.
         testUmboxImageId = umboxImageId;
         UmboxLookup lookup = new UmboxLookup();
@@ -74,7 +78,7 @@ public class IntegrationTestProgram
         lookup.setDagOrder(1);
         int testUmboxLookupId = Postgres.insertUmboxLookup(lookup);
         lookup = new UmboxLookup();
-        lookup.setUmboxImageId(umboxImageId);
+        lookup.setUmboxImageId(umboxImage2Id);
         lookup.setDeviceTypeId(defaultType);
         lookup.setStateId(SUSP_DEVICE_STATE_ID);
         lookup.setDagOrder(2);
