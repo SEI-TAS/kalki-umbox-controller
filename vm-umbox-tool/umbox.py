@@ -70,7 +70,7 @@ def generate_mac(instance_id):
     mac = [
         0x00, 0x16, 0x3e,
         random.randint(0x00, 0x7f),
-        int(instance_id) // MAX_INSTANCES,
+        int(instance_id) // 100,
         int(instance_id) % 100
     ]
     return ':'.join(map(lambda x: "%02x" % x, mac))
