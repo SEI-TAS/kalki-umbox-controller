@@ -20,7 +20,6 @@ public class IntegrationTestProgram
 {
     private static int testDeviceId = -1;
     private static int testUmboxImageId = -1;
-    private static int testUmboxLookupId = -1;
 
     private static final int NORM_DEVICE_STATE_ID = 1;
     private static final int SUSP_DEVICE_STATE_ID = 2;
@@ -50,6 +49,7 @@ public class IntegrationTestProgram
     {
         System.out.println("Inserting test device, security state, umbox image and lookup.");
 
+        // Test device.
         int defaultType = 1;
         DeviceType defType = new DeviceType(1, "test");
         String deviceIp = "10.27.151.101";
@@ -57,17 +57,31 @@ public class IntegrationTestProgram
         Device insertedDevice = Postgres.insertDevice(newDevice);
         testDeviceId = insertedDevice.getId();
 
+        // Initial device state.
         DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
         Postgres.insertDeviceSecurityState(secState);
 
+        // Umbox image.
         UmboxImage image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_FILENAME);
         int umboxImageId = Postgres.insertUmboxImage(image);
+
+        // Second fake Umbox image.
+        image = new UmboxImage(TEST_IMAGE_NAME, TEST_IMAGE_FILENAME);
+        int umboxImage2Id = Postgres.insertUmboxImage(image);
+
+        // Umboxes lookups for device.
         testUmboxImageId = umboxImageId;
         UmboxLookup lookup = new UmboxLookup();
         lookup.setUmboxImageId(umboxImageId);
         lookup.setDeviceTypeId(defaultType);
         lookup.setStateId(SUSP_DEVICE_STATE_ID);
         lookup.setDagOrder(1);
+        int testUmboxLookupId = Postgres.insertUmboxLookup(lookup);
+        lookup = new UmboxLookup();
+        lookup.setUmboxImageId(umboxImage2Id);
+        lookup.setDeviceTypeId(defaultType);
+        lookup.setStateId(SUSP_DEVICE_STATE_ID);
+        lookup.setDagOrder(2);
         testUmboxLookupId = Postgres.insertUmboxLookup(lookup);
 
         System.out.println("Test data finished inserting.");
@@ -146,7 +160,7 @@ public class IntegrationTestProgram
 
         System.out.println("Clearing rules and stopping umbox");
         Device device = Postgres.findDevice(testDeviceId);
-        DAGManager.clearUmboxesForDevice(device);
+        DAGManager.clearAllUmboxesForDevice(device);
 
         System.out.println("Waiting for async cleanup");
         try

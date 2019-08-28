@@ -15,7 +15,10 @@ public abstract class Umbox
     protected int umboxId;
     protected Device device;
     protected UmboxImage image;
-    protected String ovsPortName = "";
+    protected String ovsInPortName = "";
+    protected String ovsOutPortName = "";
+    protected String ovsInPortId = "";
+    protected String ovsOutPortId = "";
 
     /***
      * Constructor for new umboxes.
@@ -47,28 +50,31 @@ public abstract class Umbox
      * Starts a new umbox and stores its info in the DB.
      * @returns the name of the OVS port the umbox was connected to.
      */
-    public String startAndStore()
+    public void startAndStore()
     {
-        try
-        {
-            List<String> output = start();
+        List<String> output = start();
 
-            // Assuming the port name was the last thing printed in the output, get it and return it.
-            ovsPortName = output.get(output.size() - 1);
-            System.out.println("Umbox port name: " + ovsPortName);
-            if (ovsPortName != null)
-            {
-                // Store in the DB the information about the newly created umbox instance.
-                UmboxInstance instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
-                instance.insert();
-            }
-            return ovsPortName;
-        }
-        catch (RuntimeException e)
+        // Assuming the port name was the last thing printed in the output, get it and process it.
+        String ovsPortNames = output.get(output.size() - 1);
+        System.out.println("Umbox port names: " + ovsPortNames);
+        if (ovsPortNames == null)
         {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException("Could not get umbox OVS ports!");
         }
+
+        String[] portNames = ovsPortNames.split(" ");
+        if(portNames.length != 2)
+        {
+            throw new RuntimeException("Could not get 2 OVS port names!");
+        }
+
+        // Locally store the port names.
+        this.setOvsInPortName(portNames[0]);
+        this.setOvsOutPortName(portNames[1]);
+
+        // Store in the DB the information about the newly created umbox instance.
+        UmboxInstance instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
+        instance.insert();
     }
 
     /**
@@ -101,4 +107,45 @@ public abstract class Umbox
      */
     protected abstract List<String> stop();
 
+    // Getters and setters.
+
+    public String getOvsInPortName()
+    {
+        return ovsInPortName;
+    }
+
+    public void setOvsInPortName(String ovsInPortName)
+    {
+        this.ovsInPortName = ovsInPortName;
+    }
+
+    public String getOvsOutPortName()
+    {
+        return ovsOutPortName;
+    }
+
+    public void setOvsOutPortName(String ovsOutPortName)
+    {
+        this.ovsOutPortName = ovsOutPortName;
+    }
+
+    public String getOvsInPortId()
+    {
+        return ovsInPortId;
+    }
+
+    public void setOvsInPortId(String ovsInPortId)
+    {
+        this.ovsInPortId = ovsInPortId;
+    }
+
+    public String getOvsOutPortId()
+    {
+        return ovsOutPortId;
+    }
+
+    public void setOvsOutPortId(String ovsOutPortId)
+    {
+        this.ovsOutPortId = ovsOutPortId;
+    }
 }

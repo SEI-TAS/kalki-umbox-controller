@@ -135,6 +135,18 @@ class VirtualMachineDescriptor(object):
         devices.append(ElementTree.fromstring('<interface type="bridge"><model type="virtio"/><source bridge="{}"/><mac address="{}" />{}{}</interface>'.format(bridge, mac, target_string, ovs_string)))
 
     ################################################################################################################
+    # Adds a new network card in non-bridged mode.
+    ################################################################################################################
+    def add_internal_nic_interface(self, network=None):
+        network_name = "default"
+        if network is not None:
+            network_name = network
+
+        # Add a new internal interface.
+        devices = self.xmlRoot.find('devices')
+        devices.append(ElementTree.fromstring('<interface type="network"><source network="{}" /></interface>'.format(network_name)))
+
+    ################################################################################################################
     # Will enable the non-bridged mode in the XML.
     ################################################################################################################
     def enable_non_bridged_mode(self, adapter):

@@ -70,7 +70,7 @@ def generate_mac(instance_id):
     mac = [
         0x00, 0x16, 0x3e,
         random.randint(0x00, 0x7f),
-        int(instance_id) // MAX_INSTANCES,
+        int(instance_id) // 100,
         int(instance_id) % 100
     ]
     return ':'.join(map(lambda x: "%02x" % x, mac))
@@ -110,14 +110,17 @@ class VmUmbox(object):
 
         xml_descriptor.set_disk_image(self.instance_path, 'qcow2')
 
+        logger.info('Adding test network interface on libvirts default network')
+        xml_descriptor.add_internal_nic_interface()
+
+        logger.info('Adding control plane network interface, using tap: ' + self.control_iface_name)
+        xml_descriptor.add_bridge_interface(self.control_bridge, self.control_mac_address, target=self.control_iface_name)
+
         logger.info('Adding OVS connected network interface, incoming, using tap: ' + self.data_in_iface_name)
         xml_descriptor.add_bridge_interface(self.data_bridge, self.data_in_mac_address, target=self.data_in_iface_name, ovs=True)
 
         logger.info('Adding OVS connected network interface, outgoing, using tap: ' + self.data_out_iface_name)
         xml_descriptor.add_bridge_interface(self.data_bridge, self.data_out_mac_address, target=self.data_out_iface_name, ovs=True)
-
-        logger.info('Adding control plane network interface, using tap: ' + self.control_iface_name)
-        xml_descriptor.add_bridge_interface(self.control_bridge, self.control_mac_address, target=self.control_iface_name)
 
         # Remove seclabel item, which tends to generate issues when the VM is executed.
         xml_descriptor.remove_sec_label()
@@ -237,7 +240,7 @@ def main():
         umbox = create_and_start_umbox(args.datanodeip, args.umboxid, args.imagename, args.imagefile, args.controlbr, args.databr)
 
         # Print the TAP device name so that it can be returned and used by ovs commands if needed.
-        print(umbox.data_in_face_name + " " + umbox.data_out_face_name)
+        print(umbox.data_in_iface_name + " " + umbox.data_out_iface_name)
     else:
         logger.info("Umbox ID: " + args.umboxid)
         logger.info("Image name: " + str(args.imagename))
