@@ -11,6 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.models.Alert;
 import edu.cmu.sei.ttg.kalki.models.AlertType;
+import edu.cmu.sei.ttg.kalki.models.Device;
+import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
+import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
+import javafx.geometry.Pos;
 import org.eclipse.jetty.http.HttpStatus;
 
 import org.json.JSONException;
@@ -21,6 +25,9 @@ import org.json.JSONObject;
  */
 public class AlertHandlerServlet extends HttpServlet
 {
+    // Special alert used to notify us that the umbox has started.
+    private static final String UMBOX_READY_ALERT = "umbox-ready";
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException
@@ -54,10 +61,21 @@ public class AlertHandlerServlet extends HttpServlet
             // Get information about the alert.
             String umboxId = String.valueOf(alertData.getInt("umbox"));
             String alertTypeName = alertData.getString("alert");
-
-            // Store info in DB
             System.out.println("umboxId: " + umboxId);
             System.out.println("alert: " + alertTypeName);
+
+            // Handle special alert cases which won't be stored in the alert table.
+            if(alertTypeName.equals(UMBOX_READY_ALERT))
+            {
+                // Get information about the device security status change that triggered this.
+                UmboxInstance umbox = Postgres.findUmboxInstance(umboxId);
+                Device device = Postgres.findDevice(umbox.getDeviceId());
+                DeviceSecurityState state = device.getCurrentState();
+
+                // Store into log that the umbox is ready.
+                //Postgres.insertStageLog(state.getId(), "umboxes", "finished");
+                return;
+            }
 
             // Find the alert type in the DB.
             AlertType alertTypeFound = null;
