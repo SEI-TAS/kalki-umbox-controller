@@ -17,8 +17,10 @@ public abstract class Umbox
     protected UmboxImage image;
     protected String ovsInPortName = "";
     protected String ovsOutPortName = "";
+    protected String ovsRepliesPortName = "";
     protected String ovsInPortId = "";
     protected String ovsOutPortId = "";
+    protected String ovsRepliesPortId = "";
 
     /***
      * Constructor for new umboxes.
@@ -63,14 +65,15 @@ public abstract class Umbox
         }
 
         String[] portNames = ovsPortNames.split(" ");
-        if(portNames.length != 2)
+        if(portNames.length != 3)
         {
-            throw new RuntimeException("Could not get 2 OVS port names!");
+            throw new RuntimeException("Could not get 3 OVS port names!");
         }
 
         // Locally store the port names.
         this.setOvsInPortName(portNames[0]);
         this.setOvsOutPortName(portNames[1]);
+        this.setOvsRepliesPortName(portNames[2]);
 
         // Store in the DB the information about the newly created umbox instance.
         UmboxInstance instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
@@ -147,5 +150,25 @@ public abstract class Umbox
     public void setOvsOutPortId(String ovsOutPortId)
     {
         this.ovsOutPortId = ovsOutPortId;
+    }
+
+    public String getOvsRepliesPortName()
+    {
+        return ovsRepliesPortName;
+    }
+
+    public void setOvsRepliesPortName(String ovsRepliesPortName)
+    {
+        this.ovsRepliesPortName = ovsRepliesPortName;
+    }
+
+    public String getOvsRepliesPortId()
+    {
+        return ovsRepliesPortId;
+    }
+
+    public void setOvsRepliesPortId(String ovsRepliesPortId)
+    {
+        this.ovsRepliesPortId = ovsRepliesPortId;
     }
 }

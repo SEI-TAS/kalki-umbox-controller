@@ -91,11 +91,13 @@ class VmUmbox(object):
         self.control_iface_name = CONTROL_TUN_PREFIX + self.umbox_id
         self.data_in_iface_name = DATA_TUN_PREFIX + "_in_" + self.umbox_id
         self.data_out_iface_name = DATA_TUN_PREFIX + "_out_" + self.umbox_id
+        self.replies_iface_name = DATA_TUN_PREFIX + "_replies_" + self.umbox_id
 
         # Only to be used for newly started VMs.
         self.control_mac_address = generate_mac(self.umbox_id)
         self.data_in_mac_address = generate_mac(self.umbox_id)
         self.data_out_mac_address = generate_mac(self.umbox_id)
+        self.replies_mac_address = generate_mac(self.umbox_id)
 
         logger.info("VM name: " + self.instance_name)
 
@@ -110,8 +112,11 @@ class VmUmbox(object):
 
         xml_descriptor.set_disk_image(self.instance_path, 'qcow2')
 
-        logger.info('Adding test network interface on libvirts default network')
-        xml_descriptor.add_internal_nic_interface()
+        #logger.info('Adding test network interface on libvirts default network')
+        #xml_descriptor.add_internal_nic_interface()
+
+        logger.info('Adding OVS connected network interface for sending replies, using tap: ' + self.replies_iface_name)
+        xml_descriptor.add_bridge_interface(self.data_bridge, self.replies_mac_address, target=self.replies_iface_name, ovs=True)
 
         logger.info('Adding control plane network interface, using tap: ' + self.control_iface_name)
         xml_descriptor.add_bridge_interface(self.control_bridge, self.control_mac_address, target=self.control_iface_name)
@@ -240,7 +245,7 @@ def main():
         umbox = create_and_start_umbox(args.datanodeip, args.umboxid, args.imagename, args.imagefile, args.controlbr, args.databr)
 
         # Print the TAP device name so that it can be returned and used by ovs commands if needed.
-        print(umbox.data_in_iface_name + " " + umbox.data_out_iface_name)
+        print(umbox.data_in_iface_name + " " + umbox.data_out_iface_name + " " + umbox.replies_iface_name)
     else:
         logger.info("Umbox ID: " + args.umboxid)
         logger.info("Image name: " + str(args.imagename))
