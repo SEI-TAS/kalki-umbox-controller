@@ -37,6 +37,9 @@ public class DeviceSecurityStateInsertHandler implements InsertHandler
         }
         else
         {
+            // TODO: Store into log that we are starting umbox setup
+            //Postgres.insertStageLog(state.getId(), "umboxes", "starting", umboxId);
+
             lastSecurityState.put(deviceId, currentState.getName());
             DAGManager.setupUmboxesForDevice(device, currentState);
         }

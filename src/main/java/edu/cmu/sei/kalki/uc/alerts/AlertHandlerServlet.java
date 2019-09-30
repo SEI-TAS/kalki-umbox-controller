@@ -72,7 +72,7 @@ public class AlertHandlerServlet extends HttpServlet
                 Device device = Postgres.findDevice(umbox.getDeviceId());
                 DeviceSecurityState state = device.getCurrentState();
 
-                // Store into log that the umbox is ready.
+                // TODO: Store into log that the umbox is ready.
                 //Postgres.insertStageLog(state.getId(), "umboxes", "finished", umboxId);
                 return;
             }
