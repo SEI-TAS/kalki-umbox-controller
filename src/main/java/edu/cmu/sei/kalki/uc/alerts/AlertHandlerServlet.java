@@ -15,6 +15,7 @@ import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
 import edu.cmu.sei.ttg.kalki.models.StageLog;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
+import edu.cmu.sei.ttg.kalki.models.UmboxLog;
 import javafx.geometry.Pos;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -28,6 +29,9 @@ public class AlertHandlerServlet extends HttpServlet
 {
     // Special alert used to notify us that the umbox has started.
     private static final String UMBOX_READY_ALERT = "umbox-ready";
+
+    // Special alert used to store logging info.
+    private static final String UMBOX_LOG_ALERT = "log-info";
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -62,8 +66,10 @@ public class AlertHandlerServlet extends HttpServlet
             // Get information about the alert.
             String umboxId = String.valueOf(alertData.getInt("umbox"));
             String alertTypeName = alertData.getString("alert");
+            String alertDetails = alertData.getString("details");
             System.out.println("umboxId: " + umboxId);
             System.out.println("alert: " + alertTypeName);
+            System.out.println("alertDetails: " + alertDetails);
 
             // Handle special alert cases which won't be stored in the alert table.
             if(alertTypeName.equals(UMBOX_READY_ALERT))
@@ -76,6 +82,14 @@ public class AlertHandlerServlet extends HttpServlet
                 // Store into log that the umbox is ready.
                 StageLog stageLogInfo = new StageLog(state.getId(), StageLog.Action.DEPLOY_UMBOX, StageLog.Stage.FINISH, umboxId);
                 Postgres.insertStageLog(stageLogInfo);
+                return;
+            }
+
+            if(alertTypeName.equals(UMBOX_LOG_ALERT))
+            {
+                // Store into log whatever we want to log.
+                UmboxLog umboxLogInfo = new UmboxLog(umboxId, alertDetails);
+                Postgres.insertUmboxLog(umboxLogInfo);
                 return;
             }
 
