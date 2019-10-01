@@ -4,6 +4,7 @@ import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.listeners.InsertHandler;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
+import edu.cmu.sei.ttg.kalki.models.StageLog;
 
 import java.util.HashMap;
 
@@ -38,7 +39,8 @@ public class DeviceSecurityStateInsertHandler implements InsertHandler
         else
         {
             // TODO: Store into log that we are starting umbox setup
-            //Postgres.insertStageLog(state.getId(), "umboxes", "starting", umboxId);
+            StageLog stageLogInfo = new StageLog(currentState.getId(), StageLog.Action.DEPLOY_UMBOX, StageLog.Stage.REACT, "");
+            Postgres.insertStageLog(stageLogInfo);
 
             lastSecurityState.put(deviceId, currentState.getName());
             DAGManager.setupUmboxesForDevice(device, currentState);

@@ -13,6 +13,7 @@ import edu.cmu.sei.ttg.kalki.models.Alert;
 import edu.cmu.sei.ttg.kalki.models.AlertType;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
+import edu.cmu.sei.ttg.kalki.models.StageLog;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
 import javafx.geometry.Pos;
 import org.eclipse.jetty.http.HttpStatus;
@@ -72,8 +73,9 @@ public class AlertHandlerServlet extends HttpServlet
                 Device device = Postgres.findDevice(umbox.getDeviceId());
                 DeviceSecurityState state = device.getCurrentState();
 
-                // TODO: Store into log that the umbox is ready.
-                //Postgres.insertStageLog(state.getId(), "umboxes", "finished", umboxId);
+                // Store into log that the umbox is ready.
+                StageLog stageLogInfo = new StageLog(state.getId(), StageLog.Action.DEPLOY_UMBOX, StageLog.Stage.FINISH, umboxId);
+                Postgres.insertStageLog(stageLogInfo);
                 return;
             }
 
