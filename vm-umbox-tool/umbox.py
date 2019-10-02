@@ -91,7 +91,7 @@ class VmUmbox(object):
         self.control_iface_name = CONTROL_TUN_PREFIX + self.umbox_id
         self.data_in_iface_name = DATA_TUN_PREFIX + "_in_" + self.umbox_id
         self.data_out_iface_name = DATA_TUN_PREFIX + "_out_" + self.umbox_id
-        self.replies_iface_name = DATA_TUN_PREFIX + "_replies_" + self.umbox_id
+        self.replies_iface_name = DATA_TUN_PREFIX + "_esc_" + self.umbox_id
 
         # Only to be used for newly started VMs.
         self.control_mac_address = generate_mac(self.umbox_id)
