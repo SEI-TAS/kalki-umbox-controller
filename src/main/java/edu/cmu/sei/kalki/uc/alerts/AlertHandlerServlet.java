@@ -16,7 +16,6 @@ import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
 import edu.cmu.sei.ttg.kalki.models.StageLog;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
 import edu.cmu.sei.ttg.kalki.models.UmboxLog;
-import javafx.geometry.Pos;
 import org.eclipse.jetty.http.HttpStatus;
 
 import org.json.JSONException;
