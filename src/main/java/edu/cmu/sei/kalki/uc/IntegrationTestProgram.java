@@ -50,12 +50,13 @@ public class IntegrationTestProgram
         System.out.println("Inserting test device, security state, umbox image and lookup.");
 
         // Test device.
-        int defaultType = 1;
-        DeviceType defType = new DeviceType(1, "PHLE");
-        String deviceIp = "10.27.151.106";
-        Device newDevice = new Device("PHLE1", "test device", defType, deviceIp, 10, 10);
-        Device insertedDevice = Postgres.insertDevice(newDevice);
-        testDeviceId = insertedDevice.getId();
+        int defaultType = 4;
+        //DeviceType defType = new DeviceType(1, "PHLE");
+        //String deviceIp = "10.27.151.106";
+        //Device newDevice = new Device("PHLE1", "test device", defType, deviceIp, 10, 10);
+        //Device insertedDevice = Postgres.insertDevice(newDevice);
+        //testDeviceId = insertedDevice.getId();
+        testDeviceId = 4;
 
         // Initial device state.
         DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
