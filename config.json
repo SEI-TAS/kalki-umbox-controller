@@ -10,7 +10,6 @@
   "db_root_user": "kalkiuser",
   "db_root_password": "kalkipass",
   "db_recreate": "false",
-  "db_setup": "false",
 
   "control_bridge": "br-control",
   "ovs_data_bridge": "ovs-br",

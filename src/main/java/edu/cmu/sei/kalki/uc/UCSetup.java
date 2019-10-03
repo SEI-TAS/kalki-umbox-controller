@@ -70,7 +70,6 @@ public class UCSetup
         String dbUser = Config.data.get("db_user");
         String dbPass = Config.data.get("db_password");
         String recreateDB = Config.data.get("db_recreate");
-        String setupDB = Config.data.get("db_setup");
 
         if(recreateDB.equals("true"))
         {
@@ -83,11 +82,5 @@ public class UCSetup
 
         // Make initial connection, setting up the singleton.
         Postgres.initialize(dbHost, dbPort, dbName, dbUser, dbPass);
-
-        if(setupDB.equals("true"))
-        {
-            // Create tables, triggers, and more.
-            Postgres.setupDatabase();
-        }
     }
 }
