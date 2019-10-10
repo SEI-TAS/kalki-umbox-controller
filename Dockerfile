@@ -31,4 +31,4 @@ WORKDIR /app/$DIST_NAME/vm-umbox-tool
 RUN pipenv install
 
 WORKDIR /app/$DIST_NAME
-CMD ["bash", "bin/umbox_controller"]
+ENTRYPOINT ["bash", "bin/umbox_controller"]
