@@ -15,10 +15,17 @@ public class Program
     {
         try
         {
-            Config.load("config.json");
-            UCSetup.startupDBandAlertComponents();
-            UCSetup.startupUmboxBootstrap();
-            UCSetup.startupUmboxStateListener();
+            if(args.length == 1 && args[0].equals("-t"))
+            {
+                IntegrationTestProgram.main(args);
+            }
+            else
+            {
+                Config.load("config.json");
+                UCSetup.startupDBandAlertComponents();
+                UCSetup.startupUmboxBootstrap();
+                UCSetup.startupUmboxStateListener();
+            }
         }
         catch(Exception e)
         {

@@ -161,6 +161,10 @@ public class DAGManager
             return;
         }
 
+        // Clean out any ports, if present, in the IP field.
+        deviceIp = deviceIp.split(":")[0];
+        System.out.println("Cleaned device: " + deviceIp);
+
         List<OpenFlowRule> rules = new ArrayList<>();
 
         // Setup entry rules for umbox chain.
@@ -206,6 +210,10 @@ public class DAGManager
     private static void clearRedirectForDevice(String deviceIp)
     {
         System.out.println("Clearing up rules for device: " + deviceIp);
+
+        // Clean out any ports, if present, in the IP field.
+        deviceIp = deviceIp.split(":")[0];
+        System.out.println("Cleaned device: " + deviceIp);
 
         OpenFlowRule allFromDevice = new OpenFlowRule(null, null, null, deviceIp, null);
         OpenFlowRule allToDevice = new OpenFlowRule(null, null, null, null, deviceIp);

@@ -8,8 +8,8 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'edu.cmu.sei.kalki.uc.Program'
-//mainClassName = 'edu.cmu.sei.kalki.uc.IntegrationTestProgram'
+//mainClassName = 'edu.cmu.sei.kalki.uc.Program'
+mainClassName = 'edu.cmu.sei.kalki.uc.IntegrationTestProgram'
 
 sourceCompatibility = 1.8
 
