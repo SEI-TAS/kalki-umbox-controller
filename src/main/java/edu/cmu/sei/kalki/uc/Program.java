@@ -15,7 +15,7 @@ public class Program
     {
         try
         {
-            if(args.length == 1 && args[0].equals("-t"))
+            if(args.length == 1 && args[0].equals("test"))
             {
                 IntegrationTestProgram.main(args);
             }
