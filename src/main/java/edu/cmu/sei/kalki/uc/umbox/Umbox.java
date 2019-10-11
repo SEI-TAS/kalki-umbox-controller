@@ -55,6 +55,10 @@ public abstract class Umbox
     public void startAndStore()
     {
         List<String> output = start();
+        if(output == null)
+        {
+            throw new RuntimeException("Could not start umbox properly!");
+        }
 
         // Assuming the port name was the last thing printed in the output, get it and process it.
         String ovsPortNames = output.get(output.size() - 1);
