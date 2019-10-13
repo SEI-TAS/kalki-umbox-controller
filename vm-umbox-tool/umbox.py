@@ -115,9 +115,6 @@ class VmUmbox(object):
         #logger.info('Adding test network interface on libvirts default network')
         #xml_descriptor.add_internal_nic_interface()
 
-        logger.info('Adding OVS connected network interface for sending replies, using tap: ' + self.replies_iface_name)
-        xml_descriptor.add_bridge_interface(self.data_bridge, self.replies_mac_address, target=self.replies_iface_name, ovs=True)
-
         logger.info('Adding control plane network interface, using tap: ' + self.control_iface_name)
         xml_descriptor.add_bridge_interface(self.control_bridge, self.control_mac_address, target=self.control_iface_name)
 
@@ -126,6 +123,9 @@ class VmUmbox(object):
 
         logger.info('Adding OVS connected network interface, outgoing, using tap: ' + self.data_out_iface_name)
         xml_descriptor.add_bridge_interface(self.data_bridge, self.data_out_mac_address, target=self.data_out_iface_name, ovs=True)
+
+        logger.info('Adding OVS connected network interface for sending replies, using tap: ' + self.replies_iface_name)
+        xml_descriptor.add_bridge_interface(self.data_bridge, self.replies_mac_address, target=self.replies_iface_name, ovs=True)
 
         # Remove seclabel item, which tends to generate issues when the VM is executed.
         xml_descriptor.remove_sec_label()
