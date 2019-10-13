@@ -183,7 +183,7 @@ public class DAGManager
             Umbox currUmbox = umboxes.get(i);
             rules.add(new OpenFlowRule(prevUmboxOutPortId, currUmbox.getOvsInPortId(), "100", null, deviceIp));
             rules.add(new OpenFlowRule(prevUmboxOutPortId, currUmbox.getOvsInPortId(), "100", deviceIp, null));
-            rules.add(new OpenFlowRule(currUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", deviceIp, null));
+            rules.add(new OpenFlowRule(currUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
             prevUmboxOutPortId = currUmbox.getOvsOutPortId();
         }
 
@@ -192,7 +192,7 @@ public class DAGManager
         Umbox lastUmbox = umboxes.get(umboxes.size() - 1);
         rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp));
         rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsExternalPort, "100", deviceIp, null));
-        rules.add(new OpenFlowRule(lastUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", deviceIp, null));
+        rules.add(new OpenFlowRule(lastUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
 
         // Set the OVS switch to actually store the rules.
         System.out.println("Sending rules for device: " + deviceIp);
