@@ -50,34 +50,26 @@ public class IntegrationTestProgram
         System.out.println("Inserting test device, security state, umbox image and lookup.");
 
         // Test device.
-        int defaultType = 4;
+        int defaultType = 2;
         //DeviceType defType = new DeviceType(1, "PHLE");
         //String deviceIp = "10.27.151.106";
         //Device newDevice = new Device("PHLE1", "test device", defType, deviceIp, 10, 10);
         //Device insertedDevice = Postgres.insertDevice(newDevice);
         //testDeviceId = insertedDevice.getId();
-        testDeviceId = 4;
+        //testDeviceId = 4;
 
         // Initial device state.
-        DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
-        Postgres.insertDeviceSecurityState(secState);
+        //DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
+        //Postgres.insertDeviceSecurityState(secState);
 
         // Umbox images.
-        String imageName = "u1-antidos";
+        String imageName = "u7-udoo-brute-force-block";
         UmboxImage image = new UmboxImage(imageName, imageName + ".qcow2");
         int u1ImageId = Postgres.insertUmboxImage(image);
 
-        imageName = "u5-block-all";
+        imageName = "u5-sniffer-log-stats";
         image = new UmboxImage(imageName, imageName + ".qcow2");
         int u5ImageId = Postgres.insertUmboxImage(image);
-
-        imageName = "u9-phillips-brute-force";
-        image = new UmboxImage(imageName, imageName + ".qcow2");
-        int u9ImageId = Postgres.insertUmboxImage(image);
-
-        imageName = "u10-phillips-brute-force-block";
-        image = new UmboxImage(imageName, imageName + ".qcow2");
-        int u10ImageId = Postgres.insertUmboxImage(image);
 
         // Umboxes lookups for device.
         UmboxLookup lookup = new UmboxLookup();
@@ -88,31 +80,10 @@ public class IntegrationTestProgram
         Postgres.insertUmboxLookup(lookup);
 
         lookup = new UmboxLookup();
-        lookup.setUmboxImageId(u9ImageId);
+        lookup.setUmboxImageId(u5ImageId);
         lookup.setDeviceTypeId(defaultType);
         lookup.setStateId(NORM_DEVICE_STATE_ID);
         lookup.setDagOrder(2);
-        Postgres.insertUmboxLookup(lookup);
-
-        lookup = new UmboxLookup();
-        lookup.setUmboxImageId(u1ImageId);
-        lookup.setDeviceTypeId(defaultType);
-        lookup.setStateId(SUSP_DEVICE_STATE_ID);
-        lookup.setDagOrder(1);
-        Postgres.insertUmboxLookup(lookup);
-
-        lookup = new UmboxLookup();
-        lookup.setUmboxImageId(u10ImageId);
-        lookup.setDeviceTypeId(defaultType);
-        lookup.setStateId(SUSP_DEVICE_STATE_ID);
-        lookup.setDagOrder(2);
-        Postgres.insertUmboxLookup(lookup);
-
-        lookup = new UmboxLookup();
-        lookup.setUmboxImageId(u5ImageId);
-        lookup.setDeviceTypeId(defaultType);
-        lookup.setStateId(ATTACK_DEVICE_STATE_ID);
-        lookup.setDagOrder(1);
         Postgres.insertUmboxLookup(lookup);
 
         System.out.println("Test data finished inserting.");
