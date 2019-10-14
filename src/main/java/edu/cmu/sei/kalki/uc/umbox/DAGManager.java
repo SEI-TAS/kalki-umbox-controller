@@ -86,7 +86,8 @@ public class DAGManager
         for (UmboxInstance instance : oldUmboxInstances)
         {
             // Image param is not really needed for existing umboxes that we just want to stop, thus null.
-            Umbox umbox = new VMUmbox(null, Integer.parseInt(instance.getAlerterId()));
+            UmboxImage image = Postgres.findUmboxImage(instance.getUmboxImageId());
+            Umbox umbox = new VMUmbox(image, Integer.parseInt(instance.getAlerterId()));
             DAGManager.clearUmboxForDevice(umbox, device);
         }
     }
