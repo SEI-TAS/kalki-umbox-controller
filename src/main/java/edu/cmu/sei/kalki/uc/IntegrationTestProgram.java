@@ -51,16 +51,15 @@ public class IntegrationTestProgram
 
         // Test device.
         int defaultType = 2;
-        //DeviceType defType = new DeviceType(1, "PHLE");
-        //String deviceIp = "10.27.151.106";
-        //Device newDevice = new Device("PHLE1", "test device", defType, deviceIp, 10, 10);
-        //Device insertedDevice = Postgres.insertDevice(newDevice);
-        //testDeviceId = insertedDevice.getId();
-        //testDeviceId = 4;
+        DeviceType defType = new DeviceType(1, "UNTS");
+        String deviceIp = "10.27.151.106";
+        Device newDevice = new Device("UNTS1", "test device", defType, deviceIp, 10, 10);
+        Device insertedDevice = Postgres.insertDevice(newDevice);
+        testDeviceId = insertedDevice.getId();
 
         // Initial device state.
-        //DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
-        //Postgres.insertDeviceSecurityState(secState);
+        DeviceSecurityState secState = new DeviceSecurityState(testDeviceId, SUSP_DEVICE_STATE_ID);
+        Postgres.insertDeviceSecurityState(secState);
 
         // Umbox images.
         String imageName = "u7-udoo-brute-force-block";
