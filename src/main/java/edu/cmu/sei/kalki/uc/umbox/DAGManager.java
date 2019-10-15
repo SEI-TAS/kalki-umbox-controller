@@ -173,7 +173,7 @@ public class DAGManager
         Umbox firstUmbox = umboxes.get(0);
         rules.add(new OpenFlowRule(ovsExternalPort, firstUmbox.getOvsInPortId(), "100", null, deviceIp));
         rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null));
-        rules.add(new OpenFlowRule(firstUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", deviceIp, null));
+        rules.add(new OpenFlowRule(firstUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
 
         // Setup intermediate rules for umbox chain.
         System.out.println("Creating intermediate rules for device: " + deviceIp);
