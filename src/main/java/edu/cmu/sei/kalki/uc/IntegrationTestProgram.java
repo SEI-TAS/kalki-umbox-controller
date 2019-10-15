@@ -74,14 +74,14 @@ public class IntegrationTestProgram
         UmboxLookup lookup = new UmboxLookup();
         lookup.setUmboxImageId(u1ImageId);
         lookup.setDeviceTypeId(defaultType);
-        lookup.setStateId(NORM_DEVICE_STATE_ID);
+        lookup.setStateId(SUSP_DEVICE_STATE_ID);
         lookup.setDagOrder(1);
         Postgres.insertUmboxLookup(lookup);
 
         lookup = new UmboxLookup();
         lookup.setUmboxImageId(u5ImageId);
         lookup.setDeviceTypeId(defaultType);
-        lookup.setStateId(NORM_DEVICE_STATE_ID);
+        lookup.setStateId(SUSP_DEVICE_STATE_ID);
         lookup.setDagOrder(2);
         Postgres.insertUmboxLookup(lookup);
 
