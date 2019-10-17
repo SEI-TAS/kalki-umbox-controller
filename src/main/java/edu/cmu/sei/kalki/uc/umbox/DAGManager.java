@@ -172,7 +172,8 @@ public class DAGManager
         System.out.println("Creating entry rules for device: " + deviceIp);
         Umbox firstUmbox = umboxes.get(0);
         rules.add(new OpenFlowRule(ovsExternalPort, firstUmbox.getOvsInPortId(), "100", null, deviceIp));
-        rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null));
+        //rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null));   //THIS ONE
+        rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null, null, "10.27.152.5"));   //THIS ONE
         rules.add(new OpenFlowRule(firstUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
 
         // Setup intermediate rules for umbox chain.
@@ -191,7 +192,8 @@ public class DAGManager
         // Setup exit rules for umbox chain.
         System.out.println("Creating exit rules for device: " + deviceIp);
         Umbox lastUmbox = umboxes.get(umboxes.size() - 1);
-        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp));
+        //rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp));  //THIS ONE
+        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp, "10.27.151.217", null));  //THIS ONE
         rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsExternalPort, "100", deviceIp, null));
         rules.add(new OpenFlowRule(lastUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
 
