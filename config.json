@@ -1,5 +1,5 @@
 {
-  "data_node_ip": "192.168.58.102",
+  "data_node_ip": "10.27.153.2",
 
   "db_host": "localhost",
   "db_port": "5432",
@@ -10,7 +10,6 @@
   "db_root_user": "kalkiuser",
   "db_root_password": "kalkipass",
   "db_recreate": "false",
-  "db_setup": "false",
 
   "control_bridge": "br-control",
   "ovs_data_bridge": "ovs-br",

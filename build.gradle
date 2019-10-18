@@ -8,7 +8,8 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'edu.cmu.sei.ttg.kalki.dni.IntegrationTestProgram'
+mainClassName = 'edu.cmu.sei.kalki.uc.Program'
+//mainClassName = 'edu.cmu.sei.kalki.uc.IntegrationTestProgram'
 
 sourceCompatibility = 1.8
 
@@ -20,7 +21,7 @@ repositories {
 dependencies {
     compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.10.RC0'
     compile group: 'org.json', name: 'json', version: '20180130'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
     compile group: 'edu.cmu.sei.ttg', name: 'kalki-db', version: '0.0.4-SNAPSHOT'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.4.2'
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.4.2'
@@ -31,7 +32,7 @@ test {
 }
 
 docker {
-    name 'kalki/kalki-dni'
+    name 'kalki/kalki-uc'
     files tasks.distTar.outputs, "config.json"
     copySpec.with {
         from('.') {

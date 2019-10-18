@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM i386/openjdk:8
 
 # Install Python 2.7, pip and pipenv
 RUN apt-get update \
@@ -11,7 +11,7 @@ RUN apt-get -yqq install libvirt-dev
 # Install ovs-tools
 RUN apt-get -yqq install openvswitch-common openvswitch-switch
 
-ENV PROJECT_NAME dni
+ENV PROJECT_NAME umbox_controller
 ENV DIST_NAME $PROJECT_NAME-1.0-SNAPSHOT
 
 # AlertServer is listening here.
@@ -31,4 +31,4 @@ WORKDIR /app/$DIST_NAME/vm-umbox-tool
 RUN pipenv install
 
 WORKDIR /app/$DIST_NAME
-CMD ["bash", "bin/dni"]
+ENTRYPOINT ["bash", "bin/umbox_controller"]

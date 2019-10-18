@@ -1,30 +1,53 @@
-package edu.cmu.sei.ttg.kalki.dni;
+package edu.cmu.sei.kalki.uc;
 
-import edu.cmu.sei.ttg.kalki.dni.alerts.AlertServerStartup;
-import edu.cmu.sei.ttg.kalki.dni.umbox.DeviceSecurityStateInsertHandler;
-import edu.cmu.sei.ttg.kalki.dni.utils.Config;
+import edu.cmu.sei.kalki.uc.alerts.AlertServerStartup;
+import edu.cmu.sei.kalki.uc.umbox.DAGManager;
+import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
-import edu.cmu.sei.ttg.kalki.listeners.InsertListener;
 
 import java.sql.SQLException;
 
 /**
- * Entry point for the program.
+ * Methods to setup and bootstrap subcomponents.
  */
-public class DNISetup
+public class UCSetup
 {
     /**
-     * Sets up the Config and Postgres singletons, starts up the AlertHandler http server.
+     * Sets up the DB and a connection to it, plus the alert handler.
      */
-    public static void startUpComponents()
+    public static void startupDBandAlertComponents()
     {
         try
         {
-            DNISetup.setupDatabase();
-
-            InsertListener.startUpListener(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
-
+            UCSetup.setupDatabase();
             AlertServerStartup.start();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sets up umbox-related components and listeners.
+     */
+    public static void startupUmboxBootstrap()
+    {
+        try
+        {
+            DAGManager.bootstrap();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startupUmboxStateListener()
+    {
+        try
+        {
+            DAGManager.startUpStateListener();
         }
         catch(Exception e)
         {
@@ -47,7 +70,6 @@ public class DNISetup
         String dbUser = Config.data.get("db_user");
         String dbPass = Config.data.get("db_password");
         String recreateDB = Config.data.get("db_recreate");
-        String setupDB = Config.data.get("db_setup");
 
         if(recreateDB.equals("true"))
         {
@@ -60,11 +82,5 @@ public class DNISetup
 
         // Make initial connection, setting up the singleton.
         Postgres.initialize(dbHost, dbPort, dbName, dbUser, dbPass);
-
-        if(setupDB.equals("true"))
-        {
-            // Create tables, triggers, and more.
-            Postgres.setupDatabase();
-        }
     }
 }

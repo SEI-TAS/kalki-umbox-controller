@@ -2,6 +2,7 @@
 
 import os.path
 import subprocess
+import sys
 
 
 # Simple structure to represent a disk image based on a qcow2 file format.
@@ -26,6 +27,7 @@ class DiskImage(object):
         # Note that we set the source file as its backing file. This is stored in the qcow2 file.
         # Note that we also use 4K as the cluster size, since it seems to be the best compromise.
         print "Creating qcow2 image %s based on source image %s..." % (destination_disk_image_filepath, self.filepath)
+        sys.stdout.flush()
         image_tool_command = 'qemu-img create -f qcow2 -o backing_file=%s,cluster_size=4096 %s' \
                            % (self.filepath, destination_disk_image_filepath)
         self.__run_image_creation_tool(image_tool_command)
@@ -36,6 +38,8 @@ class DiskImage(object):
 
     def __run_image_creation_tool(self, image_tool_command):
         """ Starts the image creation tool in a separate process, and waits for it."""
+        print("Executing command: " + image_tool_command)
+        sys.stdout.flush()
         tool_pipe = subprocess.PIPE
         tool_process = subprocess.Popen(image_tool_command, shell=True, stdin=tool_pipe, stdout=tool_pipe, stderr=tool_pipe)
         normal_output, error_output = tool_process.communicate()

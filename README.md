@@ -1,4 +1,4 @@
-# Data Node Interface
+# Umbox Controller
 
 ## Prerequisites
 To compile this program, Java JDK 8 is required. This program uses Gradle as its build system, 
@@ -35,7 +35,6 @@ Parameters that will usually need to be configured:
  - <b>db_port</b>: Usually the default port can be used.
  - <b>db_name, db_user, db_password</b>: need to be consistent with the actual DB information being used.
  - <b>db_recreate, db_root_password</b>: only needed if we want DNI to forcefully drop and recreate the DB.
- - <b>db_setup</b>: only needed if we want DNI to create all tables and DB items (should only be used once).
 
 The following parameters do not need to be changed, if the Data Node is configured with default values:
  - <b>control_bridge</b>: name of the virtual bridge on the Data Node that the control plane and back end of

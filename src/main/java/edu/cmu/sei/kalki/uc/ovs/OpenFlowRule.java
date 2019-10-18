@@ -1,4 +1,4 @@
-package edu.cmu.sei.ttg.kalki.dni.ovs;
+package edu.cmu.sei.kalki.uc.ovs;
 
 import java.text.MessageFormat;
 
@@ -15,8 +15,11 @@ public class OpenFlowRule
 
     private String inputPort;
     private String outputPort;
-    private String sourceIpAddress = null;
-    private String destIpAddress = null;
+    private String sourceIpAddress;
+    private String destIpAddress;
+
+    private String nattedSource = null;
+    private String nattedDest = null;
 
     public OpenFlowRule(String inputPort, String outputPort, String priority, String sourceIpAddress, String destIpAddress)
     {
@@ -25,6 +28,13 @@ public class OpenFlowRule
         this.priority = priority;
         this.sourceIpAddress = sourceIpAddress;
         this.destIpAddress = destIpAddress;
+    }
+
+    public OpenFlowRule(String inputPort, String outputPort, String priority, String sourceIpAddress, String destIpAddress, String nattedSource, String nattedDest)
+    {
+        this(inputPort, outputPort, priority, sourceIpAddress, destIpAddress);
+        this.nattedSource = nattedSource;
+        this.nattedDest = nattedDest;
     }
 
     /***
@@ -62,13 +72,27 @@ public class OpenFlowRule
 
         if(outputPort != null)
         {
+            ruleString += "actions=";
+
+            /// If we want to NAT the source.
+            if(nattedSource != null)
+            {
+                ruleString += MessageFormat.format("mod_nw_src:{0}, ", nattedSource);
+            }
+
+            /// If we want to NAT the dest, but ALSO getting a local copy.
+            if(nattedDest != null)
+            {
+                ruleString += MessageFormat.format("normal, mod_nw_dst:{0}, ", nattedDest);
+            }
+
             if(outputPort.equals("-1"))
             {
-                ruleString += "actions=drop";
+                ruleString += "drop";
             }
             else
             {
-                ruleString += MessageFormat.format("actions=output:{0}, ", outputPort);
+                ruleString += MessageFormat.format("output:{0}, ", outputPort);
             }
         }
 

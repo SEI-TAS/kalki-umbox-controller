@@ -1,7 +1,7 @@
-package edu.cmu.sei.ttg.kalki.dni.umbox;
+package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.ttg.kalki.dni.utils.CommandExecutor;
-import edu.cmu.sei.ttg.kalki.dni.utils.Config;
+import edu.cmu.sei.kalki.uc.utils.CommandExecutor;
+import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 
@@ -55,7 +55,7 @@ public class VMUmbox extends Umbox
             commandInfo.add("-i");
             commandInfo.add(image.getName());
             commandInfo.add("-f");
-            commandInfo.add(image.getPath());
+            commandInfo.add(image.getFileName());
         }
         commandInfo.add("-bc");
         commandInfo.add(controlBridge);

@@ -1,4 +1,4 @@
-package edu.cmu.sei.ttg.kalki.dni.alerts;
+package edu.cmu.sei.kalki.uc.alerts;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
