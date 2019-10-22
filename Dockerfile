@@ -17,6 +17,8 @@ ENV DIST_NAME $PROJECT_NAME-1.0-SNAPSHOT
 # AlertServer is listening here.
 EXPOSE 6060
 
+COPY resolv.conf /etc/
+
 COPY $DIST_NAME.tar /app/
 WORKDIR /app
 RUN tar -xvf $DIST_NAME.tar
