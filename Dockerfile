@@ -21,8 +21,6 @@ COPY $DIST_NAME.tar /app/
 WORKDIR /app
 RUN tar -xvf $DIST_NAME.tar
 
-COPY resolv.conf /etc/
-
 COPY config.json /app/$DIST_NAME
 
 COPY vm-umbox-tool/ /app/$DIST_NAME/vm-umbox-tool/
