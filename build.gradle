@@ -33,7 +33,7 @@ test {
 
 docker {
     name 'kalki/kalki-uc'
-    files tasks.distTar.outputs, "config.json"
+    files tasks.distTar.outputs, "config.json", "resolv.conf"
     copySpec.with {
         from('.') {
             include 'vm-umbox-tool/**'
