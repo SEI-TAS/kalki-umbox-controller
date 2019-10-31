@@ -23,7 +23,7 @@ RUN tar -xvf $DIST_NAME.tar
 
 COPY config.json /app/$DIST_NAME
 COPY vm-umbox-tool/ /app/$DIST_NAME/vm-umbox-tool/
-COPY tests/ /app/
+COPY tests/ /app/tests/
 
 # Setup pipenv for VM Umbox tool
 ENV PIPENV_VENV_IN_PROJECT "enabled"

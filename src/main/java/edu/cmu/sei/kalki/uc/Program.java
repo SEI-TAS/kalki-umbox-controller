@@ -17,7 +17,7 @@ public class Program
         try
         {
             boolean runTests = false;
-            String testFile = "test.sql";
+            String testFile = "tests/test.sql";
             if(args.length >= 1 && args[0].equals("test"))
             {
                 runTests = true;
