@@ -18,7 +18,7 @@ BEGIN
     INSERT INTO device(name, description, type_id, ip_address, status_history_size, sampling_rate, default_sampling_rate) VALUES ('UNTS1', 'Test Udoo', dtype.id, '10.27.151.101', 1, 10000, 10000) RETURNING id INTO d;
     INSERT INTO device_security_state (device_id, state_id, timestamp) VALUES (d.id, normal.id, current_timestamp) RETURNING id INTO dSS;
     UPDATE device set current_state_id=dSS.id WHERE id=d.id;
-    INSERT INTO umbox_image(name, file_name) VALUES ('u6-udoo-brute-force', 'u7-udoo-brute-force.qcow2') RETURNING id INTO u6;
+    INSERT INTO umbox_image(name, file_name) VALUES ('u6-udoo-brute-force', 'u6-udoo-brute-force.qcow2') RETURNING id INTO u6;
     INSERT INTO umbox_image(name, file_name) VALUES ('u7-udoo-brute-force-block', 'u7-udoo-brute-force-block.qcow2') RETURNING id INTO u7;
     INSERT INTO umbox_image(name, file_name) VALUES ('u4-block-all', 'u4-block-all.qcow2') RETURNING id INTO u4;
     INSERT INTO umbox_lookup(state_id, device_type_id, umbox_image_id, dag_order) VALUES (normal.id, dtype.id, u6.id, 1);
