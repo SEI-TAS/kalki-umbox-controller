@@ -9,7 +9,6 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 mainClassName = 'edu.cmu.sei.kalki.uc.Program'
-//mainClassName = 'edu.cmu.sei.kalki.uc.IntegrationTestProgram'
 
 sourceCompatibility = 1.8
 
@@ -40,4 +39,10 @@ docker {
             into '.'
         }
     }
+    copySpec.with {
+        from('.') {
+            include 'tests/**'
+            into '.'
+        }
+    }    
 }
