@@ -15,7 +15,7 @@ public class ProgramTests
     @BeforeAll
     static void setUpEnvironment() throws IOException
     {
-        IntegrationTestProgram.setUpEnvironment();
+        TestSetup.setUpEnvironment();
     }
 
     /***
@@ -24,7 +24,7 @@ public class ProgramTests
     //@Test
     void runTriggerTest() throws InterruptedException
     {
-        IntegrationTestProgram.runTriggerTest();
+        TestSetup.runTriggerTest();
     }
 
     /***
@@ -33,6 +33,6 @@ public class ProgramTests
     //@Test
     void runBootupTest()
     {
-        IntegrationTestProgram.runBootupTest();
+        TestSetup.runBootupTest();
     }
 }

@@ -10,22 +10,37 @@ public class Program
 {
     /**
      * Entry point for the program.
+     * If tests params are received, DB and DB data will be prepared accordingly to run those tests.
      */
     public static void main(String[] args)
     {
         try
         {
-            if(args.length == 1 && args[0].equals("test"))
+            boolean runTests = false;
+            String testFile = "tests/test.sql";
+            if(args.length >= 1 && args[0].equals("test"))
             {
-                IntegrationTestProgram.main(args);
+                runTests = true;
+                if (args.length >= 2)
+                {
+                    testFile = args[1];
+                }
             }
-            else
+
+            Config.load("config.json");
+            if(runTests)
             {
-                Config.load("config.json");
-                UCSetup.startupDBandAlertComponents();
-                UCSetup.startupUmboxBootstrap();
-                UCSetup.startupUmboxStateListener();
+                TestSetup.overwriteDBConfig();
             }
+
+            UCSetup.startupDBandAlertComponents();
+            if(runTests)
+            {
+                TestSetup.insertTestData(testFile);
+            }
+
+            UCSetup.startupUmboxBootstrap();
+            UCSetup.startupUmboxStateListener();
         }
         catch(Exception e)
         {

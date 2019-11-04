@@ -17,15 +17,13 @@ ENV DIST_NAME $PROJECT_NAME-1.0-SNAPSHOT
 # AlertServer is listening here.
 EXPOSE 6060
 
-COPY resolv.conf /etc/
-
 COPY $DIST_NAME.tar /app/
 WORKDIR /app
 RUN tar -xvf $DIST_NAME.tar
 
 COPY config.json /app/$DIST_NAME
-
 COPY vm-umbox-tool/ /app/$DIST_NAME/vm-umbox-tool/
+COPY tests/ /app/$DIST_NAME/tests/
 
 # Setup pipenv for VM Umbox tool
 ENV PIPENV_VENV_IN_PROJECT "enabled"

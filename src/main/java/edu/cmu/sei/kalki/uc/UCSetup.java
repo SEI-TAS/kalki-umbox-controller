@@ -10,12 +10,12 @@ import java.sql.SQLException;
 /**
  * Methods to setup and bootstrap subcomponents.
  */
-public class UCSetup
+class UCSetup
 {
     /**
      * Sets up the DB and a connection to it, plus the alert handler.
      */
-    public static void startupDBandAlertComponents()
+    static void startupDBandAlertComponents()
     {
         try
         {
@@ -31,7 +31,7 @@ public class UCSetup
     /**
      * Sets up umbox-related components and listeners.
      */
-    public static void startupUmboxBootstrap()
+    static void startupUmboxBootstrap()
     {
         try
         {
@@ -43,7 +43,7 @@ public class UCSetup
         }
     }
 
-    public static void startupUmboxStateListener()
+    static void startupUmboxStateListener()
     {
         try
         {
