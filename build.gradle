@@ -39,10 +39,4 @@ docker {
             into '.'
         }
     }
-    copySpec.with {
-        from('.') {
-            include 'tests/**'
-            into '.'
-        }
-    }    
 }
