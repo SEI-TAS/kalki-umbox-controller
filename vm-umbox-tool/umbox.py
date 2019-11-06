@@ -84,7 +84,7 @@ class VmUmbox(object):
         self.umbox_id = umbox_id
         self.image_name = image_name
         self.image_file_name = image_file_name
-        self.instance_name = image_name + NUM_SEPARATOR + self.umbox_id
+        self.instance_name = image_name.replace(" ", "-") + NUM_SEPARATOR + self.umbox_id
 
         self.control_bridge = control_bridge
         self.data_bridge = data_bridge
