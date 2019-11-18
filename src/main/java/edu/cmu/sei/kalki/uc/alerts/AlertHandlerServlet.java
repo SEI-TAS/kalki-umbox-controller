@@ -111,7 +111,7 @@ public class AlertHandlerServlet extends HttpServlet
 
             synchronized (this)
             {
-                Alert currentAlert = new Alert(alertTypeName, umboxId, alertTypeFound.getId());
+                Alert currentAlert = new Alert(alertTypeName, umboxId, alertTypeFound.getId(), alertDetails);
                 Postgres.insertAlert(currentAlert);
             }
         }
