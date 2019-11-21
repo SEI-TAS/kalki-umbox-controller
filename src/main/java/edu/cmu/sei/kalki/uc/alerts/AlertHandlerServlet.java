@@ -75,6 +75,11 @@ public class AlertHandlerServlet extends HttpServlet
             {
                 // Get information about the device security status change that triggered this.
                 UmboxInstance umbox = Postgres.findUmboxInstance(umboxId);
+                if(umbox == null)
+                {
+                    System.out.println("Error processing alert: umbox instance with id " + umboxId + " was not found in DB.");
+                    return;
+                }
                 Device device = Postgres.findDevice(umbox.getDeviceId());
                 DeviceSecurityState state = device.getCurrentState();
 
