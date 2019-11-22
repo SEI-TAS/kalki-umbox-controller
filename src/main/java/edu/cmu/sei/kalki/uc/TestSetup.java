@@ -3,10 +3,6 @@ package edu.cmu.sei.kalki.uc;
 import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.database.Postgres;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Scanner;
-
 /***
  * Simple class for setting up quick tests.
  */
@@ -29,27 +25,7 @@ public class TestSetup
     {
         System.out.println("Inserting test data.");
 
-        System.out.println("Reading from file: "+fileName);
-        try {
-            InputStream is = new FileInputStream(fileName);
-            Scanner s = new Scanner(is);
-
-            String line, statement="";
-            while(s.hasNextLine()){
-                line = s.nextLine();
-                if(line.equals("") || line.equals(" ")) {
-                    Postgres.executeCommand(statement);
-                    statement="";
-                } else {
-                    statement += line;
-                }
-            }
-            if (!statement.equals(""))
-                Postgres.executeCommand(statement);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Postgres.executeSQLFile(fileName);
 
         System.out.println("Test data finished inserting.");
     }
