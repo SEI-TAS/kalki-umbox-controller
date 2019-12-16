@@ -5,12 +5,14 @@ import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
 
-import java.util.List;
+import java.lang.reflect.Constructor;
 import java.util.Random;
 
 public abstract class Umbox
 {
     private static final int MAX_INSTANCES = 1000;
+
+    public static String umboxClass;
 
     protected int umboxId;
     protected Device device;
@@ -22,12 +24,41 @@ public abstract class Umbox
     protected String ovsOutPortId = "";
     protected String ovsRepliesPortId = "";
 
+    public static void setUmboxClass(String classPath)
+    {
+        umboxClass = classPath;
+    }
+
+    public static Umbox createUmbox(UmboxImage image, Device device)
+    {
+        try {
+            Constructor con = Class.forName(umboxClass).getConstructor(UmboxImage.class, Device.class);
+            return (Umbox) con.newInstance(image, device);
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error creating umbox: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static Umbox createUmbox(UmboxImage image, int instanceId)
+    {
+        try {
+            Constructor con = Class.forName(umboxClass).getConstructor(UmboxImage.class, Integer.TYPE);
+            return (Umbox) con.newInstance(image, instanceId);
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error creating umbox: " + e.getMessage());
+            return null;
+        }
+    }
+
     /***
      * Constructor for new umboxes.
      * @param device
      * @param image
      */
-    public Umbox(UmboxImage image, Device device)
+    protected Umbox(UmboxImage image, Device device)
     {
         this.image = image;
         this.device = device;
@@ -41,7 +72,7 @@ public abstract class Umbox
      * Constructor for existing umboxes.
      * @param instanceId
      */
-    public Umbox(UmboxImage image, int instanceId)
+    protected Umbox(UmboxImage image, int instanceId)
     {
         this.image = image;
         this.device = null;
@@ -50,38 +81,21 @@ public abstract class Umbox
 
     /**
      * Starts a new umbox and stores its info in the DB.
-     * @returns the name of the OVS port the umbox was connected to.
      */
     public void startAndStore()
     {
-        List<String> output = start();
-        if(output == null)
+        try
         {
-            throw new RuntimeException("Could not start umbox properly!");
-        }
+            start();
 
-        // Assuming the port name was the last thing printed in the output, get it and process it.
-        String ovsPortNames = output.get(output.size() - 1);
-        System.out.println("Umbox port names: " + ovsPortNames);
-        if (ovsPortNames == null)
+            // Store in the DB the information about the newly created umbox instance.
+            UmboxInstance instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
+            instance.insert();
+        }
+        catch (RuntimeException e)
         {
-            throw new RuntimeException("Could not get umbox OVS ports!");
+            e.printStackTrace();
         }
-
-        String[] portNames = ovsPortNames.split(" ");
-        if(portNames.length != 3)
-        {
-            throw new RuntimeException("Could not get 3 OVS port names!");
-        }
-
-        // Locally store the port names.
-        this.setOvsInPortName(portNames[0]);
-        this.setOvsOutPortName(portNames[1]);
-        this.setOvsRepliesPortName(portNames[2]);
-
-        // Store in the DB the information about the newly created umbox instance.
-        UmboxInstance instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
-        instance.insert();
     }
 
     /**
@@ -105,14 +119,13 @@ public abstract class Umbox
 
     /**
      * Starts a new umbox.
-     * @returns the name of the OVS port the umbox was connected to.
      */
-    protected abstract List<String> start();
+    protected abstract boolean start();
 
     /**
      * Stops a running umbox.
      */
-    protected abstract List<String> stop();
+    protected abstract boolean stop();
 
     // Getters and setters.
 

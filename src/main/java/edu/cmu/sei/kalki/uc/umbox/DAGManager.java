@@ -21,6 +21,8 @@ public class DAGManager
      */
     public static void bootstrap()
     {
+        Umbox.setUmboxClass(Config.data.get("umbox_class"));
+
         List<Device> devices = Postgres.findAllDevices();
         for(Device device : devices)
         {
@@ -87,7 +89,7 @@ public class DAGManager
         {
             // Image param is not really needed for existing umboxes that we just want to stop, thus null.
             UmboxImage image = Postgres.findUmboxImage(instance.getUmboxImageId());
-            Umbox umbox = new VMUmbox(image, Integer.parseInt(instance.getAlerterId()));
+            Umbox umbox = Umbox.createUmbox(image, Integer.parseInt(instance.getAlerterId()));
             DAGManager.clearUmboxForDevice(umbox, device);
         }
     }
@@ -99,9 +101,7 @@ public class DAGManager
      */
     public static Umbox setupUmboxForDevice(UmboxImage image, Device device)
     {
-        // Here we are explicitly stating we are using VMUmboxes. If we wanted to change to another implementation,
-        // for now it would be enough to change it here.
-        Umbox umbox = new VMUmbox(image, device);
+        Umbox umbox = Umbox.createUmbox(image, device);
 
         System.out.println("Starting Umbox.");
         umbox.startAndStore();
@@ -147,7 +147,7 @@ public class DAGManager
         {
             System.out.println("Stopping umbox.");
             UmboxImage image = Postgres.findUmboxImage(instance.getUmboxImageId());
-            Umbox umbox = new VMUmbox(image, Integer.parseInt(instance.getAlerterId()));
+            Umbox umbox = Umbox.createUmbox(image, Integer.parseInt(instance.getAlerterId()));
             umbox.stopAndClear();
         }
     }
