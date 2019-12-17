@@ -4,6 +4,7 @@ import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
+import javafx.geometry.Pos;
 
 import java.lang.reflect.Constructor;
 import java.util.Random;
@@ -63,9 +64,20 @@ public abstract class Umbox
         this.image = image;
         this.device = device;
 
-        // Generate random id.
-        Random rand = new Random();
-        umboxId = rand.nextInt(MAX_INSTANCES);
+        // Generate random id. Check if there is no instance with this ID, and re-generate if there is.
+        int tries = 0;
+        do
+        {
+            Random rand = new Random();
+            umboxId = rand.nextInt(MAX_INSTANCES);
+            tries++;
+
+            if(tries > MAX_INSTANCES)
+            {
+                throw new RuntimeException("Can't allocate an ID for a new umbox; all of them seem to be allocated.");
+            }
+        }
+        while(Postgres.findUmboxInstance(String.valueOf(umboxId)) != null);
     }
 
     /***
