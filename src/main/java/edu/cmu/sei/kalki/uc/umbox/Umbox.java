@@ -4,7 +4,6 @@ import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
-import javafx.geometry.Pos;
 
 import java.lang.reflect.Constructor;
 import java.util.Random;
