@@ -41,10 +41,10 @@ public class DockerUmbox extends Umbox
 
         try
         {
-            //docker = new RemoteDocker(new URI(Config.data.get("data_node_ip")));
-            docker = new LocalDocker(new File("/var/run/docker.sock"));
+            docker = new RemoteDocker(new URI(Config.data.get("data_node_ip")));
+            //docker = new LocalDocker(new File("/var/run/docker.sock"));
         }
-        catch(Exception e) //URISyntaxException
+        catch(URISyntaxException e)
         {
             System.out.println("Error processing data node IP: " + e.getMessage());
             e.printStackTrace();
