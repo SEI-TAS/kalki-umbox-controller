@@ -54,7 +54,8 @@ public class DockerUmbox extends Umbox
     {
         try
         {
-            docker.containers().create(PREFIX + this.umboxId, image.getName());
+            Container container = docker.containers().create(PREFIX + this.umboxId, image.getName());
+            container.start();
             return true;
         }
         catch (Exception e)
