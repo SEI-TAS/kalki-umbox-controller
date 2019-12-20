@@ -97,6 +97,7 @@ public abstract class Umbox
     {
         try
         {
+            System.out.println("Starting umbox.");
             start();
 
             // Store in the DB the information about the newly created umbox instance.
@@ -116,6 +117,7 @@ public abstract class Umbox
     {
         try
         {
+            System.out.println("Stopping umbox.");
             stop();
 
             UmboxInstance umboxInstance = Postgres.findUmboxInstance(String.valueOf(umboxId));

@@ -3,14 +3,12 @@ package edu.cmu.sei.kalki.uc.umbox;
 import com.amihaiemil.docker.Container;
 import com.amihaiemil.docker.Containers;
 import com.amihaiemil.docker.Docker;
-import com.amihaiemil.docker.LocalDocker;
 import com.amihaiemil.docker.RemoteDocker;
 import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 
 import javax.json.JsonObject;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
