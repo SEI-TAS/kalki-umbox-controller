@@ -1,18 +1,14 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
-import com.amihaiemil.docker.Container;
-import com.amihaiemil.docker.Containers;
 import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 
-import javax.json.JsonObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Iterator;
 
 public class DockerUmbox extends Umbox
 {
@@ -64,6 +60,7 @@ public class DockerUmbox extends Umbox
         try
         {
             sendToOvsDockerServer(apiURL, "DELETE");
+            return true;
         }
         catch (Exception e)
         {
