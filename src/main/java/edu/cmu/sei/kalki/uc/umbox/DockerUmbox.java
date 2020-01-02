@@ -2,51 +2,44 @@ package edu.cmu.sei.kalki.uc.umbox;
 
 import com.amihaiemil.docker.Container;
 import com.amihaiemil.docker.Containers;
-import com.amihaiemil.docker.Docker;
-import com.amihaiemil.docker.RemoteDocker;
 import edu.cmu.sei.kalki.uc.utils.Config;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 
 import javax.json.JsonObject;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Iterator;
 
 public class DockerUmbox extends Umbox
 {
     private static final String PREFIX = "umbox-";
+    private static final String BASE_URL = "/ovs-docker";
 
-    private static Docker docker;
-    private String umboxContainerName;
+    private String fullBaseURL;
+    private String containerName;
+    private String apiURL;
 
     public DockerUmbox(UmboxImage image, Device device)
     {
         super(image, device);
-        connectToDocker();
+        setupDockerVars();
     }
 
     public DockerUmbox(UmboxImage image, int instanceId)
     {
         super(image, instanceId);
-        connectToDocker();
+        setupDockerVars();
     }
 
-    private void connectToDocker()
+    private void setupDockerVars()
     {
-        umboxContainerName = "/" + PREFIX + String.valueOf(this.umboxId);
-
-        try
-        {
-            docker = new RemoteDocker(new URI(Config.data.get("data_node_ip")));
-            //docker = new LocalDocker(new File("/var/run/docker.sock"));
-        }
-        catch(URISyntaxException e)
-        {
-            System.out.println("Error processing data node IP: " + e.getMessage());
-            e.printStackTrace();
-        }
+        fullBaseURL = "http://" + Config.data.get("data_node_ip") + BASE_URL;
+        containerName = PREFIX + this.umboxId;
+        apiURL = "/" + image.getName() + "/" + containerName;
     }
 
     @Override
@@ -54,8 +47,7 @@ public class DockerUmbox extends Umbox
     {
         try
         {
-            Container container = docker.containers().create(PREFIX + this.umboxId, image.getName());
-            container.start();
+            sendToOvsDockerServer(apiURL, "POST");
             return true;
         }
         catch (Exception e)
@@ -69,50 +61,47 @@ public class DockerUmbox extends Umbox
     @Override
     protected boolean stop()
     {
-        Containers containers  = docker.containers();
-        Iterator<Container> allContainers = containers.all();
-        while(allContainers.hasNext())
+        try
         {
-            Container container = allContainers.next();
-            JsonObject containerInfo;
-            try
-            {
-                containerInfo = container.inspect();
-            } catch (IOException e)
-            {
-                System.out.println("Error getting container information: " + e.toString());
-                e.printStackTrace();
-                return false;
-            }
-
-            if(umboxContainerName.equals(containerInfo.getString("Name")))
-            {
-                try
-                {
-                    container.stop();
-                }
-                catch (Exception e)
-                {
-                    System.out.println("Could not stop container; assuming already stopped.");
-                }
-
-                try
-                {
-                    container.remove();
-                    System.out.println("Container successfully removed.");
-                    return true;
-                }
-                catch (IOException e)
-                {
-                    System.out.println("Problem removing container.");
-                    e.printStackTrace();
-                    return false;
-                }
-            }
+            sendToOvsDockerServer(apiURL, "DELETE");
         }
+        catch (Exception e)
+        {
+            System.out.println("Error stopping docker container: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-        System.out.println("Container was not found.");
-        return false;
+    private void sendToOvsDockerServer(String URL, String method) throws IOException
+    {
+        try {
+            URL url = new URL(fullBaseURL + URL);
+            HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+            httpCon.setRequestMethod(method);
+            int responseCode = httpCon.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK)
+            {
+                BufferedReader in = new BufferedReader(new InputStreamReader(httpCon.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+                while ((inputLine = in.readLine()) != null)
+                {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                System.out.println(response.toString());
+            }
+            else
+            {
+                System.out.println("GET request was unsuccessful: " + responseCode);
+            }
+        } catch (Exception e) {
+            System.out.println("Error sending HTTP  command: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public static void test()
