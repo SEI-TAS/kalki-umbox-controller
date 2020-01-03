@@ -13,7 +13,8 @@ import java.net.URL;
 public class DockerUmbox extends Umbox
 {
     private static final String PREFIX = "umbox-";
-    private static final String BASE_URL = "/ovs-docker";
+    private static final String API_BASE_URL = "/ovs-docker";
+    private static final String API_PORT = "5500";
 
     private String fullBaseURL;
     private String containerName;
@@ -33,7 +34,7 @@ public class DockerUmbox extends Umbox
 
     private void setupDockerVars()
     {
-        fullBaseURL = "http://" + Config.data.get("data_node_ip") + BASE_URL;
+        fullBaseURL = "http://" + Config.data.get("data_node_ip") + ":" + API_PORT + API_BASE_URL;
         containerName = PREFIX + this.umboxId;
         apiURL = "/" + image.getName() + "/" + containerName;
     }
@@ -74,6 +75,7 @@ public class DockerUmbox extends Umbox
     {
         try {
             URL url = new URL(fullBaseURL + URL);
+            System.out.println("Sending command to: " + url.toString());
             HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
             httpCon.setRequestMethod(method);
             int responseCode = httpCon.getResponseCode();
@@ -95,7 +97,7 @@ public class DockerUmbox extends Umbox
                 System.out.println("GET request was unsuccessful: " + responseCode);
             }
         } catch (Exception e) {
-            System.out.println("Error sending HTTP  command: " + e.getMessage());
+            System.out.println("Error sending HTTP command: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }

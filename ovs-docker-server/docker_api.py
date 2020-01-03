@@ -4,10 +4,15 @@ import subprocess
 from flask import Flask
 from flask_restful import Api, Resource
 
+# Existing networks and bridges.
 CONTROL_NETWORK = "control-net"
 OVS_BRIDGE = "ovs-br"
 
-BASE_URL = "/ovs-docker"
+# API info.
+API_BASE_URL = "/ovs-docker"
+API_PORT = "5500"
+
+# Reply keys and values.
 STATUS_KEY = "status"
 OK_VALUE = "ok"
 ERROR_VALUE = "error"
@@ -15,11 +20,10 @@ IN_PORTNAME_KEY = "in_port_name"
 OUT_PORTNAME_KEY = "out_port_name"
 ESC_PORTNAME_KEY = "esc_port_name"
 
+# Docker and OVS commands.
 RUN_CMD = "docker run --rm -dit --network {} --name {} {}"
 OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
-
-GET_PORT_NAME_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=name find interface external_ids:container_id="{}}" external_ids:container_iface="{}}"'
-
+GET_PORT_NAME_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=name find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD= "docker container stop {}"
 OVS_CLEAR_CMD = "sudo ovs-docker del-ports {} {}"
 
@@ -34,11 +38,13 @@ def run_command(command):
 
     # Show errors, if any.
     if len(error_output) > 0:
-        print error_output
+        error_msg = "Error executing command: " + error_output
+        print(error_msg)
+        raise Exception(error_msg)
 
     # Show output, if any.
     if len(normal_output) > 0:
-        print normal_output
+        print(normal_output)
 
     print("Finished executing command")
     return normal_output
@@ -89,8 +95,8 @@ def main():
 
     app = Flask(__name__)
     api = Api(app)
-    api.add_resource(DockerContainer, BASE_URL + "/<string:image_name>/<string:instance_name>")
-    app.run(host="0.0.0.0", debug=True)
+    api.add_resource(DockerContainer, API_BASE_URL + "/<string:image_name>/<string:instance_name>")
+    app.run(host="0.0.0.0", port=API_PORT, debug=True)
 
 
 if __name__ == "__main__":
