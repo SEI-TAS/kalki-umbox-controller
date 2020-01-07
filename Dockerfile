@@ -1,13 +1,11 @@
 FROM i386/openjdk:8
 
-# Not needed for Docker version.
-# Install Python 2.7, pip and pipenv
-#RUN apt-get update \
-#&& apt-get -yqq install python python-pip
-#RUN pip install pipenv
+RUN apt-get update
 
 # Not needed for Docker version.
-# Install Libvirt (dev)
+# For VM Tool: Install Python 2.7, pip, pipenv and libvirt
+#RUN apt-get -yqq install python python-pip
+#RUN pip install pipenv
 #RUN apt-get -yqq install libvirt-dev
 
 # Install ovs-tools
@@ -24,9 +22,9 @@ WORKDIR /app
 RUN tar -xvf $DIST_NAME.tar
 
 COPY config.json /app/$DIST_NAME
-#COPY vm-umbox-tool/ /app/$DIST_NAME/vm-umbox-tool/
 
 # Setup pipenv for VM Umbox tool
+#COPY vm-umbox-tool/ /app/$DIST_NAME/vm-umbox-tool/
 #ENV PIPENV_VENV_IN_PROJECT "enabled"
 #WORKDIR /app/$DIST_NAME/vm-umbox-tool
 #RUN pipenv install
