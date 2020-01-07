@@ -1,5 +1,5 @@
 {
-  "data_node_ip": "127.0.0.1",
+  "data_node_ip": "10.27.153.2",
 
   "db_host": "localhost",
   "db_port": "5432",
