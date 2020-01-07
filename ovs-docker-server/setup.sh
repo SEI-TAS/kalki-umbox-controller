@@ -9,6 +9,9 @@ DATA_NODE_IP=10.27.153.2
 
 docker network create -d macvlan --subnet=${CONTROL_NET} --gateway=${GATEWAY} --aux-address="control=${CONTROL_NODE_IP}" --aux-address="data=${DATA_NODE_IP}" -o parent=${CONTROL_BRIDGE} ${DOCKER_CONTROL_NET}
 
+ENV PIPENV_VENV_IN_PROJECT "enabled"
+pipenv install
+
 # How to connect main NIC and 3 OVS NICs.
 #docker run --rm -dit --network control-net --name umbox-id alpine:latest ash
 #sudo ovs-docker add-port ovs-br eth1 umbox-id
