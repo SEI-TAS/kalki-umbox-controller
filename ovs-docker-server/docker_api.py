@@ -101,7 +101,7 @@ def main():
 
     app = Flask(__name__)
     api = Api(app)
-    api.add_resource(DockerContainer, API_BASE_URL + "/<string:image_name>/<string:instance_name>")
+    api.add_resource(DockerContainer, API_BASE_URL + "/<string:image_name>/<string:container_name>")
     app.run(host="0.0.0.0", port=API_PORT, debug=True)
 
 
