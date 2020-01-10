@@ -21,7 +21,7 @@ OUT_PORTNAME_KEY = "out_port_name"
 ESC_PORTNAME_KEY = "esc_port_name"
 
 # Docker and OVS commands.
-RUN_CMD = "docker run --rm -it --network {} --name {} {}"
+RUN_CMD = "docker run --rm -dit --network {} --name {} {}"
 OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
 GET_PORT_NAME_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=name find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD= "docker container stop {}"
