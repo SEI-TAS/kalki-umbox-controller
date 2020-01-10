@@ -21,8 +21,7 @@ OUT_PORTNAME_KEY = "out_port_name"
 ESC_PORTNAME_KEY = "esc_port_name"
 
 # Docker and OVS commands.
-CREATE_CMD = "docker create --rm -it --network {} --name {} {}"
-START_CMD = "docker start {}"
+RUN_CMD = "docker create --rm -it --network {} --name {} {}"
 OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
 GET_PORT_NAME_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=name find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD= "docker container stop {}"
@@ -57,8 +56,9 @@ class DockerContainer(Resource):
     def post(self, image_name, container_name):
         try:
             # Start docker instance.
-            print("Creating container")
-            run_command(CREATE_CMD.format(CONTROL_NETWORK, container_name, image_name))
+            print("Starting container")
+            run_command(RUN_CMD.format(CONTROL_NETWORK, container_name, image_name))
+            print("Container started")
 
             # Connect OVS ports.
             print("Connecting OVS ports.")
@@ -73,9 +73,8 @@ class DockerContainer(Resource):
             print("OVS connection successful")
 
             # Start the container.
-            print("Starting container")
-            run_command(START_CMD.format(container_name))
-            print("Container started")
+            #print("Starting container")
+            #run_command(START_CMD.format(container_name))
 
             # Return OVS port names.
             return {STATUS_KEY: OK_VALUE, IN_PORTNAME_KEY: eth1_portname, OUT_PORTNAME_KEY: eth2_portname, ESC_PORTNAME_KEY: eth3_portname}
