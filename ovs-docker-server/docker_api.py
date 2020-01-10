@@ -16,15 +16,15 @@ API_PORT = "5500"
 STATUS_KEY = "status"
 OK_VALUE = "ok"
 ERROR_VALUE = "error"
-IN_PORTNAME_KEY = "in_port_name"
-OUT_PORTNAME_KEY = "out_port_name"
-ESC_PORTNAME_KEY = "esc_port_name"
+IN_PORTID_KEY = "in_port_id"
+OUT_PORTID_KEY = "out_port_id"
+ESC_PORTID_KEY = "esc_port_id"
 
 # Docker and OVS commands.
 RUN_CMD = "docker run --rm -dit --network {} --name {} {}"
 OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
-GET_PORT_NAME_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=name find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
-STOP_CMD= "docker container stop {}"
+GET_PORT_ID_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
+STOP_CMD = "docker container stop {}"
 OVS_CLEAR_CMD = "sudo ovs-docker del-ports {} {}"
 
 
@@ -67,9 +67,9 @@ class DockerContainer(Resource):
             run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth3", container_name))
 
             # Get port names.
-            eth1_portname = run_command(GET_PORT_NAME_CMD.format(container_name, "eth1")).rstrip("\n)")
-            eth2_portname = run_command(GET_PORT_NAME_CMD.format(container_name, "eth2")).rstrip("\n)")
-            eth3_portname = run_command(GET_PORT_NAME_CMD.format(container_name, "eth3")).rstrip("\n)")
+            eth1_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth1")).rstrip("\n)")
+            eth2_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth2")).rstrip("\n)")
+            eth3_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth3")).rstrip("\n)")
             print("OVS connection successful")
 
             # Start the container.
@@ -77,7 +77,7 @@ class DockerContainer(Resource):
             #run_command(START_CMD.format(container_name))
 
             # Return OVS port names.
-            return {STATUS_KEY: OK_VALUE, IN_PORTNAME_KEY: eth1_portname, OUT_PORTNAME_KEY: eth2_portname, ESC_PORTNAME_KEY: eth3_portname}
+            return {STATUS_KEY: OK_VALUE, IN_PORTID_KEY: eth1_portid, OUT_PORTID_KEY: eth2_portid, ESC_PORTID_KEY: eth3_portid}
         except Exception as e:
             print("Error starting docker instance: " + str(e))
             return {STATUS_KEY: ERROR_VALUE}
