@@ -21,7 +21,8 @@ OUT_PORTNAME_KEY = "out_port_name"
 ESC_PORTNAME_KEY = "esc_port_name"
 
 # Docker and OVS commands.
-RUN_CMD = "docker run --rm -dit --network {} --name {} {}"
+CREATE_CMD = "docker create --rm -it --network {} --name {} {}"
+START_CMD = "docker start {}"
 OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
 GET_PORT_NAME_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=name find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD= "docker container stop {}"
@@ -53,25 +54,30 @@ def run_command(command):
 class DockerContainer(Resource):
     """Resource for handling OVS-connected docker images."""
 
-    def post(self, image_name, instance_name):
+    def post(self, image_name, container_name):
         try:
             # Start docker instance.
-            print("Starting container")
-            run_command(RUN_CMD.format(CONTROL_NETWORK, instance_name, image_name))
+            print("Creating container")
+            run_command(CREATE_CMD.format(CONTROL_NETWORK, container_name, image_name))
 
             # Connect OVS ports.
             print("Connecting OVS ports.")
-            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth1", instance_name))
-            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth2", instance_name))
-            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth3", instance_name))
+            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth1", container_name))
+            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth2", container_name))
+            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth3", container_name))
 
             # Get port names.
-            eth1_portname = run_command(GET_PORT_NAME_CMD.format(instance_name, "eth1"))
-            eth2_portname = run_command(GET_PORT_NAME_CMD.format(instance_name, "eth2"))
-            eth3_portname = run_command(GET_PORT_NAME_CMD.format(instance_name, "eth3"))
+            eth1_portname = run_command(GET_PORT_NAME_CMD.format(container_name, "eth1"))
+            eth2_portname = run_command(GET_PORT_NAME_CMD.format(container_name, "eth2"))
+            eth3_portname = run_command(GET_PORT_NAME_CMD.format(container_name, "eth3"))
+            print("OVS connection successful")
+
+            # Start the container.
+            print("Starting container")
+            run_command(START_CMD.format(container_name))
+            print("Container started")
 
             # Return OVS port names.
-            print("OVS connection successful")
             return {STATUS_KEY: OK_VALUE, IN_PORTNAME_KEY: eth1_portname, OUT_PORTNAME_KEY: eth2_portname, ESC_PORTNAME_KEY: eth3_portname}
         except Exception as e:
             print("Error starting docker instance: " + str(e))
