@@ -22,7 +22,7 @@ OUT_PORTID_KEY = "out_port_id"
 ESC_PORTID_KEY = "esc_port_id"
 
 # Docker and OVS commands.
-RUN_CMD = "docker run --rm -dit --network {} --name {} {}"
+RUN_CMD = "docker run --rm -dit --network {} --hostname {} --name {} {}"
 OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
 GET_PORT_ID_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD = "docker container stop {}"
@@ -58,7 +58,7 @@ class DockerContainer(Resource):
         try:
             # Start docker instance.
             print("Starting container")
-            run_command(RUN_CMD.format(CONTROL_NETWORK, container_name, image_name))
+            run_command(RUN_CMD.format(CONTROL_NETWORK, container_name, container_name, image_name))
             print("Container started")
 
             # Connect OVS ports.
