@@ -100,19 +100,26 @@ public class DAGManager
         Umbox umbox = Umbox.createUmbox(image, device);
         umbox.startAndStore();
 
-        // Get the port ids from the names with a remote API call.
-        RemoteOVSDB ovsdb = new RemoteOVSDB(Config.data.get("data_node_ip"));
-        String umboxInPortId = ovsdb.getPortId(umbox.getOvsInPortName());
-        String umboxOutPortId = ovsdb.getPortId(umbox.getOvsOutPortName());
-        String umboxRepliesPortId = ovsdb.getPortId(umbox.getOvsRepliesPortName());
-        if(umboxInPortId == null || umboxOutPortId == null || umboxRepliesPortId == null)
+        if(umbox.getOvsInPortId().equals("") || umbox.getOvsOutPortId().equals("") || umbox.getOvsRepliesPortId().equals(""))
         {
-            throw new RuntimeException("Could not get port ids!");
-        }
+            // Get the port ids from the names with a remote API call.
+            RemoteOVSDB ovsdb = new RemoteOVSDB(Config.data.get("data_node_ip"));
+            String umboxInPortId = ovsdb.getPortId(umbox.getOvsInPortName());
+            String umboxOutPortId = ovsdb.getPortId(umbox.getOvsOutPortName());
+            String umboxRepliesPortId = ovsdb.getPortId(umbox.getOvsRepliesPortName());
+            if (umboxInPortId == null || umboxOutPortId == null || umboxRepliesPortId == null)
+            {
+                throw new RuntimeException("Could not get port ids!");
+            }
 
-        umbox.setOvsInPortId(umboxInPortId);
-        umbox.setOvsOutPortId(umboxOutPortId);
-        umbox.setOvsRepliesPortId(umboxRepliesPortId);
+            umbox.setOvsInPortId(umboxInPortId);
+            umbox.setOvsOutPortId(umboxOutPortId);
+            umbox.setOvsRepliesPortId(umboxRepliesPortId);
+        }
+        else
+        {
+            System.out.println("Port IDs were already received, not sending extra request to get them.");
+        }
 
         return umbox;
     }

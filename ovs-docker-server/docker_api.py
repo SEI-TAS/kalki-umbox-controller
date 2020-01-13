@@ -16,6 +16,7 @@ API_PORT = "5500"
 STATUS_KEY = "status"
 OK_VALUE = "ok"
 ERROR_VALUE = "error"
+ERROR_DETAILS_KEY = "error"
 IN_PORTID_KEY = "in_port_id"
 OUT_PORTID_KEY = "out_port_id"
 ESC_PORTID_KEY = "esc_port_id"
@@ -79,8 +80,9 @@ class DockerContainer(Resource):
             # Return OVS port names.
             return {STATUS_KEY: OK_VALUE, IN_PORTID_KEY: eth1_portid, OUT_PORTID_KEY: eth2_portid, ESC_PORTID_KEY: eth3_portid}
         except Exception as e:
-            print("Error starting docker instance: " + str(e))
-            return {STATUS_KEY: ERROR_VALUE}
+            errorMsg = "Error starting docker instance: " + str(e)
+            print(errorMsg)
+            return {STATUS_KEY: ERROR_VALUE, ERROR_DETAILS_KEY: errorMsg}
 
     def delete(self, image_name, instance_name):
         """Remove an existing docker instance and its OVS connections."""
@@ -91,8 +93,9 @@ class DockerContainer(Resource):
             print("Stopping successful")
             return {STATUS_KEY: OK_VALUE}
         except Exception as e:
-            print("Error stopping docker instance: " + str(e))
-            return {STATUS_KEY: ERROR_VALUE}
+            errorMsg = "Error stopping docker instance: " + str(e)
+            print(errorMsg)
+            return {STATUS_KEY: ERROR_VALUE, ERROR_DETAILS_KEY: errorMsg}
 
 
 def main():
