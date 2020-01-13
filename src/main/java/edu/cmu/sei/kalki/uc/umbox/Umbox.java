@@ -93,40 +93,59 @@ public abstract class Umbox
     /**
      * Starts a new umbox and stores its info in the DB.
      */
-    public void startAndStore()
+    public boolean startAndStore()
     {
+        UmboxInstance instance = null;
         try
         {
-            System.out.println("Starting umbox.");
-            start();
-
             // Store in the DB the information about the newly created umbox instance.
-            UmboxInstance instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
+            instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
             instance.insert();
+
+            System.out.println("Starting umbox.");
+            return start();
         }
         catch (RuntimeException e)
         {
+            System.out.println("Error starting umbox: " + e.toString());
             e.printStackTrace();
+
+            try
+            {
+                if (instance != null)
+                {
+                    Postgres.deleteUmboxInstance(instance.getId());
+                }
+            }
+            catch(Exception ex)
+            {
+                System.out.println("Error removing instance not properly created: " + ex.toString());
+            }
+
+            return false;
         }
     }
 
     /**
      * Stops a running umbox and clears its info from the DB.
      */
-    public void stopAndClear()
+    public boolean stopAndClear()
     {
         try
         {
             System.out.println("Stopping umbox.");
-            stop();
+            boolean success = stop();
 
             UmboxInstance umboxInstance = Postgres.findUmboxInstance(String.valueOf(umboxId));
             System.out.println("Deleting umbox instance from DB.");
             Postgres.deleteUmboxInstance(umboxInstance.getId());
+            return success;
         }
         catch (RuntimeException e)
         {
+            System.out.println("Error stopping umbox: " + e.toString());
             e.printStackTrace();
+            return false;
         }
     }
 
