@@ -5,12 +5,14 @@ import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
 
-import java.util.List;
+import java.lang.reflect.Constructor;
 import java.util.Random;
 
 public abstract class Umbox
 {
     private static final int MAX_INSTANCES = 1000;
+
+    public static String umboxClass;
 
     protected int umboxId;
     protected Device device;
@@ -22,26 +24,66 @@ public abstract class Umbox
     protected String ovsOutPortId = "";
     protected String ovsRepliesPortId = "";
 
+    public static void setUmboxClass(String classPath)
+    {
+        umboxClass = classPath;
+    }
+
+    public static Umbox createUmbox(UmboxImage image, Device device)
+    {
+        try {
+            Constructor con = Class.forName(umboxClass).getConstructor(UmboxImage.class, Device.class);
+            return (Umbox) con.newInstance(image, device);
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error creating umbox: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static Umbox createUmbox(UmboxImage image, int instanceId)
+    {
+        try {
+            Constructor con = Class.forName(umboxClass).getConstructor(UmboxImage.class, Integer.TYPE);
+            return (Umbox) con.newInstance(image, instanceId);
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error creating umbox: " + e.getMessage());
+            return null;
+        }
+    }
+
     /***
      * Constructor for new umboxes.
      * @param device
      * @param image
      */
-    public Umbox(UmboxImage image, Device device)
+    protected Umbox(UmboxImage image, Device device)
     {
         this.image = image;
         this.device = device;
 
-        // Generate random id.
-        Random rand = new Random();
-        umboxId = rand.nextInt(MAX_INSTANCES);
+        // Generate random id. Check if there is no instance with this ID, and re-generate if there is.
+        int tries = 0;
+        do
+        {
+            Random rand = new Random();
+            umboxId = rand.nextInt(MAX_INSTANCES);
+            tries++;
+
+            if(tries > MAX_INSTANCES)
+            {
+                throw new RuntimeException("Can't allocate an ID for a new umbox; all of them seem to be allocated.");
+            }
+        }
+        while(Postgres.findUmboxInstance(String.valueOf(umboxId)) != null);
     }
 
     /***
      * Constructor for existing umboxes.
      * @param instanceId
      */
-    public Umbox(UmboxImage image, int instanceId)
+    protected Umbox(UmboxImage image, int instanceId)
     {
         this.image = image;
         this.device = null;
@@ -50,69 +92,72 @@ public abstract class Umbox
 
     /**
      * Starts a new umbox and stores its info in the DB.
-     * @returns the name of the OVS port the umbox was connected to.
      */
-    public void startAndStore()
+    public boolean startAndStore()
     {
-        List<String> output = start();
-        if(output == null)
+        UmboxInstance instance = null;
+        try
         {
-            throw new RuntimeException("Could not start umbox properly!");
-        }
+            // Store in the DB the information about the newly created umbox instance.
+            instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
+            instance.insert();
 
-        // Assuming the port name was the last thing printed in the output, get it and process it.
-        String ovsPortNames = output.get(output.size() - 1);
-        System.out.println("Umbox port names: " + ovsPortNames);
-        if (ovsPortNames == null)
+            System.out.println("Starting umbox.");
+            return start();
+        }
+        catch (RuntimeException e)
         {
-            throw new RuntimeException("Could not get umbox OVS ports!");
+            System.out.println("Error starting umbox: " + e.toString());
+            e.printStackTrace();
+
+            try
+            {
+                if (instance != null)
+                {
+                    Postgres.deleteUmboxInstance(instance.getId());
+                }
+            }
+            catch(Exception ex)
+            {
+                System.out.println("Error removing instance not properly created: " + ex.toString());
+            }
+
+            return false;
         }
-
-        String[] portNames = ovsPortNames.split(" ");
-        if(portNames.length != 3)
-        {
-            throw new RuntimeException("Could not get 3 OVS port names!");
-        }
-
-        // Locally store the port names.
-        this.setOvsInPortName(portNames[0]);
-        this.setOvsOutPortName(portNames[1]);
-        this.setOvsRepliesPortName(portNames[2]);
-
-        // Store in the DB the information about the newly created umbox instance.
-        UmboxInstance instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
-        instance.insert();
     }
 
     /**
      * Stops a running umbox and clears its info from the DB.
      */
-    public void stopAndClear()
+    public boolean stopAndClear()
     {
         try
         {
-            stop();
+            System.out.println("Stopping umbox.");
+            boolean success = stop();
 
             UmboxInstance umboxInstance = Postgres.findUmboxInstance(String.valueOf(umboxId));
             System.out.println("Deleting umbox instance from DB.");
             Postgres.deleteUmboxInstance(umboxInstance.getId());
+            return success;
         }
         catch (RuntimeException e)
         {
+            System.out.println("Error stopping umbox: " + e.toString());
             e.printStackTrace();
+            return false;
         }
     }
 
     /**
      * Starts a new umbox.
-     * @returns the name of the OVS port the umbox was connected to.
      */
-    protected abstract List<String> start();
+    protected abstract boolean start();
 
     /**
      * Stops a running umbox.
      */
-    protected abstract List<String> stop();
+    protected abstract boolean stop();
 
     // Getters and setters.
 

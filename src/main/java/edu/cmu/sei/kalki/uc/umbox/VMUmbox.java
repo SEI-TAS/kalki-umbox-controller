@@ -65,29 +65,52 @@ public class VMUmbox extends Umbox
 
     /**
      * Starts a new umbox.
-     * @returns the name of the OVS port the umbox was connected to.
      */
-    protected List<String> start()
+    @Override
+    protected boolean start()
     {
+        List<String> output = null;
         List<String> command = (ArrayList) commandInfo.clone();
         command.add("-c");
         command.add("start");
 
         try
         {
-            return CommandExecutor.executeCommand(command, commandWorkingDir);
+            output = CommandExecutor.executeCommand(command, commandWorkingDir);
+
+            // Assuming the port name was the last thing printed in the output, get it and process it.
+            String ovsPortNames = output.get(output.size() - 1);
+            System.out.println("Umbox port names: " + ovsPortNames);
+            if (ovsPortNames == null)
+            {
+                throw new RuntimeException("Could not get umbox OVS ports!");
+            }
+
+            String[] portNames = ovsPortNames.split(" ");
+            if(portNames.length != 3)
+            {
+                throw new RuntimeException("Could not get 3 OVS port names!");
+            }
+
+            // Locally store the port names.
+            this.setOvsInPortName(portNames[0]);
+            this.setOvsOutPortName(portNames[1]);
+            this.setOvsRepliesPortName(portNames[2]);
+
+            return true;
         }
         catch (RuntimeException e)
         {
             e.printStackTrace();
-            return null;
+            throw new RuntimeException("Could not start umbox properly!");
         }
     }
 
     /**
      * Stops a running umbox.
      */
-    protected List<String> stop()
+    @Override
+    protected boolean stop()
     {
         List<String> command = (ArrayList) commandInfo.clone();
         command.add("-c");
@@ -96,12 +119,13 @@ public class VMUmbox extends Umbox
         try
         {
             System.out.println("Executing stop command.");
-            return CommandExecutor.executeCommand(command, commandWorkingDir);
+            CommandExecutor.executeCommand(command, commandWorkingDir);
+            return true;
         }
         catch (RuntimeException e)
         {
             e.printStackTrace();
-            return null;
+            throw new RuntimeException("Could not stop umbox properly!");
         }
     }
 
