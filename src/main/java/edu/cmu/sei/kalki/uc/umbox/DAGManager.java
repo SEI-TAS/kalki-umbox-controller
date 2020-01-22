@@ -21,6 +21,10 @@ public class DAGManager
      */
     public static void bootstrap()
     {
+        // Setup the Umbox type to use from the config file.
+        Umbox.setUmboxClass(Config.data.get("umbox_class"));
+
+        // Set up umboxes for existing devices.
         List<Device> devices = Postgres.findAllDevices();
         for(Device device : devices)
         {
@@ -83,13 +87,7 @@ public class DAGManager
         setRedirectForDevice(device.getIp(), ovsDeviceNetworkPort, ovsExternalNetworkPort, newUmboxes);
 
         // Finally clear the old umboxes.
-        for (UmboxInstance instance : oldUmboxInstances)
-        {
-            // Image param is not really needed for existing umboxes that we just want to stop, thus null.
-            UmboxImage image = Postgres.findUmboxImage(instance.getUmboxImageId());
-            Umbox umbox = new VMUmbox(image, Integer.parseInt(instance.getAlerterId()));
-            DAGManager.clearUmboxForDevice(umbox, device);
-        }
+        stopUmboxes(oldUmboxInstances);
     }
 
     /**
@@ -97,38 +95,33 @@ public class DAGManager
      * @param image
      * @param device
      */
-    public static Umbox setupUmboxForDevice(UmboxImage image, Device device)
+    private static Umbox setupUmboxForDevice(UmboxImage image, Device device)
     {
-        // Here we are explicitly stating we are using VMUmboxes. If we wanted to change to another implementation,
-        // for now it would be enough to change it here.
-        Umbox umbox = new VMUmbox(image, device);
-
-        System.out.println("Starting Umbox.");
+        Umbox umbox = Umbox.createUmbox(image, device);
         umbox.startAndStore();
 
-        // Get the port ids from the names with a remote API call.
-        RemoteOVSDB ovsdb = new RemoteOVSDB(Config.data.get("data_node_ip"));
-        String umboxInPortId = ovsdb.getPortId(umbox.getOvsInPortName());
-        String umboxOutPortId = ovsdb.getPortId(umbox.getOvsOutPortName());
-        String umboxRepliesPortId = ovsdb.getPortId(umbox.getOvsRepliesPortName());
-        if(umboxInPortId == null || umboxOutPortId == null || umboxRepliesPortId == null)
+        if(umbox.getOvsInPortId().equals("") || umbox.getOvsOutPortId().equals("") || umbox.getOvsRepliesPortId().equals(""))
         {
-            throw new RuntimeException("Could not get port ids!");
+            // Get the port ids from the names with a remote API call.
+            RemoteOVSDB ovsdb = new RemoteOVSDB(Config.data.get("data_node_ip"));
+            String umboxInPortId = ovsdb.getPortId(umbox.getOvsInPortName());
+            String umboxOutPortId = ovsdb.getPortId(umbox.getOvsOutPortName());
+            String umboxRepliesPortId = ovsdb.getPortId(umbox.getOvsRepliesPortName());
+            if (umboxInPortId == null || umboxOutPortId == null || umboxRepliesPortId == null)
+            {
+                throw new RuntimeException("Could not get port ids!");
+            }
+
+            umbox.setOvsInPortId(umboxInPortId);
+            umbox.setOvsOutPortId(umboxOutPortId);
+            umbox.setOvsRepliesPortId(umboxRepliesPortId);
+        }
+        else
+        {
+            System.out.println("Port IDs were already received, not sending extra request to get them.");
         }
 
-        umbox.setOvsInPortId(umboxInPortId);
-        umbox.setOvsOutPortId(umboxOutPortId);
-        umbox.setOvsRepliesPortId(umboxRepliesPortId);
         return umbox;
-    }
-
-    /**
-     * Stops a given umbox and clears rules directing traffic to it.
-     */
-    public static void clearUmboxForDevice(Umbox umbox, Device device)
-    {
-        System.out.println("Stopping umbox.");
-        umbox.stopAndClear();
     }
 
     /**
@@ -138,16 +131,22 @@ public class DAGManager
     public static void clearAllUmboxesForDevice(Device device)
     {
         System.out.println("Clearing all umboxes for this device.");
-
         clearRedirectForDevice(device.getIp());
-
         List<UmboxInstance> instances = Postgres.findUmboxInstances(device.getId());
-        System.out.println("Stopping all umboxes for this device.");
-        for(UmboxInstance instance : instances)
+        stopUmboxes(instances);
+    }
+
+    /**
+     * Stops all umbox instances provided.
+     * @param umboxes
+     */
+    private static void stopUmboxes(List<UmboxInstance> umboxes)
+    {
+        System.out.println("Stopping all umboxes given.");
+        for(UmboxInstance instance : umboxes)
         {
-            System.out.println("Stopping umbox.");
             UmboxImage image = Postgres.findUmboxImage(instance.getUmboxImageId());
-            Umbox umbox = new VMUmbox(image, Integer.parseInt(instance.getAlerterId()));
+            Umbox umbox = Umbox.createUmbox(image, Integer.parseInt(instance.getAlerterId()));
             umbox.stopAndClear();
         }
     }
@@ -172,8 +171,7 @@ public class DAGManager
         System.out.println("Creating entry rules for device: " + deviceIp);
         Umbox firstUmbox = umboxes.get(0);
         rules.add(new OpenFlowRule(ovsExternalPort, firstUmbox.getOvsInPortId(), "100", null, deviceIp));
-        rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null));   //THIS ONE
-        //rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null, null, "10.27.152.5"));   //THIS ONE
+        rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null));
         rules.add(new OpenFlowRule(firstUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
 
         // Setup intermediate rules for umbox chain.
@@ -192,8 +190,7 @@ public class DAGManager
         // Setup exit rules for umbox chain.
         System.out.println("Creating exit rules for device: " + deviceIp);
         Umbox lastUmbox = umboxes.get(umboxes.size() - 1);
-        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp));  //THIS ONE
-        //rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp, "10.27.151.217", null));  //THIS ONE
+        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp));
         rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsExternalPort, "100", deviceIp, null));
         rules.add(new OpenFlowRule(lastUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
 
