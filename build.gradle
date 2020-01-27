@@ -1,5 +1,5 @@
 plugins {
-    id 'com.palantir.docker' version '0.22.1'
+    id 'com.palantir.docker' version '0.24.0'
 }
 
 group 'edu.cmu.sei.ttg.kalki'
@@ -34,9 +34,16 @@ test {
     useJUnitPlatform()
 }
 
+task dockerVM(type: docker)
+
 docker {
     name 'kalki/kalki-uc'
     files tasks.distTar.outputs, "config.json"
+}
+
+dockerVM {
+    name 'kalki/kalki-uc-vm'
+    dockerfile file('Dockerfile.vm')
     copySpec.with {
         from('.') {
             include 'vm-umbox-tool/**'

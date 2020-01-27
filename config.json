@@ -16,5 +16,5 @@
   "ovs_devices_network_port": "1",
   "ovs_external_network_port": "2",
 
-  "umbox_class": "edu.cmu.sei.kalki.uc.umbox.VMUmbox"
+  "umbox_class": "edu.cmu.sei.kalki.uc.umbox.DockerUmbox"
 }

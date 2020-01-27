@@ -1,0 +1,22 @@
+FROM kalki/kalki-uc
+
+RUN apt-get update
+
+# For VM Tool: Install Python 2.7, pip, pipenv and libvirt
+RUN apt-get -yqq install python python-pip
+RUN pip install pipenv
+RUN apt-get -yqq install libvirt-dev
+
+ENV PROJECT_NAME umbox_controller
+ENV DIST_NAME $PROJECT_NAME-1.0-SNAPSHOT
+
+# Setup pipenv for VM Umbox tool
+COPY vm-umbox-tool/ /app/$DIST_NAME/vm-umbox-tool/
+ENV PIPENV_VENV_IN_PROJECT "enabled"
+WORKDIR /app/$DIST_NAME/vm-umbox-tool
+RUN pipenv install
+
+WORKDIR /app/$DIST_NAME
+
+# Configure for VM UMboxes.
+RUN sed -i "s|DockerUmbox|VMUmbox|g" /app/$DIST_NAME/config.json
