@@ -34,7 +34,7 @@ test {
     useJUnitPlatform()
 }
 
-task dockerVM(type: docker)
+task dockerVM(type: com.palantir.gradle.docker.DockerExtension)
 
 docker {
     name 'kalki/kalki-uc'
