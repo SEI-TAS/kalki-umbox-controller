@@ -34,16 +34,10 @@ test {
     useJUnitPlatform()
 }
 
-task dockerVM(type: com.palantir.gradle.docker.DockerExtension)
-
 docker {
-    name 'kalki/kalki-uc'
+    name $container_name
+    dockerfile file('Dockerfile.tmp')
     files tasks.distTar.outputs, "config.json"
-}
-
-dockerVM {
-    name 'kalki/kalki-uc-vm'
-    dockerfile file('Dockerfile.vm')
     copySpec.with {
         from('.') {
             include 'vm-umbox-tool/**'
