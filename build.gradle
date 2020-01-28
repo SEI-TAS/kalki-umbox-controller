@@ -35,7 +35,7 @@ test {
 }
 
 docker {
-    name $container_name
+    name container_name
     dockerfile file('Dockerfile.tmp')
     files tasks.distTar.outputs, "config.json"
     copySpec.with {
