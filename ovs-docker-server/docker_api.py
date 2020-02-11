@@ -22,7 +22,7 @@ OUT_PORTID_KEY = "out_port_id"
 ESC_PORTID_KEY = "esc_port_id"
 
 # Docker and OVS commands.
-RUN_CMD = "docker run --rm -dit --network {} --hostname {} --name {} {}"
+RUN_CMD = "docker run --rm -dit --network {} --hostname {} --name {} {} {}"
 OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
 GET_PORT_ID_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD = "docker container stop {}"
@@ -54,11 +54,11 @@ def run_command(command):
 class DockerContainer(Resource):
     """Resource for handling OVS-connected docker images."""
 
-    def post(self, image_name, container_name):
+    def post(self, image_name, container_name, ip_address):
         try:
             # Start docker instance.
             print("Starting container")
-            run_command(RUN_CMD.format(CONTROL_NETWORK, container_name, container_name, image_name))
+            run_command(RUN_CMD.format(CONTROL_NETWORK, container_name, container_name, image_name, ip_address))
             print("Container started")
 
             # Connect OVS ports.
@@ -84,7 +84,7 @@ class DockerContainer(Resource):
             print(errorMsg)
             return {STATUS_KEY: ERROR_VALUE, ERROR_DETAILS_KEY: errorMsg}
 
-    def delete(self, image_name, instance_name):
+    def delete(self, image_name, instance_name, ip_address):
         """Remove an existing docker instance and its OVS connections."""
         try:
             print("Stopping container")
@@ -103,7 +103,7 @@ def main():
 
     app = Flask(__name__)
     api = Api(app)
-    api.add_resource(DockerContainer, API_BASE_URL + "/<string:image_name>/<string:container_name>")
+    api.add_resource(DockerContainer, API_BASE_URL + "/<string:image_name>/<string:container_name>/<string:ip_address>")
     app.run(host="0.0.0.0", port=API_PORT, debug=True)
 
 
