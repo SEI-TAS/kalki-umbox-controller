@@ -83,8 +83,8 @@ public class DAGManager
         System.out.println("Setting up rules for umboxes.");
         String ovsDeviceNetworkPort = Config.data.get("ovs_devices_network_port");
         String ovsExternalNetworkPort = Config.data.get("ovs_external_network_port");
-        clearRedirectForDevice(device.getIp());
-        setRedirectForDevice(device.getIp(), ovsDeviceNetworkPort, ovsExternalNetworkPort, newUmboxes);
+        clearRedirectForDevice(device);
+        setRedirectForDevice(device, ovsDeviceNetworkPort, ovsExternalNetworkPort, newUmboxes);
 
         // Finally clear the old umboxes.
         stopUmboxes(oldUmboxInstances);
@@ -131,7 +131,7 @@ public class DAGManager
     public static void clearAllUmboxesForDevice(Device device)
     {
         System.out.println("Clearing all umboxes for this device.");
-        clearRedirectForDevice(device.getIp());
+        clearRedirectForDevice(device);
         List<UmboxInstance> instances = Postgres.findUmboxInstances(device.getId());
         stopUmboxes(instances);
     }
@@ -154,7 +154,7 @@ public class DAGManager
 
     /**
      */
-    private static void setRedirectForDevice(String deviceIp, String ovsDevicePort, String ovsExternalPort, List<Umbox> umboxes)
+    private static void setRedirectForDevice(Device device, String ovsDevicePort, String ovsExternalPort, List<Umbox> umboxes)
     {
         if(umboxes.size() == 0)
         {
@@ -162,41 +162,39 @@ public class DAGManager
             return;
         }
 
-        // Clean out any ports, if present, in the IP field.
-        deviceIp = deviceIp.split(":")[0];
-        System.out.println("Cleaned device: " + deviceIp);
+        String cleanDeviceIp = cleanDeviceIp(device.getIp());
 
         List<OpenFlowRule> rules = new ArrayList<>();
 
         // Setup entry rules for umbox chain.
-        System.out.println("Creating entry rules for device: " + deviceIp);
+        System.out.println("Creating entry rules for device: " + cleanDeviceIp);
         Umbox firstUmbox = umboxes.get(0);
-        rules.add(new OpenFlowRule(ovsExternalPort, firstUmbox.getOvsInPortId(), "100", null, deviceIp));
-        rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", deviceIp, null));
+        rules.add(new OpenFlowRule(ovsExternalPort, firstUmbox.getOvsInPortId(), "100", null, cleanDeviceIp));
+        rules.add(new OpenFlowRule(ovsDevicePort, firstUmbox.getOvsInPortId(), "100", cleanDeviceIp, null));
         rules.add(new OpenFlowRule(firstUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
 
         // Setup intermediate rules for umbox chain.
-        System.out.println("Creating intermediate rules for device: " + deviceIp);
+        System.out.println("Creating intermediate rules for device: " + cleanDeviceIp);
         String prevUmboxOutPortId = firstUmbox.getOvsOutPortId();
         for(int i = 1; i < umboxes.size(); i++)
         {
             // We could use only 1 rule here without src/dest IP, but we use two to make it easier later to delete all rules associated to the device IP.
             Umbox currUmbox = umboxes.get(i);
-            rules.add(new OpenFlowRule(prevUmboxOutPortId, currUmbox.getOvsInPortId(), "100", null, deviceIp));
-            rules.add(new OpenFlowRule(prevUmboxOutPortId, currUmbox.getOvsInPortId(), "100", deviceIp, null));
+            rules.add(new OpenFlowRule(prevUmboxOutPortId, currUmbox.getOvsInPortId(), "100", null, cleanDeviceIp));
+            rules.add(new OpenFlowRule(prevUmboxOutPortId, currUmbox.getOvsInPortId(), "100", cleanDeviceIp, null));
             rules.add(new OpenFlowRule(currUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
             prevUmboxOutPortId = currUmbox.getOvsOutPortId();
         }
 
         // Setup exit rules for umbox chain.
-        System.out.println("Creating exit rules for device: " + deviceIp);
+        System.out.println("Creating exit rules for device: " + cleanDeviceIp);
         Umbox lastUmbox = umboxes.get(umboxes.size() - 1);
-        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, deviceIp));
-        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsExternalPort, "100", deviceIp, null));
+        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsDevicePort, "100", null, cleanDeviceIp));
+        rules.add(new OpenFlowRule(lastUmbox.getOvsOutPortId(), ovsExternalPort, "100", cleanDeviceIp, null));
         rules.add(new OpenFlowRule(lastUmbox.getOvsRepliesPortId(), ovsExternalPort, "100", null, null));
 
         // Set the OVS switch to actually store the rules.
-        System.out.println("Sending rules for device: " + deviceIp);
+        System.out.println("Sending rules for device: " + cleanDeviceIp);
         RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.data.get("data_node_ip"));
         for(OpenFlowRule rule : rules)
         {
@@ -206,21 +204,31 @@ public class DAGManager
 
     /**
      * Clears all rules related to incoming and outgoing traffic for a given device.
-     * @param deviceIp
+     * @param device
      */
-    private static void clearRedirectForDevice(String deviceIp)
+    private static void clearRedirectForDevice(Device device)
     {
-        System.out.println("Clearing up rules for device: " + deviceIp);
+        System.out.println("Clearing up rules for device: " + device.getIp());
 
-        // Clean out any ports, if present, in the IP field.
-        deviceIp = deviceIp.split(":")[0];
-        System.out.println("Cleaned device: " + deviceIp);
+        String cleanDeviceIp = cleanDeviceIp(device.getIp());
 
-        OpenFlowRule allFromDevice = new OpenFlowRule(null, null, null, deviceIp, null);
-        OpenFlowRule allToDevice = new OpenFlowRule(null, null, null, null, deviceIp);
+        OpenFlowRule allFromDevice = new OpenFlowRule(null, null, null, cleanDeviceIp, null);
+        OpenFlowRule allToDevice = new OpenFlowRule(null, null, null, null, cleanDeviceIp);
 
         RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.data.get("data_node_ip"));
         vSwitch.removeRule(allFromDevice);
         vSwitch.removeRule(allToDevice);
+    }
+
+    /**
+     * Clean out any ports, if present, in the IP field.
+     * @param deviceIp
+     * @return
+     */
+    private static String cleanDeviceIp(String deviceIp)
+    {
+        String cleanDeviceIp = deviceIp.split(":")[0];
+        System.out.println("Cleaned device IP: " + cleanDeviceIp);
+        return cleanDeviceIp;
     }
 }
