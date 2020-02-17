@@ -32,10 +32,6 @@ Parameters that will usually need to be configured:
  - <b>db_port</b>: Usually the default port can be used.
  - <b>db_name, db_user, db_password</b>: need to be consistent with the actual DB information being used.
  - <b>db_recreate, db_root_password</b>: only needed if we want DNI to forcefully drop and recreate the DB.
-
-The following parameters do not need to be changed, if the Data Node is configured with default values:
- - <b>ovs_devices_network_port, ovs_external_network_port</b>: ports on the OVS virtual bridge on the 
- Data Node that are used to connect to the devices and to the external network, respectively.
  
 ## Usage
 The simplest way to use this component is by creating a Docker container. First the component
