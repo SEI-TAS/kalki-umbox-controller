@@ -35,8 +35,6 @@ public class VMUmbox extends Umbox
     private void setupCommand()
     {
         String dataNodeIP = Config.data.get("data_node_ip");
-        String ovsDataBridge = Config.data.get("ovs_data_bridge");
-        String controlBridge = Config.data.get("control_bridge");
 
         commandWorkingDir = Paths.get(System.getProperty("user.dir"), UMBOX_TOOL_PATH).toString();
 
@@ -57,10 +55,6 @@ public class VMUmbox extends Umbox
             commandInfo.add("-f");
             commandInfo.add(image.getFileName());
         }
-        commandInfo.add("-bc");
-        commandInfo.add(controlBridge);
-        commandInfo.add("-bd");
-        commandInfo.add(ovsDataBridge);
     }
 
     /**

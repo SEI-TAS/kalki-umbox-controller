@@ -8,7 +8,6 @@ import random
 import json
 from argparse import ArgumentParser
 
-
 import requests
 
 import vm.vmutils as vmutils
@@ -18,6 +17,10 @@ import vm.vm_descriptor as vm_descriptor
 MAX_INSTANCES = 1000
 NUM_SEPARATOR = "-"
 XML_VM_TEMPLATE = "vm/vm_template.xml"
+
+# Bridge names in data node.
+CONTROL_BRIDGE = "br-control"
+OVS_DATA_BRIDGE = "ovs-br"
 
 # Base names for the TUN/TAP virtual interfaces on the data node that handle the VM interfaces.
 CONTROL_TUN_PREFIX = "vnucont"
@@ -39,9 +42,6 @@ def setup_custom_logger(name):
 
     formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
                                   datefmt='%Y-%m-%d %H:%M:%S')
-    #handler = logging.FileHandler(file_path, mode='w')
-    #handler.setFormatter(formatter)
-    #logger.addHandler(handler)
 
     screen_handler = logging.StreamHandler(stream=sys.stderr)
     screen_handler.setFormatter(formatter)
@@ -49,9 +49,8 @@ def setup_custom_logger(name):
     return logger
 
 
-def create_and_start_umbox(data_node_ip, umbox_id, image_name, image_file_name, control_bridge, data_bridge):
-    umbox = VmUmbox(umbox_id, image_name, image_file_name, control_bridge, data_bridge)
-    #umbox.create_linked_image()
+def create_and_start_umbox(data_node_ip, umbox_id, image_name, image_file_name):
+    umbox = VmUmbox(umbox_id, image_name, image_file_name, CONTROL_BRIDGE, OVS_DATA_BRIDGE)
     umbox.start(data_node_ip)
     logger.info("Umbox started.")
 
@@ -222,8 +221,6 @@ def parse_arguments():
     parser.add_argument("-u", "--umbox", dest="umboxid", required=False, help="id of the umbox instance")
     parser.add_argument("-i", "--image", dest="imagename", required=False, help="name of the umbox image")
     parser.add_argument("-f", "--imagefile", dest="imagefile", required=False, help="the name of the image file")
-    parser.add_argument("-bc", "--bridgecontrol", dest="controlbr", required=False, help="name of the control virtual bridge")
-    parser.add_argument("-bd", "--bridgedata", dest="databr", required=False, help="name of the data ovs virtual bridge")
     args = parser.parse_args()
     return args
 
@@ -232,6 +229,9 @@ def main():
     global logger
     logger = setup_custom_logger("main")
 
+    logger.info("Control bridge: " + CONTROL_BRIDGE)
+    logger.info("Data bridge: " + OVS_DATA_BRIDGE)
+
     args = parse_arguments()
     logger.info("Command: " + args.command)
     logger.info("Data node to use: " + args.datanodeip)
@@ -239,10 +239,8 @@ def main():
         logger.info("Umbox ID: " + args.umboxid)
         logger.info("Image name: " + args.imagename)
         logger.info("Image file: " + args.imagefile)
-        logger.info("Control bridge: " + args.controlbr)
-        logger.info("Data bridge: " + args.databr)
 
-        umbox = create_and_start_umbox(args.datanodeip, args.umboxid, args.imagename, args.imagefile, args.controlbr, args.databr)
+        umbox = create_and_start_umbox(args.datanodeip, args.umboxid, args.imagename, args.imagefile)
 
         # Print the TAP device name so that it can be returned and used by ovs commands if needed.
         print(umbox.data_in_iface_name + " " + umbox.data_out_iface_name + " " + umbox.replies_iface_name)

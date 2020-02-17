@@ -11,8 +11,6 @@
   "db_root_password": "kalkipass",
   "db_recreate": "false",
 
-  "control_bridge": "br-control",
-  "ovs_data_bridge": "ovs-br",
   "ovs_devices_network_port": "1",
   "ovs_external_network_port": "2",
 
