@@ -37,9 +37,9 @@ public class DockerUmbox extends Umbox
         setupDockerVars();
     }
 
-    public DockerUmbox(UmboxImage image, int instanceId)
+    public DockerUmbox(UmboxImage image, Device device, int instanceId)
     {
-        super(image, instanceId);
+        super(image, device, instanceId);
         setupDockerVars();
     }
 

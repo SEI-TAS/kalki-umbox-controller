@@ -41,11 +41,11 @@ public abstract class Umbox
         }
     }
 
-    public static Umbox createUmbox(UmboxImage image, int instanceId)
+    public static Umbox createUmbox(UmboxImage image, Device device, int instanceId)
     {
         try {
-            Constructor con = Class.forName(umboxClass).getConstructor(UmboxImage.class, Integer.TYPE);
-            return (Umbox) con.newInstance(image, instanceId);
+            Constructor con = Class.forName(umboxClass).getConstructor(UmboxImage.class, Device.class, Integer.TYPE);
+            return (Umbox) con.newInstance(image, device, instanceId);
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Error creating umbox: " + e.getMessage());
@@ -83,10 +83,10 @@ public abstract class Umbox
      * Constructor for existing umboxes.
      * @param instanceId
      */
-    protected Umbox(UmboxImage image, int instanceId)
+    protected Umbox(UmboxImage image, Device device, int instanceId)
     {
         this.image = image;
-        this.device = null;
+        this.device = device;
         this.umboxId = instanceId;
     }
 

@@ -23,9 +23,9 @@ public class VMUmbox extends Umbox
         setupCommand();
     }
 
-    public VMUmbox(UmboxImage image, int instanceId)
+    public VMUmbox(UmboxImage image, Device device, int instanceId)
     {
-        super(image, instanceId);
+        super(image, device, instanceId);
         setupCommand();
     }
 

@@ -146,7 +146,8 @@ public class DAGManager
         for(UmboxInstance instance : umboxes)
         {
             UmboxImage image = Postgres.findUmboxImage(instance.getUmboxImageId());
-            Umbox umbox = Umbox.createUmbox(image, Integer.parseInt(instance.getAlerterId()));
+            Device device = Postgres.findDevice(instance.getDeviceId());
+            Umbox umbox = Umbox.createUmbox(image, device, Integer.parseInt(instance.getAlerterId()));
             umbox.stopAndClear();
         }
     }
