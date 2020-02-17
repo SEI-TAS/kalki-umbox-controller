@@ -100,3 +100,4 @@ gradle-app.setting
 
 state.json
 *.pyc
+Dockerfile.tmp

@@ -1,5 +1,5 @@
 plugins {
-    id 'com.palantir.docker' version '0.22.1'
+    id 'com.palantir.docker' version '0.24.0'
 }
 
 group 'edu.cmu.sei.ttg.kalki'
@@ -35,7 +35,8 @@ test {
 }
 
 docker {
-    name 'kalki/kalki-uc'
+    name container_name
+    dockerfile file('Dockerfile.tmp')
     files tasks.distTar.outputs, "config.json"
     copySpec.with {
         from('.') {

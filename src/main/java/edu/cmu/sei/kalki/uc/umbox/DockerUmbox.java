@@ -47,7 +47,7 @@ public class DockerUmbox extends Umbox
     {
         fullBaseURL = "http://" + Config.data.get("data_node_ip") + ":" + API_PORT + API_BASE_URL;
         containerName = PREFIX + this.umboxId;
-        apiURL = "/" + image.getName() + "/" + containerName;
+        apiURL = "/" + image.getName() + "/" + containerName + "/" + device.getIp();
     }
 
     @Override

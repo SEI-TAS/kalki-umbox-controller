@@ -1,14 +1,7 @@
 FROM i386/openjdk:8
 
-RUN apt-get update
-
-# Not needed for Docker version.
-# For VM Tool: Install Python 2.7, pip, pipenv and libvirt
-#RUN apt-get -yqq install python python-pip
-#RUN pip install pipenv
-#RUN apt-get -yqq install libvirt-dev
-
 # Install ovs-tools
+RUN apt-get update
 RUN apt-get -yqq install openvswitch-common openvswitch-switch
 
 ENV PROJECT_NAME umbox_controller
@@ -22,12 +15,6 @@ WORKDIR /app
 RUN tar -xvf $DIST_NAME.tar
 
 COPY config.json /app/$DIST_NAME
-
-# Setup pipenv for VM Umbox tool
-#COPY vm-umbox-tool/ /app/$DIST_NAME/vm-umbox-tool/
-#ENV PIPENV_VENV_IN_PROJECT "enabled"
-#WORKDIR /app/$DIST_NAME/vm-umbox-tool
-#RUN pipenv install
 
 WORKDIR /app/$DIST_NAME
 ENTRYPOINT ["bash", "bin/umbox_controller"]

@@ -1,15 +1,12 @@
 # Umbox Controller
 
 ## Prerequisites
-To compile this program, Java JDK 8 is required. This program uses Gradle as its build system, 
+ - To compile this program, Java JDK 8 is required. This program uses Gradle as its build system, 
 but since it uses an included Gradle wrapper, no external Gradle setup is required.
-
-To build the Docker image of the program, Docker should be installed first.
-
-Kalki-db should be installed on a local Maven repo for this program to compile. 
+ - To build the Docker image of the program, Docker should be installed first.
+ - Kalki-db should be installed on a local Maven repo for this program to compile. 
 You can find more details here: https://github.com/SEI-TTG/kalki-db/tree/dev
-
-This program requires a Postgres database engine to run. This can be installed manually, or a Docker image
+ - This program requires a Postgres database engine to run. This can be installed manually, or a Docker image
 can be used. If the Docker image is used, the Kalki Docker network should be created too.
 You can find more details here: https://github.com/SEI-TTG/kalki-db/tree/dev
 
@@ -45,11 +42,21 @@ The following parameters do not need to be changed, if the Data Node is configur
  Data Node that are used to connect to the devices and to the external network, respectively.
  
 ## Usage
-The simplest way to use this component is by creating a Docker container. To do this, first the component
-needs to be compiled and a Docker image be created from it. To do this, execute the following command:
+The simplest way to use this component is by creating a Docker container. First the component
+needs to be compiled and a Docker image be created from it. By default, this controller is configured
+to handle Docker-based umboxes. To create this image, execute the following command:
 
-  `./gradlew docker -i`
+`bash build_container.sh`
 
 To execute a container from that image, execute the following command:
 
-  `bash run_container.sh`  
+`bash run_container.sh`  
+
+A version of this component that supports VM-based umboxes can also be built on demand. This will create a parallel
+image that will allow to easily start either version of the component. To do this, execute the following command:
+
+`bash build_vm.sh`
+
+To execute a container from that image then, execute the following command:
+
+`bash run_vm.sh`
