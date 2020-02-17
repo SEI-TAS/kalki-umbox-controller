@@ -16,6 +16,9 @@ import java.util.List;
 
 public class DAGManager
 {
+    private final static String OVS_DEVICES_NETWORK_PORT = "1";
+    private final static String OVS_EXTERNAL_NETWORK_PORT = "2";
+
     /**
      * Goes over all devices and sets up umboxes for each of them based on their current state.
      */
@@ -81,10 +84,8 @@ public class DAGManager
 
         // Now set up rules between umboxes and networks, and between themselves.
         System.out.println("Setting up rules for umboxes.");
-        String ovsDeviceNetworkPort = Config.data.get("ovs_devices_network_port");
-        String ovsExternalNetworkPort = Config.data.get("ovs_external_network_port");
         clearRedirectForDevice(device);
-        setRedirectForDevice(device, ovsDeviceNetworkPort, ovsExternalNetworkPort, newUmboxes);
+        setRedirectForDevice(device, OVS_DEVICES_NETWORK_PORT, OVS_EXTERNAL_NETWORK_PORT, newUmboxes);
 
         // Finally clear the old umboxes.
         stopUmboxes(oldUmboxInstances);
