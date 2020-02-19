@@ -8,6 +8,7 @@ import edu.cmu.sei.ttg.kalki.database.Postgres;
 import edu.cmu.sei.ttg.kalki.listeners.InsertListener;
 import edu.cmu.sei.ttg.kalki.models.Device;
 import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
+import edu.cmu.sei.ttg.kalki.models.SecurityState;
 import edu.cmu.sei.ttg.kalki.models.UmboxImage;
 import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
 
@@ -33,7 +34,8 @@ public class DAGManager
         {
             System.out.println("Checking if there are umboxes to be started for device " + device.getName() + ", state " + device.getCurrentState().getName());
             DeviceSecurityState state = device.getCurrentState();
-            setupUmboxesForDevice(device, state);
+            SecurityState currState = Postgres.findSecurityState(state.getStateId());
+            setupUmboxesForDevice(device, currState);
         }
     }
 
@@ -43,6 +45,7 @@ public class DAGManager
     public static void startUpStateListener()
     {
         InsertListener.addHandler(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
+        InsertListener.addHandler(Postgres.TRIGGER_NOTIF_NEW_POLICY_INSTANCE, new PolicyInstanceInsertHandler());
         InsertListener.startListening();
     }
 
@@ -51,14 +54,14 @@ public class DAGManager
      * @param device
      * @param currentState
      */
-    public static synchronized void setupUmboxesForDevice(Device device, DeviceSecurityState currentState)
+    public static synchronized void setupUmboxesForDevice(Device device, SecurityState currentState)
     {
         List<UmboxInstance> oldUmboxInstances = Postgres.findUmboxInstances(device.getId());
         System.out.println("Found old umbox instances info for device, umboxes running: " + oldUmboxInstances.size());
 
         // First find umbox images for this device/state.
-        List<UmboxImage> umboxImages = Postgres.findUmboxImagesByDeviceTypeAndSecState(device.getType().getId(), currentState.getStateId());
-        System.out.println("Found umboxes for device type " + device.getType().getId() + " and current state " + currentState.getStateId() + ", number of umboxes: " + umboxImages.size());
+        List<UmboxImage> umboxImages = Postgres.findUmboxImagesByDeviceTypeAndSecState(device.getType().getId(), currentState.getId());
+        System.out.println("Found umboxes for device type " + device.getType().getId() + " and current state " + currentState.getId() + ", number of umboxes: " + umboxImages.size());
         if(umboxImages.size() == 0)
         {
             System.out.println("No umboxes associated to this state for this device.");
