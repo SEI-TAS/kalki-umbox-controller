@@ -1,6 +1,6 @@
 package edu.cmu.sei.kalki.uc;
 
-import edu.cmu.sei.kalki.uc.utils.Config;
+import edu.cmu.sei.kalki.db.utils.Config;
 
 /**
  * Entry point for the program.

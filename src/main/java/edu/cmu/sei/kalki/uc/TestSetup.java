@@ -1,6 +1,6 @@
 package edu.cmu.sei.kalki.uc;
 
-import edu.cmu.sei.kalki.uc.utils.Config;
+import edu.cmu.sei.kalki.db.utils.Config;
 import edu.cmu.sei.kalki.db.database.Postgres;
 
 /***

@@ -3,7 +3,7 @@ package edu.cmu.sei.kalki.uc.umbox;
 import edu.cmu.sei.kalki.uc.ovs.OpenFlowRule;
 import edu.cmu.sei.kalki.uc.ovs.RemoteOVSDB;
 import edu.cmu.sei.kalki.uc.ovs.RemoteOVSSwitch;
-import edu.cmu.sei.kalki.uc.utils.Config;
+import edu.cmu.sei.kalki.db.utils.Config;
 import edu.cmu.sei.kalki.db.database.Postgres;
 import edu.cmu.sei.kalki.db.listeners.InsertListener;
 import edu.cmu.sei.kalki.db.models.Device;

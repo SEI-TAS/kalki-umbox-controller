@@ -1,6 +1,6 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.kalki.uc.utils.Config;
+import edu.cmu.sei.kalki.db.utils.Config;
 import edu.cmu.sei.kalki.db.models.Device;
 import edu.cmu.sei.kalki.db.models.UmboxImage;
 

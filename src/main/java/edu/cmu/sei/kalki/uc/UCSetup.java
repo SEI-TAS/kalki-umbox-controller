@@ -2,7 +2,7 @@ package edu.cmu.sei.kalki.uc;
 
 import edu.cmu.sei.kalki.uc.alerts.AlertServerStartup;
 import edu.cmu.sei.kalki.uc.umbox.DAGManager;
-import edu.cmu.sei.kalki.uc.utils.Config;
+import edu.cmu.sei.kalki.db.utils.Config;
 import edu.cmu.sei.kalki.db.database.Postgres;
 
 import java.sql.SQLException;
