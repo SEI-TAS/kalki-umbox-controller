@@ -1,13 +1,13 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.ttg.kalki.database.Postgres;
-import edu.cmu.sei.ttg.kalki.listeners.InsertHandler;
-import edu.cmu.sei.ttg.kalki.models.Device;
-import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
-import edu.cmu.sei.ttg.kalki.models.PolicyRule;
-import edu.cmu.sei.ttg.kalki.models.PolicyRuleLog;
-import edu.cmu.sei.ttg.kalki.models.SecurityState;
-import edu.cmu.sei.ttg.kalki.models.StageLog;
+import edu.cmu.sei.kalki.db.database.Postgres;
+import edu.cmu.sei.kalki.db.listeners.InsertHandler;
+import edu.cmu.sei.kalki.db.models.Device;
+import edu.cmu.sei.kalki.db.models.DeviceSecurityState;
+import edu.cmu.sei.kalki.db.models.PolicyRule;
+import edu.cmu.sei.kalki.db.models.PolicyRuleLog;
+import edu.cmu.sei.kalki.db.models.SecurityState;
+import edu.cmu.sei.kalki.db.models.StageLog;
 
 import java.util.HashMap;
 

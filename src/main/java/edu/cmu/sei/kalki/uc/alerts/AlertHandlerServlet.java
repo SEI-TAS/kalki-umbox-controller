@@ -8,14 +8,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.cmu.sei.ttg.kalki.database.Postgres;
-import edu.cmu.sei.ttg.kalki.models.Alert;
-import edu.cmu.sei.ttg.kalki.models.AlertType;
-import edu.cmu.sei.ttg.kalki.models.Device;
-import edu.cmu.sei.ttg.kalki.models.DeviceSecurityState;
-import edu.cmu.sei.ttg.kalki.models.StageLog;
-import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
-import edu.cmu.sei.ttg.kalki.models.UmboxLog;
+import edu.cmu.sei.kalki.db.database.Postgres;
+import edu.cmu.sei.kalki.db.models.Alert;
+import edu.cmu.sei.kalki.db.models.AlertType;
+import edu.cmu.sei.kalki.db.models.Device;
+import edu.cmu.sei.kalki.db.models.DeviceSecurityState;
+import edu.cmu.sei.kalki.db.models.StageLog;
+import edu.cmu.sei.kalki.db.models.UmboxInstance;
+import edu.cmu.sei.kalki.db.models.UmboxLog;
 import org.eclipse.jetty.http.HttpStatus;
 
 import org.json.JSONException;
