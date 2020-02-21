@@ -26,7 +26,7 @@ public class DAGManager
     public static void bootstrap()
     {
         // Setup the Umbox type to use from the config file.
-        Umbox.setUmboxClass(Config.data.get("umbox_class"));
+        Umbox.setUmboxClass(Config.getValue("umbox_class"));
 
         // Set up umboxes for existing devices.
         List<Device> devices = Postgres.findAllDevices();
@@ -42,9 +42,9 @@ public class DAGManager
     /**
      * Starts up the listener for device state changes.
      */
-    public static void startUpStateListener()
+    public static void startUpDBListener()
     {
-        InsertListener.addHandler(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
+        //InsertListener.addHandler(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
         InsertListener.addHandler(Postgres.TRIGGER_NOTIF_NEW_POLICY_INSTANCE, new PolicyInstanceInsertHandler());
         InsertListener.startListening();
     }
@@ -107,7 +107,7 @@ public class DAGManager
         if(umbox.getOvsInPortId().equals("") || umbox.getOvsOutPortId().equals("") || umbox.getOvsRepliesPortId().equals(""))
         {
             // Get the port ids from the names with a remote API call.
-            RemoteOVSDB ovsdb = new RemoteOVSDB(Config.data.get("data_node_ip"));
+            RemoteOVSDB ovsdb = new RemoteOVSDB(Config.getValue("data_node_ip"));
             String umboxInPortId = ovsdb.getPortId(umbox.getOvsInPortName());
             String umboxOutPortId = ovsdb.getPortId(umbox.getOvsOutPortName());
             String umboxRepliesPortId = ovsdb.getPortId(umbox.getOvsRepliesPortName());
@@ -199,7 +199,7 @@ public class DAGManager
 
         // Set the OVS switch to actually store the rules.
         System.out.println("Sending rules for device: " + cleanDeviceIp);
-        RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.data.get("data_node_ip"));
+        RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.getValue("data_node_ip"));
         for(OpenFlowRule rule : rules)
         {
             vSwitch.addRule(rule);
@@ -219,7 +219,7 @@ public class DAGManager
         OpenFlowRule allFromDevice = new OpenFlowRule(null, null, null, cleanDeviceIp, null);
         OpenFlowRule allToDevice = new OpenFlowRule(null, null, null, null, cleanDeviceIp);
 
-        RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.data.get("data_node_ip"));
+        RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.getValue("data_node_ip"));
         vSwitch.removeRule(allFromDevice);
         vSwitch.removeRule(allToDevice);
     }

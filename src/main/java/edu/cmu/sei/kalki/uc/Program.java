@@ -1,6 +1,8 @@
 package edu.cmu.sei.kalki.uc;
 
+import edu.cmu.sei.kalki.db.database.Postgres;
 import edu.cmu.sei.kalki.db.utils.Config;
+import edu.cmu.sei.kalki.db.utils.TestDB;
 
 /**
  * Entry point for the program.
@@ -16,31 +18,19 @@ public class Program
     {
         try
         {
-            boolean runTests = false;
-            String testFile = "tests/test.sql";
-            if(args.length >= 1 && args[0].equals("test"))
-            {
-                runTests = true;
-                if (args.length >= 2)
-                {
-                    testFile = args[1];
-                }
-            }
-
             Config.load("config.json");
-            if(runTests)
+
+            if(args.length >= 2 && args[0].equals("test"))
             {
-                TestSetup.overwriteDBConfig();
+                String testFile = args[1];
+                TestDB.setupTestDBFromConfig(testFile);
+            }
+            else
+            {
+                Postgres.initializeFromConfig();
             }
 
-            UCSetup.startupDBandAlertComponents();
-            if(runTests)
-            {
-                TestSetup.insertTestData(testFile);
-            }
-
-            UCSetup.startupUmboxBootstrap();
-            UCSetup.startupUmboxStateListener();
+            UmboxController.startUpComponents();
         }
         catch(Exception e)
         {

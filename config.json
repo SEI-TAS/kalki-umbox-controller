@@ -1,15 +1,12 @@
 {
   "data_node_ip": "10.27.153.2",
 
-  "db_host": "localhost",
-  "db_port": "5432",
   "db_name": "kalkidb",
   "db_user": "kalkiuser",
   "db_password": "kalkipass",
 
   "db_root_user": "kalkiuser",
   "db_root_password": "kalkipass",
-  "db_recreate": "false",
 
   "umbox_class": "edu.cmu.sei.kalki.uc.umbox.DockerUmbox"
 }
