@@ -1,5 +1,9 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
+import edu.cmu.sei.kalki.db.daos.DeviceDAO;
+import edu.cmu.sei.kalki.db.daos.SecurityStateDAO;
+import edu.cmu.sei.kalki.db.daos.UmboxImageDAO;
+import edu.cmu.sei.kalki.db.daos.UmboxInstanceDAO;
 import edu.cmu.sei.kalki.uc.ovs.OpenFlowRule;
 import edu.cmu.sei.kalki.uc.ovs.RemoteOVSDB;
 import edu.cmu.sei.kalki.uc.ovs.RemoteOVSSwitch;
@@ -29,12 +33,12 @@ public class DAGManager
         Umbox.setUmboxClass(Config.getValue("umbox_class"));
 
         // Set up umboxes for existing devices.
-        List<Device> devices = Postgres.findAllDevices();
+        List<Device> devices = DeviceDAO.findAllDevices();
         for(Device device : devices)
         {
             System.out.println("Checking if there are umboxes to be started for device " + device.getName() + ", state " + device.getCurrentState().getName());
             DeviceSecurityState state = device.getCurrentState();
-            SecurityState currState = Postgres.findSecurityState(state.getStateId());
+            SecurityState currState = SecurityStateDAO.findSecurityState(state.getStateId());
             setupUmboxesForDevice(device, currState);
         }
     }
@@ -56,11 +60,11 @@ public class DAGManager
      */
     public static synchronized void setupUmboxesForDevice(Device device, SecurityState currentState)
     {
-        List<UmboxInstance> oldUmboxInstances = Postgres.findUmboxInstances(device.getId());
+        List<UmboxInstance> oldUmboxInstances = UmboxInstanceDAO.findUmboxInstances(device.getId());
         System.out.println("Found old umbox instances info for device, umboxes running: " + oldUmboxInstances.size());
 
         // First find umbox images for this device/state.
-        List<UmboxImage> umboxImages = Postgres.findUmboxImagesByDeviceTypeAndSecState(device.getType().getId(), currentState.getId());
+        List<UmboxImage> umboxImages = UmboxImageDAO.findUmboxImagesByDeviceTypeAndSecState(device.getType().getId(), currentState.getId());
         System.out.println("Found umboxes for device type " + device.getType().getId() + " and current state " + currentState.getId() + ", number of umboxes: " + umboxImages.size());
         if(umboxImages.size() == 0)
         {
@@ -136,7 +140,7 @@ public class DAGManager
     {
         System.out.println("Clearing all umboxes for this device.");
         clearRedirectForDevice(device);
-        List<UmboxInstance> instances = Postgres.findUmboxInstances(device.getId());
+        List<UmboxInstance> instances = UmboxInstanceDAO.findUmboxInstances(device.getId());
         stopUmboxes(instances);
     }
 
@@ -149,8 +153,8 @@ public class DAGManager
         System.out.println("Stopping all umboxes given.");
         for(UmboxInstance instance : umboxes)
         {
-            UmboxImage image = Postgres.findUmboxImage(instance.getUmboxImageId());
-            Device device = Postgres.findDevice(instance.getDeviceId());
+            UmboxImage image = UmboxImageDAO.findUmboxImage(instance.getUmboxImageId());
+            Device device = DeviceDAO.findDevice(instance.getDeviceId());
             Umbox umbox = Umbox.createUmbox(image, device, Integer.parseInt(instance.getAlerterId()));
             umbox.stopAndClear();
         }

@@ -1,6 +1,9 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.kalki.db.database.Postgres;
+import edu.cmu.sei.kalki.db.daos.DeviceDAO;
+import edu.cmu.sei.kalki.db.daos.PolicyRuleDAO;
+import edu.cmu.sei.kalki.db.daos.PolicyRuleLogDAO;
+import edu.cmu.sei.kalki.db.daos.SecurityStateDAO;
 import edu.cmu.sei.kalki.db.listeners.InsertHandler;
 import edu.cmu.sei.kalki.db.models.Device;
 import edu.cmu.sei.kalki.db.models.DeviceSecurityState;
@@ -19,7 +22,7 @@ public class PolicyInstanceInsertHandler implements InsertHandler
     public void handleNewInsertion(int policyRuleLogId)
     {
         System.out.println("Handling new device policy rule log detection with id: <" + policyRuleLogId + ">.");
-        PolicyRuleLog newPolicyRuleLog = Postgres.findPolicyRuleLog(policyRuleLogId);
+        PolicyRuleLog newPolicyRuleLog = PolicyRuleLogDAO.findPolicyRuleLog(policyRuleLogId);
         if(newPolicyRuleLog == null)
         {
             System.out.println("Policy rule log with given id could not be loaded from DB (" + policyRuleLogId + ")");
@@ -27,12 +30,12 @@ public class PolicyInstanceInsertHandler implements InsertHandler
         }
 
         int deviceId = newPolicyRuleLog.getDeviceId();
-        Device device = Postgres.findDevice(deviceId);
+        Device device = DeviceDAO.findDevice(deviceId);
         System.out.println("Found device info for device with id " + deviceId);
 
-        PolicyRule rule = Postgres.findPolicyRule(newPolicyRuleLog.getPolicyRuleId());
+        PolicyRule rule = PolicyRuleDAO.findPolicyRule(newPolicyRuleLog.getPolicyRuleId());
         DeviceSecurityState currentDevSecState = device.getCurrentState();
-        SecurityState currentState = Postgres.findSecurityState(rule.getStateTransId());
+        SecurityState currentState = SecurityStateDAO.findSecurityState(rule.getStateTransId());
 
         // Check if state is the same as before, and if so, ignore trigger.
         String lastSecurityStateName = lastSecurityStateMap.get(deviceId);
@@ -44,7 +47,7 @@ public class PolicyInstanceInsertHandler implements InsertHandler
         {
             // Store into log that we are starting umbox setup
             StageLog stageLogInfo = new StageLog(currentDevSecState.getId(), StageLog.Action.DEPLOY_UMBOX, StageLog.Stage.REACT, "");
-            Postgres.insertStageLog(stageLogInfo);
+            stageLogInfo.insert();
 
             lastSecurityStateMap.put(deviceId, currentState.getName());
             DAGManager.setupUmboxesForDevice(device, currentState);

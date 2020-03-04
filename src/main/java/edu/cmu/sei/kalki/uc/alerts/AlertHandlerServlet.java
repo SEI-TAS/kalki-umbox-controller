@@ -8,7 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.cmu.sei.kalki.db.database.Postgres;
+import edu.cmu.sei.kalki.db.daos.AlertTypeDAO;
+import edu.cmu.sei.kalki.db.daos.DeviceDAO;
+import edu.cmu.sei.kalki.db.daos.UmboxInstanceDAO;
 import edu.cmu.sei.kalki.db.models.Alert;
 import edu.cmu.sei.kalki.db.models.AlertType;
 import edu.cmu.sei.kalki.db.models.Device;
@@ -74,18 +76,18 @@ public class AlertHandlerServlet extends HttpServlet
             if(alertTypeName.equals(UMBOX_READY_ALERT))
             {
                 // Get information about the device security status change that triggered this.
-                UmboxInstance umbox = Postgres.findUmboxInstance(umboxId);
+                UmboxInstance umbox = UmboxInstanceDAO.findUmboxInstance(umboxId);
                 if(umbox == null)
                 {
                     System.out.println("Error processing alert: umbox instance with id " + umboxId + " was not found in DB.");
                     return;
                 }
-                Device device = Postgres.findDevice(umbox.getDeviceId());
+                Device device = DeviceDAO.findDevice(umbox.getDeviceId());
                 DeviceSecurityState state = device.getCurrentState();
 
                 // Store into log that the umbox is ready.
                 StageLog stageLogInfo = new StageLog(state.getId(), StageLog.Action.DEPLOY_UMBOX, StageLog.Stage.FINISH, umboxId);
-                Postgres.insertStageLog(stageLogInfo);
+                stageLogInfo.insert();
                 return;
             }
 
@@ -93,13 +95,13 @@ public class AlertHandlerServlet extends HttpServlet
             {
                 // Store into log whatever we want to log.
                 UmboxLog umboxLogInfo = new UmboxLog(umboxId, alertDetails);
-                Postgres.insertUmboxLog(umboxLogInfo);
+                umboxLogInfo.insert();
                 return;
             }
 
             // Find the alert type in the DB.
             AlertType alertTypeFound = null;
-            List<AlertType> types = Postgres.findAllAlertTypes();
+            List<AlertType> types = AlertTypeDAO.findAllAlertTypes();
             for(AlertType type : types)
             {
                 if(type.getName().equals(alertTypeName))
@@ -117,7 +119,7 @@ public class AlertHandlerServlet extends HttpServlet
             synchronized (this)
             {
                 Alert currentAlert = new Alert(alertTypeName, umboxId, alertTypeFound.getId(), alertDetails);
-                Postgres.insertAlert(currentAlert);
+                currentAlert.insert();
             }
         }
         catch (JSONException e)

@@ -1,5 +1,6 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
+import edu.cmu.sei.kalki.db.daos.UmboxInstanceDAO;
 import edu.cmu.sei.kalki.db.database.Postgres;
 import edu.cmu.sei.kalki.db.models.Device;
 import edu.cmu.sei.kalki.db.models.UmboxImage;
@@ -76,7 +77,7 @@ public abstract class Umbox
                 throw new RuntimeException("Can't allocate an ID for a new umbox; all of them seem to be allocated.");
             }
         }
-        while(Postgres.findUmboxInstance(String.valueOf(umboxId)) != null);
+        while(UmboxInstanceDAO.findUmboxInstance(String.valueOf(umboxId)) != null);
     }
 
     /***
@@ -114,7 +115,7 @@ public abstract class Umbox
             {
                 if (instance != null)
                 {
-                    Postgres.deleteUmboxInstance(instance.getId());
+                    UmboxInstanceDAO.deleteUmboxInstance(instance.getId());
                 }
             }
             catch(Exception ex)
@@ -136,9 +137,9 @@ public abstract class Umbox
             System.out.println("Stopping umbox.");
             boolean success = stop();
 
-            UmboxInstance umboxInstance = Postgres.findUmboxInstance(String.valueOf(umboxId));
+            UmboxInstance umboxInstance = UmboxInstanceDAO.findUmboxInstance(String.valueOf(umboxId));
             System.out.println("Deleting umbox instance from DB.");
-            Postgres.deleteUmboxInstance(umboxInstance.getId());
+            UmboxInstanceDAO.deleteUmboxInstance(umboxInstance.getId());
             return success;
         }
         catch (RuntimeException e)
