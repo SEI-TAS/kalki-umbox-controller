@@ -18,6 +18,8 @@ public class DeviceSecurityStateInsertHandler implements InsertHandler
 {
     private static HashMap<Integer, String> lastSecurityState = new HashMap<>();
 
+    private UmboxManager umboxManager = new UmboxManager();
+
     @Override
     public void handleNewInsertion(int deviceSecurityStateId)
     {
@@ -47,7 +49,7 @@ public class DeviceSecurityStateInsertHandler implements InsertHandler
             stageLogInfo.insert();
 
             lastSecurityState.put(deviceId, currentSecurityState.getName());
-            DAGManager.setupUmboxesForDevice(device, currentSecurityState);
+            umboxManager.setupUmboxesForDevice(device, currentSecurityState);
         }
     }
 }

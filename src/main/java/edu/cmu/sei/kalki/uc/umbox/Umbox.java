@@ -37,8 +37,7 @@ public abstract class Umbox
             return (Umbox) con.newInstance(image, device);
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("Error creating umbox: " + e.getMessage());
-            return null;
+            throw new RuntimeException("Could not create umbox for the given image and device: " + e.getMessage());
         }
     }
 
@@ -49,8 +48,7 @@ public abstract class Umbox
             return (Umbox) con.newInstance(image, device, instanceId);
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("Error creating umbox: " + e.getMessage());
-            return null;
+            throw new RuntimeException("Could not create umbox for the given image and device: " + e.getMessage());
         }
     }
 

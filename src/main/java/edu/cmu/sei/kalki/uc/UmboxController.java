@@ -1,7 +1,7 @@
 package edu.cmu.sei.kalki.uc;
 
 import edu.cmu.sei.kalki.uc.alerts.AlertServerStartup;
-import edu.cmu.sei.kalki.uc.umbox.DAGManager;
+import edu.cmu.sei.kalki.uc.umbox.UmboxManager;
 
 /**
  * Main class for the controller.
@@ -14,7 +14,8 @@ public class UmboxController
     public static void startUpComponents()
     {
         AlertServerStartup.start();
-        DAGManager.bootstrap();
-        DAGManager.startUpDBListener();
+        UmboxManager umboxManager = new UmboxManager();
+        umboxManager.bootstrap();
+        umboxManager.startUpDBListener();
     }
 }

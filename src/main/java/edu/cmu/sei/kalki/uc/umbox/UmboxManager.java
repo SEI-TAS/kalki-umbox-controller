@@ -19,7 +19,7 @@ import edu.cmu.sei.kalki.db.models.UmboxInstance;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAGManager
+public class UmboxManager
 {
     private final static String OVS_DEVICES_NETWORK_PORT = "1";
     private final static String OVS_EXTERNAL_NETWORK_PORT = "2";
@@ -27,7 +27,7 @@ public class DAGManager
     /**
      * Goes over all devices and sets up umboxes for each of them based on their current state.
      */
-    public static void bootstrap()
+    public void bootstrap()
     {
         // Setup the Umbox type to use from the config file.
         Umbox.setUmboxClass(Config.getValue("umbox_class"));
@@ -44,9 +44,9 @@ public class DAGManager
     }
 
     /**
-     * Starts up the listener for device state changes.
+     * Starts up the listener for policy rule log.
      */
-    public static void startUpDBListener()
+    public void startUpDBListener()
     {
         //InsertListener.addHandler(Postgres.TRIGGER_NOTIF_NEW_DEV_SEC_STATE, new DeviceSecurityStateInsertHandler());
         InsertListener.addHandler(Postgres.TRIGGER_NOTIF_NEW_POLICY_INSTANCE, new PolicyInstanceInsertHandler());
@@ -54,11 +54,19 @@ public class DAGManager
     }
 
     /**
+     * Stops up the listener for policy rule log.
+     */
+    public void stopDBListener()
+    {
+        InsertListener.stopListening();
+    }
+
+    /**
      * Sets up all umboxes for a given device and state. Also clears up previous umboxes if needed.
      * @param device
      * @param currentState
      */
-    public static synchronized void setupUmboxesForDevice(Device device, SecurityState currentState)
+    public synchronized void setupUmboxesForDevice(Device device, SecurityState currentState)
     {
         List<UmboxInstance> oldUmboxInstances = UmboxInstanceDAO.findUmboxInstances(device.getId());
         System.out.println("Found old umbox instances info for device, umboxes running: " + oldUmboxInstances.size());
@@ -79,7 +87,7 @@ public class DAGManager
             try
             {
                 System.out.println("Starting umbox instance.");
-                Umbox newUmbox = DAGManager.setupUmboxForDevice(image, device);
+                Umbox newUmbox = setupUmboxForDevice(image, device);
                 newUmboxes.add(newUmbox);
             }
             catch (RuntimeException e)
@@ -103,7 +111,7 @@ public class DAGManager
      * @param image
      * @param device
      */
-    private static Umbox setupUmboxForDevice(UmboxImage image, Device device)
+    private Umbox setupUmboxForDevice(UmboxImage image, Device device)
     {
         Umbox umbox = Umbox.createUmbox(image, device);
         umbox.startAndStore();
@@ -136,7 +144,7 @@ public class DAGManager
      * Stops all umboxes for the given device, and clears all rules to them.
      * @param device
      */
-    public static void clearAllUmboxesForDevice(Device device)
+    public void clearAllUmboxesForDevice(Device device)
     {
         System.out.println("Clearing all umboxes for this device.");
         clearRedirectForDevice(device);
@@ -148,7 +156,7 @@ public class DAGManager
      * Stops all umbox instances provided.
      * @param umboxes
      */
-    private static void stopUmboxes(List<UmboxInstance> umboxes)
+    private void stopUmboxes(List<UmboxInstance> umboxes)
     {
         System.out.println("Stopping all umboxes given.");
         for(UmboxInstance instance : umboxes)
@@ -162,7 +170,7 @@ public class DAGManager
 
     /**
      */
-    private static void setRedirectForDevice(Device device, String ovsDevicePort, String ovsExternalPort, List<Umbox> umboxes)
+    private void setRedirectForDevice(Device device, String ovsDevicePort, String ovsExternalPort, List<Umbox> umboxes)
     {
         if(umboxes.size() == 0)
         {
@@ -214,7 +222,7 @@ public class DAGManager
      * Clears all rules related to incoming and outgoing traffic for a given device.
      * @param device
      */
-    private static void clearRedirectForDevice(Device device)
+    private void clearRedirectForDevice(Device device)
     {
         System.out.println("Clearing up rules for device: " + device.getIp());
 
@@ -233,7 +241,7 @@ public class DAGManager
      * @param deviceIp
      * @return
      */
-    private static String cleanDeviceIp(String deviceIp)
+    private String cleanDeviceIp(String deviceIp)
     {
         String cleanDeviceIp = deviceIp.split(":")[0];
         System.out.println("Cleaned device IP: " + cleanDeviceIp);

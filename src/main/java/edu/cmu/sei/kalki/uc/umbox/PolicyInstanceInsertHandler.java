@@ -13,35 +13,38 @@ import edu.cmu.sei.kalki.db.models.SecurityState;
 import edu.cmu.sei.kalki.db.models.StageLog;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class PolicyInstanceInsertHandler implements InsertHandler
 {
-    private static HashMap<Integer, String> lastSecurityStateMap = new HashMap<>();
+    private static Logger logger = Logger.getLogger(PolicyInstanceInsertHandler.class.getName());
+    private HashMap<Integer, String> lastSecurityStateMap = new HashMap<>();
+    private UmboxManager umboxManager = new UmboxManager();
 
     @Override
     public void handleNewInsertion(int policyRuleLogId)
     {
-        System.out.println("Handling new device policy rule log detection with id: <" + policyRuleLogId + ">.");
+        logger.info("Handling new device policy rule log detection with id: <" + policyRuleLogId + ">.");
         PolicyRuleLog newPolicyRuleLog = PolicyRuleLogDAO.findPolicyRuleLog(policyRuleLogId);
         if(newPolicyRuleLog == null)
         {
-            System.out.println("Policy rule log with given id could not be loaded from DB (" + policyRuleLogId + ")");
+            logger.severe("Policy rule log with given id could not be loaded from DB (" + policyRuleLogId + ")");
             return;
         }
 
         int deviceId = newPolicyRuleLog.getDeviceId();
         Device device = DeviceDAO.findDevice(deviceId);
-        System.out.println("Found device info for device with id " + deviceId);
+        logger.info("Found device info for device with id " + deviceId);
 
         PolicyRule rule = PolicyRuleDAO.findPolicyRule(newPolicyRuleLog.getPolicyRuleId());
         DeviceSecurityState currentDevSecState = device.getCurrentState();
-        SecurityState currentState = SecurityStateDAO.findSecurityState(rule.getStateTransId());
+        SecurityState currentState = SecurityStateDAO.findSecurityState(device.getCurrentState().getStateId());
 
         // Check if state is the same as before, and if so, ignore trigger.
         String lastSecurityStateName = lastSecurityStateMap.get(deviceId);
         if(currentState.getName().equals(lastSecurityStateName))
         {
-            System.out.println("Ignoring trigger since device is now in same state as it was in the previous call.");
+            logger.info("Ignoring trigger since device is now in same state as it was in the previous call.");
         }
         else
         {
@@ -50,7 +53,7 @@ public class PolicyInstanceInsertHandler implements InsertHandler
             stageLogInfo.insert();
 
             lastSecurityStateMap.put(deviceId, currentState.getName());
-            DAGManager.setupUmboxesForDevice(device, currentState);
+            umboxManager.setupUmboxesForDevice(device, currentState);
         }
     }
 }
