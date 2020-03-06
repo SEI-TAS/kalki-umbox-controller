@@ -23,7 +23,9 @@ public class Program
             if(args.length >= 2 && args[0].equals("test"))
             {
                 String testFile = args[1];
-                TestDB.setupTestDBFromConfig(testFile);
+                TestDB.recreateTestDB();
+                TestDB.initialize();
+                TestDB.insertTestData(testFile);
             }
             else
             {

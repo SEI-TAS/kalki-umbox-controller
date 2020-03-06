@@ -5,8 +5,5 @@
   "db_user": "kalkiuser",
   "db_password": "kalkipass",
 
-  "db_root_user": "kalkiuser",
-  "db_root_password": "kalkipass",
-
   "umbox_class": "edu.cmu.sei.kalki.uc.umbox.DockerUmbox"
 }
