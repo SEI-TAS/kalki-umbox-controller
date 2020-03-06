@@ -11,9 +11,9 @@ import edu.cmu.sei.kalki.uc.umbox.UmboxManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
 public class PolicyInstanceInsertHandlerTest extends TestBase
 {
@@ -22,7 +22,7 @@ public class PolicyInstanceInsertHandlerTest extends TestBase
     private PolicyRule testPolicyRule;
     private Device testDevice;
 
-    @Spy
+    @Mock
     private UmboxManager umboxManager;
 
     @InjectMocks
@@ -34,6 +34,9 @@ public class PolicyInstanceInsertHandlerTest extends TestBase
         MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Helper method to set up test data in the DB.
+     */
     private PolicyRuleLog insertPolicyRuleLogAndData(int initState, int endState) {
         testAlertType = insertAlertType("test-alert");
         testDeviceType = insertTestDeviceType();
