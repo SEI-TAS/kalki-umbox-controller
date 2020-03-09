@@ -18,11 +18,6 @@ import org.mockito.MockitoAnnotations;
 
 public class PolicyInstanceInsertHandlerTest extends DatabaseTestBase
 {
-    private AlertType testAlertType;
-    private DeviceType testDeviceType;
-    private PolicyRule testPolicyRule;
-    private Device testDevice;
-
     @Mock
     private UmboxManager umboxManager;  // Mockito will create a mock for this and initialize it.
 

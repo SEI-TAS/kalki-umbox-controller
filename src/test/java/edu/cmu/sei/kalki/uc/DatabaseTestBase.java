@@ -12,7 +12,6 @@ import edu.cmu.sei.kalki.db.models.StateTransition;
 import edu.cmu.sei.kalki.db.utils.TestDB;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +19,11 @@ import java.util.logging.Level;
 
 public abstract class DatabaseTestBase
 {
+    protected AlertType testAlertType;
+    protected DeviceType testDeviceType;
+    protected PolicyRule testPolicyRule;
+    protected Device testDevice;
+
     public void setup() {
         try {
             System.out.println("Base before each");

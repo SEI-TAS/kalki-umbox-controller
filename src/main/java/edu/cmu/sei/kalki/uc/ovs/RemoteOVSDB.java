@@ -56,7 +56,7 @@ public class RemoteOVSDB
         if(serverIp == null) {
             throw new RuntimeException("Server IP has not been configured!");
         }
-        
+
         System.out.print("Preparing command to OVS DB.");
         List<String> commandInfo = new ArrayList<>();
         commandInfo.add(TOOL_COMMAND);
