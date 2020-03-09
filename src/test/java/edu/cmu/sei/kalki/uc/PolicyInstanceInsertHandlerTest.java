@@ -1,5 +1,6 @@
 package edu.cmu.sei.kalki.uc;
 
+import edu.cmu.sei.kalki.db.daos.SecurityStateDAO;
 import edu.cmu.sei.kalki.db.models.AlertType;
 import edu.cmu.sei.kalki.db.models.Device;
 import edu.cmu.sei.kalki.db.models.DeviceType;
@@ -54,11 +55,13 @@ public class PolicyInstanceInsertHandlerTest extends TestBase
     @Test
     public void testNotificationHandling() {
         PolicyRuleLog policyRuleLog = insertPolicyRuleLogAndData(1, 2);
+        SecurityState currentState = SecurityStateDAO.findSecurityState(testDevice.getCurrentState().getStateId());
 
         handler.handleNewInsertion(policyRuleLog.getId());
 
         // Verify the method to set up umboxes was properly called.
-        Mockito.verify(umboxManager).setupUmboxesForDevice(Mockito.any(Device.class), Mockito.any(SecurityState.class));
+        Mockito.verify(umboxManager).setupUmboxesForDevice(Mockito.argThat((Device device) -> device.getId() == testDevice.getId()),
+                                                           Mockito.argThat((SecurityState state) -> state.getId() == currentState.getId()));
     }
 
     /**
