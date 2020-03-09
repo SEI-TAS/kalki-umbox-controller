@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public abstract class TestBase
+public abstract class DatabaseTestBase
 {
     public void setup() {
         try {

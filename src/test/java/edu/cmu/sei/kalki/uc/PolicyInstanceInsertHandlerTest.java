@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-public class PolicyInstanceInsertHandlerTest extends TestBase
+public class PolicyInstanceInsertHandlerTest extends DatabaseTestBase
 {
     private AlertType testAlertType;
     private DeviceType testDeviceType;

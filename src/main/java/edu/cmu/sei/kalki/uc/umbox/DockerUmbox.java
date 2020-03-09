@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-
 public class DockerUmbox extends Umbox
 {
     private static final String PREFIX = "umbox-";
