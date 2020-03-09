@@ -22,12 +22,18 @@ public class RemoteOVSDB
     private String serverIp;
     private int port;
 
-    public RemoteOVSDB(String serverIP)
+    /**
+     * Sets the IP of the server.
+     */
+    public void setServer(String serverIP)
     {
-        this(serverIP, DEFAULT_PORT);
+        setServer(serverIP, DEFAULT_PORT);
     }
 
-    public RemoteOVSDB(String serverIP, int port)
+    /**
+     * Sets the IP and port of the server.
+     */
+    public void setServer(String serverIP, int port)
     {
         this.serverIp = serverIP;
         this.port = port;
@@ -47,6 +53,10 @@ public class RemoteOVSDB
      */
     private List<String> sendCommand(String command, List<String> arguments)
     {
+        if(serverIp == null) {
+            throw new RuntimeException("Server IP has not been configured!");
+        }
+        
         System.out.print("Preparing command to OVS DB.");
         List<String> commandInfo = new ArrayList<>();
         commandInfo.add(TOOL_COMMAND);

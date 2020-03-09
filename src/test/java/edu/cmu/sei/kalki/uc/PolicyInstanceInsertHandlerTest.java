@@ -24,10 +24,10 @@ public class PolicyInstanceInsertHandlerTest extends DatabaseTestBase
     private Device testDevice;
 
     @Mock
-    private UmboxManager umboxManager;
+    private UmboxManager umboxManager;  // Mockito will create a mock for this and initialize it.
 
     @InjectMocks
-    private PolicyInstanceInsertHandler handler = new PolicyInstanceInsertHandler();
+    private PolicyInstanceInsertHandler handler;    // Mockito will initialize this with default constructor, and inject.
 
     @BeforeEach
     public void setup() {

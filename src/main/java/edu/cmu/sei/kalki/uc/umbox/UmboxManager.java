@@ -24,14 +24,23 @@ public class UmboxManager
     private final static String OVS_DEVICES_NETWORK_PORT = "1";
     private final static String OVS_EXTERNAL_NETWORK_PORT = "2";
 
+    private RemoteOVSSwitch ovsSwitch = new RemoteOVSSwitch();
+    private RemoteOVSDB ovsDB = new RemoteOVSDB();
+
+    /**
+     * Configure the umbox class to use.
+     * @param umboxClass
+     * @throws ClassNotFoundException
+     */
+    public void setUmboxClass(String umboxClass) throws ClassNotFoundException {
+        Umbox.setUmboxClass(umboxClass);
+    }
+
     /**
      * Goes over all devices and sets up umboxes for each of them based on their current state.
      */
     public void bootstrap()
     {
-        // Setup the Umbox type to use from the config file.
-        Umbox.setUmboxClass(Config.getValue("umbox_class"));
-
         // Set up umboxes for existing devices.
         List<Device> devices = DeviceDAO.findAllDevices();
         for(Device device : devices)
@@ -119,10 +128,10 @@ public class UmboxManager
         if(umbox.getOvsInPortId().equals("") || umbox.getOvsOutPortId().equals("") || umbox.getOvsRepliesPortId().equals(""))
         {
             // Get the port ids from the names with a remote API call.
-            RemoteOVSDB ovsdb = new RemoteOVSDB(Config.getValue("data_node_ip"));
-            String umboxInPortId = ovsdb.getPortId(umbox.getOvsInPortName());
-            String umboxOutPortId = ovsdb.getPortId(umbox.getOvsOutPortName());
-            String umboxRepliesPortId = ovsdb.getPortId(umbox.getOvsRepliesPortName());
+            ovsDB.setServer(Config.getValue("data_node_ip"));
+            String umboxInPortId = ovsDB.getPortId(umbox.getOvsInPortName());
+            String umboxOutPortId = ovsDB.getPortId(umbox.getOvsOutPortName());
+            String umboxRepliesPortId = ovsDB.getPortId(umbox.getOvsRepliesPortName());
             if (umboxInPortId == null || umboxOutPortId == null || umboxRepliesPortId == null)
             {
                 throw new RuntimeException("Could not get port ids!");
@@ -211,10 +220,10 @@ public class UmboxManager
 
         // Set the OVS switch to actually store the rules.
         System.out.println("Sending rules for device: " + cleanDeviceIp);
-        RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.getValue("data_node_ip"));
+        ovsSwitch.setServer(Config.getValue("data_node_ip"));
         for(OpenFlowRule rule : rules)
         {
-            vSwitch.addRule(rule);
+            ovsSwitch.addRule(rule);
         }
     }
 
@@ -231,9 +240,9 @@ public class UmboxManager
         OpenFlowRule allFromDevice = new OpenFlowRule(null, null, null, cleanDeviceIp, null);
         OpenFlowRule allToDevice = new OpenFlowRule(null, null, null, null, cleanDeviceIp);
 
-        RemoteOVSSwitch vSwitch = new RemoteOVSSwitch(Config.getValue("data_node_ip"));
-        vSwitch.removeRule(allFromDevice);
-        vSwitch.removeRule(allToDevice);
+        ovsSwitch.setServer(Config.getValue("data_node_ip"));
+        ovsSwitch.removeRule(allFromDevice);
+        ovsSwitch.removeRule(allToDevice);
     }
 
     /**
