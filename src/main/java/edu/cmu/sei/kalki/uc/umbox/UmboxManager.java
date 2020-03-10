@@ -167,7 +167,7 @@ public class UmboxManager
      */
     private void stopUmboxes(List<UmboxInstance> umboxes)
     {
-        System.out.println("Stopping all umboxes given.");
+        System.out.println("Stopping all umboxes given: " + umboxes.size());
         for(UmboxInstance instance : umboxes)
         {
             UmboxImage image = UmboxImageDAO.findUmboxImage(instance.getUmboxImageId());
