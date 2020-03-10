@@ -21,9 +21,6 @@ import org.mockito.MockitoAnnotations;
 
 public class UmboxManagerTest extends DatabaseTestBase
 {
-    private UmboxImage testImage;
-    private UmboxLookup testUmboxLookup;
-
     @Mock
     RemoteOVSSwitch ovsSwitch;
 
@@ -41,12 +38,6 @@ public class UmboxManagerTest extends DatabaseTestBase
         MockitoAnnotations.initMocks(this);
     }
 
-    private UmboxImage insertTestUmboxImage(String imageName) {
-        UmboxImage umboxImage = new UmboxImage(imageName, "");
-        umboxImage.insert();
-        return umboxImage;
-    }
-
     private UmboxLookup insertUmboxLookup(int policyRuleId, int umboxImageId, int dagOrder) {
         UmboxLookup umboxLookup = new UmboxLookup(policyRuleId, umboxImageId, dagOrder);
         umboxLookup.insert();
@@ -62,7 +53,7 @@ public class UmboxManagerTest extends DatabaseTestBase
     private void insertUmboxReactions(int initState, int endState) {
         testAlertType = insertAlertType("test-alert");
         testPolicyRule = insertPolicyRule(testAlertType, testDeviceType, initState, endState);
-        testUmboxLookup = insertUmboxLookup(testPolicyRule.getId(), testImage.getId(), 0);
+        insertUmboxLookup(testPolicyRule.getId(), testImage.getId(), 0);
     }
 
     @Test
@@ -98,7 +89,7 @@ public class UmboxManagerTest extends DatabaseTestBase
         insertUmboxReactions(currentState.getId(), 2);
 
         UmboxImage umboxImage2 = insertTestUmboxImage("kalki/testimage2");
-        testUmboxLookup = insertUmboxLookup(testPolicyRule.getId(), umboxImage2.getId(), 1);
+        insertUmboxLookup(testPolicyRule.getId(), umboxImage2.getId(), 1);
 
         umboxManager.setupUmboxesForDevice(testDevice, currentState);
 

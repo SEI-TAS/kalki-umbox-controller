@@ -1,7 +1,6 @@
 package edu.cmu.sei.kalki.uc.alerts;
 
 import java.io.BufferedReader;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -79,7 +78,7 @@ public class AlertHandlerServlet extends HttpServlet
      * Process a given alert.
      * @param alertData the alert JSON data.
      */
-    private void processAlert(JSONObject alertData) {
+    public void processAlert(JSONObject alertData) {
         // Get information about the alert.
         String umboxId = String.valueOf(alertData.getInt("umbox"));
         String alertTypeName = alertData.getString("alert");
@@ -116,17 +115,7 @@ public class AlertHandlerServlet extends HttpServlet
         }
 
         // Find the alert type in the DB.
-        AlertType alertTypeFound = null;
-        List<AlertType> types = AlertTypeDAO.findAllAlertTypes();
-        for(AlertType type : types)
-        {
-            if(type.getName().equals(alertTypeName))
-            {
-                alertTypeFound = type;
-                break;
-            }
-        }
-
+        AlertType alertTypeFound = AlertTypeDAO.findAlertTypeByName(alertTypeName);
         if(alertTypeFound == null)
         {
             throw new RuntimeException("Alert type received <" + alertTypeName + "> not found in DB.");

@@ -9,6 +9,7 @@ import edu.cmu.sei.kalki.db.models.DeviceType;
 import edu.cmu.sei.kalki.db.models.PolicyCondition;
 import edu.cmu.sei.kalki.db.models.PolicyRule;
 import edu.cmu.sei.kalki.db.models.StateTransition;
+import edu.cmu.sei.kalki.db.models.UmboxImage;
 import edu.cmu.sei.kalki.db.utils.TestDB;
 
 import org.junit.jupiter.api.AfterEach;
@@ -23,6 +24,7 @@ public abstract class DatabaseTestBase
     protected DeviceType testDeviceType;
     protected PolicyRule testPolicyRule;
     protected Device testDevice;
+    protected UmboxImage testImage;
 
     public void setup() {
         try {
@@ -99,6 +101,15 @@ public abstract class DatabaseTestBase
         System.out.println("Inserting test alert of type: " + alertType.getName());
         Alert alert = new Alert(device.getId(), alertType.getName(), alertType.getId(), "this is a test");
         alert.insert();
+    }
+
+    /**
+     * Inserts an umbox image with the given name and no file.
+     */
+    protected UmboxImage insertTestUmboxImage(String imageName) {
+        UmboxImage umboxImage = new UmboxImage(imageName, "");
+        umboxImage.insert();
+        return umboxImage;
     }
 
     /**
