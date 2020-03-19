@@ -3,6 +3,7 @@ package edu.cmu.sei.kalki.uc;
 import edu.cmu.sei.kalki.db.database.Postgres;
 import edu.cmu.sei.kalki.db.models.Alert;
 import edu.cmu.sei.kalki.db.models.AlertType;
+import edu.cmu.sei.kalki.db.models.DataNode;
 import edu.cmu.sei.kalki.db.models.Device;
 import edu.cmu.sei.kalki.db.models.DeviceSecurityState;
 import edu.cmu.sei.kalki.db.models.DeviceType;
@@ -85,7 +86,9 @@ public abstract class DatabaseTestBase
      * Inserts a test device in the given state and of the given type.
      */
     protected Device insertTestDevice(int stateId, DeviceType deviceType) {
-        Device device = new Device("Test Device", "device", deviceType, "127.0.0.1", 1, 1);
+        DataNode dataNode = new DataNode("TestDN", "localhost");
+        dataNode.insert();
+        Device device = new Device("Test Device", "device", deviceType, "127.0.0.1", 1, 1, dataNode);
         device.insert();
 
         DeviceSecurityState dss = new DeviceSecurityState(device.getId(), stateId);

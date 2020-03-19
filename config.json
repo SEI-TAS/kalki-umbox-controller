@@ -1,6 +1,4 @@
 {
-  "data_node_ip": "10.27.153.2",
-
   "db_name": "kalkidb",
   "db_user": "kalkiuser",
   "db_password": "kalkipass",

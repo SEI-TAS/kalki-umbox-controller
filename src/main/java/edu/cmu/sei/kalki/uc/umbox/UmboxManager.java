@@ -128,7 +128,7 @@ public class UmboxManager
         if(umbox.getOvsInPortId().equals("") || umbox.getOvsOutPortId().equals("") || umbox.getOvsRepliesPortId().equals(""))
         {
             // Get the port ids from the names with a remote API call.
-            ovsDB.setServer(Config.getValue("data_node_ip"));
+            ovsDB.setServer(device.getDataNode().getIpAddress());
             String umboxInPortId = ovsDB.getPortId(umbox.getOvsInPortName());
             String umboxOutPortId = ovsDB.getPortId(umbox.getOvsOutPortName());
             String umboxRepliesPortId = ovsDB.getPortId(umbox.getOvsRepliesPortName());
@@ -220,7 +220,7 @@ public class UmboxManager
 
         // Set the OVS switch to actually store the rules.
         System.out.println("Sending rules for device: " + cleanDeviceIp);
-        ovsSwitch.setServer(Config.getValue("data_node_ip"));
+        ovsSwitch.setServer(device.getDataNode().getIpAddress());
         for(OpenFlowRule rule : rules)
         {
             ovsSwitch.addRule(rule);
@@ -240,7 +240,7 @@ public class UmboxManager
         OpenFlowRule allFromDevice = new OpenFlowRule(null, null, null, cleanDeviceIp, null);
         OpenFlowRule allToDevice = new OpenFlowRule(null, null, null, null, cleanDeviceIp);
 
-        ovsSwitch.setServer(Config.getValue("data_node_ip"));
+        ovsSwitch.setServer(device.getDataNode().getIpAddress());
         ovsSwitch.removeRule(allFromDevice);
         ovsSwitch.removeRule(allToDevice);
     }

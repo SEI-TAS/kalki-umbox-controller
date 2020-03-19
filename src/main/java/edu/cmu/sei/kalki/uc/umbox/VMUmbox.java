@@ -34,7 +34,7 @@ public class VMUmbox extends Umbox
      */
     private void setupCommand()
     {
-        String dataNodeIP = Config.getValue("data_node_ip");
+        String dataNodeIP = device.getDataNode().getIpAddress();
 
         commandWorkingDir = Paths.get(System.getProperty("user.dir"), UMBOX_TOOL_PATH).toString();
 
