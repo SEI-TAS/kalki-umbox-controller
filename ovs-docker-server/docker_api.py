@@ -23,8 +23,12 @@ ESC_PORTID_KEY = "esc_port_id"
 
 # Docker and OVS commands.
 RUN_CMD = "docker run --rm -dit --network {} --hostname {} --name {} {} {}"
+RUN_CMD_WCAP = "docker run --rm -dit --network {} --cap-add {} \
+                           --hostname {} --name {} {} {}"
 OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
-GET_PORT_ID_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
+GET_PORT_ID_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=ofport \
+                                  find interface external_ids:container_id= \
+                                  "{}" external_ids:container_iface="{}"'
 STOP_CMD = "docker container stop {}"
 OVS_CLEAR_CMD = "sudo ovs-docker del-ports {} {}"
 
@@ -34,7 +38,8 @@ def run_command(command):
     print("Executing command: " + command)
     sys.stdout.flush()
     tool_pipe = subprocess.PIPE
-    tool_process = subprocess.Popen(command, shell=True, stdin=tool_pipe, stdout=tool_pipe, stderr=tool_pipe)
+    tool_process = subprocess.Popen(command, shell=True, stdin=tool_pipe,
+                                    stdout=tool_pipe, stderr=tool_pipe)
     normal_output, error_output = tool_process.communicate()
 
     # Show errors, if any.
@@ -54,31 +59,42 @@ def run_command(command):
 class DockerContainer(Resource):
     """Resource for handling OVS-connected docker images."""
 
-    def post(self, image_name, container_name, ip_address):
+    def post(self, image_name, container_name, ip_address, cap=None):
         try:
             # Start docker instance.
             print("Starting container")
-            run_command(RUN_CMD.format(CONTROL_NETWORK, container_name, container_name, image_name, ip_address))
+            if cap==None:
+                run_command(RUN_CMD.format(CONTROL_NETWORK, container_name,
+                                           container_name, image_name,
+                                           ip_address))
+            else:
+                run_command(RUN_CMD_WCAP.format(CONTROL_NETWORK, cap,
+                                                container_name,
+                                                container_name, image_name,
+                                                ip_address))
             print("Container started")
 
             # Connect OVS ports.
             print("Connecting OVS ports.")
-            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth1", container_name))
-            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth2", container_name))
-            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth3", container_name))
+            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth1",
+                                                container_name))
+            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth2",
+                                                container_name))
+            run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth3",
+                                                container_name))
 
             # Get port names.
-            eth1_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth1")).rstrip("\n)")
-            eth2_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth2")).rstrip("\n)")
-            eth3_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth3")).rstrip("\n)")
+            eth1_portid = run_command(GET_PORT_ID_CMD.format(container_name,
+                                                             "eth1")).rstrip("\n)")
+            eth2_portid = run_command(GET_PORT_ID_CMD.format(container_name,
+                                                             "eth2")).rstrip("\n)")
+            eth3_portid = run_command(GET_PORT_ID_CMD.format(container_name,
+                                                             "eth3")).rstrip("\n)")
             print("OVS connection successful")
 
-            # Start the container.
-            #print("Starting container")
-            #run_command(START_CMD.format(container_name))
-
             # Return OVS port names.
-            return {STATUS_KEY: OK_VALUE, IN_PORTID_KEY: eth1_portid, OUT_PORTID_KEY: eth2_portid, ESC_PORTID_KEY: eth3_portid}
+            return {STATUS_KEY: OK_VALUE, IN_PORTID_KEY: eth1_portid,
+                    OUT_PORTID_KEY: eth2_portid, ESC_PORTID_KEY: eth3_portid}
         except Exception as e:
             errorMsg = "Error starting docker instance: " + str(e)
             print(errorMsg)
