@@ -93,6 +93,8 @@ public abstract class DatabaseTestBase
 
         DeviceSecurityState dss = new DeviceSecurityState(device.getId(), stateId);
         dss.insert();
+        device.setCurrentState(dss);
+        device.insertOrUpdate();
 
         return device;
     }
