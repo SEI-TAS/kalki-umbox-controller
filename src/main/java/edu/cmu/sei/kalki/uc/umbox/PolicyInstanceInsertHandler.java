@@ -36,7 +36,6 @@ public class PolicyInstanceInsertHandler implements InsertHandler
         Device device = DeviceDAO.findDevice(deviceId);
         logger.info("Found device info for device with id " + deviceId);
 
-        PolicyRule rule = PolicyRuleDAO.findPolicyRule(newPolicyRuleLog.getPolicyRuleId());
         DeviceSecurityState currentDevSecState = device.getCurrentState();
         SecurityState currentState = SecurityStateDAO.findSecurityState(device.getCurrentState().getStateId());
 

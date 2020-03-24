@@ -38,8 +38,8 @@ public class UmboxManagerTest extends DatabaseTestBase
         MockitoAnnotations.initMocks(this);
     }
 
-    private UmboxLookup insertUmboxLookup(int policyRuleId, int umboxImageId, int dagOrder) {
-        UmboxLookup umboxLookup = new UmboxLookup(policyRuleId, umboxImageId, dagOrder);
+    private UmboxLookup insertUmboxLookup(int securityStateId, int deviceTypeId, int umboxImageId, int dagOrder) {
+        UmboxLookup umboxLookup = new UmboxLookup(securityStateId, deviceTypeId, umboxImageId, dagOrder);
         umboxLookup.insert();
         return umboxLookup;
     }
@@ -50,10 +50,9 @@ public class UmboxManagerTest extends DatabaseTestBase
         testImage = insertTestUmboxImage("kalki/testimage");
     }
 
-    private void insertUmboxReactions(int initState, int endState) {
+    private void insertPolicy(int initState, int endState) {
         testAlertType = insertAlertType("test-alert");
         testPolicyRule = insertPolicyRule(testAlertType, testDeviceType, initState, endState);
-        insertUmboxLookup(testPolicyRule.getId(), testImage.getId(), 0);
     }
 
     @Test
@@ -72,7 +71,7 @@ public class UmboxManagerTest extends DatabaseTestBase
     public void testOneUmbox() {
         SecurityState currentState = SecurityStateDAO.findByName("Normal");
         insertTestData(currentState.getId());
-        insertUmboxReactions(currentState.getId(), 2);
+        insertUmboxLookup(currentState.getId(), testDeviceType.getId(), testImage.getId(), 0);
 
         umboxManager.setupUmboxesForDevice(testDevice, currentState);
 
@@ -86,10 +85,10 @@ public class UmboxManagerTest extends DatabaseTestBase
     public void testTwoUmboxes() {
         SecurityState currentState = SecurityStateDAO.findByName("Normal");
         insertTestData(currentState.getId());
-        insertUmboxReactions(currentState.getId(), 2);
+        insertUmboxLookup(currentState.getId(), testDeviceType.getId(), testImage.getId(), 0);
 
         UmboxImage umboxImage2 = insertTestUmboxImage("kalki/testimage2");
-        insertUmboxLookup(testPolicyRule.getId(), umboxImage2.getId(), 1);
+        insertUmboxLookup(currentState.getId(), testDeviceType.getId(), umboxImage2.getId(), 1);
 
         umboxManager.setupUmboxesForDevice(testDevice, currentState);
 
@@ -107,7 +106,7 @@ public class UmboxManagerTest extends DatabaseTestBase
     public void testBootstrap() {
         SecurityState currentState = SecurityStateDAO.findByName("Normal");
         insertTestData(currentState.getId());
-        insertUmboxReactions(currentState.getId(), 2);
+        insertUmboxLookup(currentState.getId(), testDeviceType.getId(), testImage.getId(), 0);
 
         umboxManager.bootstrap();
 
@@ -122,23 +121,26 @@ public class UmboxManagerTest extends DatabaseTestBase
      */
     @Test
     public void testUmboxChanged() {
-        SecurityState currentState = SecurityStateDAO.findByName("Normal");
-        insertTestData(currentState.getId());
-        insertUmboxReactions(currentState.getId(), 2);
+        SecurityState initialState = SecurityStateDAO.findByName("Normal");
+        insertTestData(initialState.getId());
+        insertUmboxLookup(initialState.getId(), testDeviceType.getId(), testImage.getId(), 0);
 
-        // Ass a second image for the next transition.
+        // Add a second image for the next transition.
+        SecurityState secondState = SecurityStateDAO.findByName("Suspicious");
         testImage = insertTestUmboxImage("kalki/testimage2");
-        insertUmboxReactions(2, 3);
+        insertPolicy(initialState.getId(), secondState.getId());
+        insertUmboxLookup(secondState.getId(), testDeviceType.getId(), testImage.getId(), 0);
 
-        umboxManager.setupUmboxesForDevice(testDevice, currentState);
+        // Set up initial umboxes.
+        umboxManager.setupUmboxesForDevice(testDevice, initialState);
 
         // Move the device to the next state (would be done by the main controller)
-        currentState = SecurityStateDAO.findByName("Suspicious");
-        DeviceSecurityState dss = new DeviceSecurityState(testDevice.getId(), currentState.getId());
+        DeviceSecurityState dss = new DeviceSecurityState(testDevice.getId(), secondState.getId());
         testDevice.setCurrentState(dss);
         testDevice.insertOrUpdate();
 
-        umboxManager.setupUmboxesForDevice(testDevice, currentState);
+        // Set new umboxes.
+        umboxManager.setupUmboxesForDevice(testDevice, secondState);
 
         Assertions.assertEquals(2, MockUmbox.numStartTimesCalled);
         Assertions.assertEquals(1, MockUmbox.numStopTimesCalled);
