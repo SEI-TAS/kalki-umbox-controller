@@ -17,4 +17,4 @@ RUN tar -xvf $DIST_NAME.tar
 COPY config.json /app/$DIST_NAME
 
 WORKDIR /app/$DIST_NAME
-ENTRYPOINT ["bash", "bin/umbox_controller"]
+ENTRYPOINT ["bash", "bin/kalki-umbox-controller"]
