@@ -38,17 +38,17 @@ The simplest way to use this component is by creating a Docker container. First 
 needs to be compiled and a Docker image be created from it. By default, this controller is configured
 to handle Docker-based umboxes. To create this image, execute the following command:
 
-`bash build_container.sh`
+`bash build_docker_version.sh`
 
 To execute a container from that image, execute the following command:
 
-`bash run_container.sh`  
+`bash run_docker_version.sh`  
 
 A version of this component that supports VM-based umboxes can also be built on demand. This will create a parallel
 image that will allow to easily start either version of the component. To do this, execute the following command:
 
-`bash build_vm.sh`
+`bash build_vm_version.sh`
 
 To execute a container from that image then, execute the following command:
 
-`bash run_vm.sh`
+`bash run_vm_version.sh`
