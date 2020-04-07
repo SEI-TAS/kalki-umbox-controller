@@ -4,6 +4,9 @@ FROM python:2.7
 RUN apt-get update
 RUN pip install pipenv
 
+# Install docker tools
+RUN apt-get install docker.io
+
 # ovs-docker-server is listening here.
 EXPOSE 5500
 
