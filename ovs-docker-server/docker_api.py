@@ -23,10 +23,10 @@ ESC_PORTID_KEY = "esc_port_id"
 
 # Docker and OVS commands.
 RUN_CMD = "docker run --rm -dit --network {} --hostname {} --name {} {} {}"
-OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
-GET_PORT_ID_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
+OVS_ADD_PORT_CMD = "ovs-docker add-port {} {} {}"
+GET_PORT_ID_CMD = 'ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD = "docker container stop {}"
-OVS_CLEAR_CMD = "sudo ovs-docker del-ports {} {}"
+OVS_CLEAR_CMD = "ovs-docker del-ports {} {}"
 
 
 def run_command(command):
@@ -55,6 +55,7 @@ class DockerContainer(Resource):
     """Resource for handling OVS-connected docker images."""
 
     def post(self, image_name, container_name, ip_address):
+        """Receives the image name, the name to give the container, and the IP of the device being monitored."""
         try:
             # Start docker instance.
             print("Starting container")
