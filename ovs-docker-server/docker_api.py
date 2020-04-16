@@ -23,10 +23,10 @@ ESC_PORTID_KEY = "esc_port_id"
 
 # Docker and OVS commands.
 RUN_CMD = "docker run --rm -dit --network {} --hostname {} --name {} {} {}"
-OVS_ADD_PORT_CMD = "bash -x ovs-docker add-port {} {} {}"
-GET_PORT_ID_CMD = 'ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD = "docker container stop {}"
-OVS_CLEAR_CMD = "ovs-docker del-ports {} {}"
+OVS_ADD_PORT_CMD = "bash ./ovs-scripts/ovs-docker.sh add-port {} {} {}"
+OVS_CLEAR_CMD = "bash ./ovs-scripts/ovs-docker.sh del-ports {} {}"
+GET_PORT_ID_CMD = 'ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 
 
 def run_command(command):
