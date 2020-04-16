@@ -37,17 +37,20 @@ def run_command(command):
     tool_process = subprocess.Popen(command, shell=True, stdin=tool_pipe, stdout=tool_pipe, stderr=tool_pipe)
     normal_output, error_output = tool_process.communicate()
 
+    # Show output, if any.
+    if len(normal_output) > 0:
+        print(normal_output)
+        sys.stdout.flush()
+
     # Show errors, if any.
     if len(error_output) > 0:
         error_msg = "Error executing command: " + error_output
         print(error_msg)
+        sys.stdout.flush()
         raise Exception(error_msg)
 
-    # Show output, if any.
-    if len(normal_output) > 0:
-        print(normal_output)
-
     print("Finished executing command")
+    sys.stdout.flush()
     return normal_output
 
 
