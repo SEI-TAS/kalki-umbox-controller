@@ -19,7 +19,7 @@ RUN wget https://raw.githubusercontent.com/openvswitch/ovs/master/utilities/ovs-
 RUN chmod a+rwx ovs-docker
 
 # Instal ovs tools
-RUN apt-get -yqq install openvswitch-common openvswitch-switch 
+RUN apt-get -yqq install openvswitch-common openvswitch-switch
 
 # ovs-docker-server is listening here.
 EXPOSE 5500
