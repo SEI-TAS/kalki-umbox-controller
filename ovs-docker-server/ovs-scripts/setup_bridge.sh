@@ -97,7 +97,7 @@ fi
 
 # Getting IP and brodcast IP for the IoT NIC.
 IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
-IOT_NIC_BROADCAST=$(ip addr show ovs-br | grep -Po 'brd \K[\d.]+')
+IOT_NIC_BROADCAST=$(ip addr show ${IOT_NIC} | grep -Po 'brd \K[\d.]+')
 
 setup_nic_bridge $OF_BRIDGE $IOT_NIC $EXT_NIC $IOT_NIC_IP $IOT_NIC_BROADCAST
 setup_passthrough_bridge_rules $OF_BRIDGE $IOT_NIC_IP
