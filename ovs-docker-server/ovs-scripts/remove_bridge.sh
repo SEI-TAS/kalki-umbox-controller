@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-bash setup_bridge.sh "clear"
+bash setup_bridge.sh clear
