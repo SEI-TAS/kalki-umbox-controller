@@ -28,7 +28,7 @@ RUN pipenv install --system --deploy --ignore-pipfile
 # Copy the actual code
 COPY run.sh /app/
 COPY docker_api.py /app/
-COPY ovs-srcipts/ovs-docker.sh /app/ovs-srcipts/ovs-docker.sh
+COPY ovs-scripts/ovs-docker.sh /app/ovs-scripts/ovs-docker.sh
 
 # Calling directly.
 ENTRYPOINT ["bash", "run.sh"]
