@@ -13,6 +13,11 @@ RUN add-apt-repository "deb [arch=$(dpkg --print-architecture)] https://download
 RUN apt-get update
 RUN apt-get install -yqq docker-ce-cli
 
+# Install ovs-docker util
+WORKDIR /usr/bin
+RUN wget https://raw.githubusercontent.com/openvswitch/ovs/master/utilities/ovs-docker
+RUN chmod a+rwx ovs-docker
+
 # ovs-docker-server is listening here.
 EXPOSE 5500
 
