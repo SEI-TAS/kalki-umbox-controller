@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MODE="$1"
+
 IOT_NIC=enp2s0f1
 EXT_NIC=enp2s0f0
 
@@ -86,6 +88,12 @@ setup_passthrough_bridge_rules() {
 echo "Beginning switches setup..."
 
 clear_bridge
+
+# Stop here if we just want to clear the bridge.
+if [ "$MODE" == "clear" ]
+then
+  exit 0
+fi
 
 # Getting IP and brodcast IP for the IoT NIC.
 IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
