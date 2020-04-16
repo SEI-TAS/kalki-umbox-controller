@@ -1,8 +1,5 @@
 #!/bin/bash
 
-IOT_NIC_IP=10.27.151.127
-IOT_NIC_BROADCAST=10.27.151.255
-
 IOT_NIC=enp2s0f1
 EXT_NIC=enp2s0f0
 
@@ -15,10 +12,10 @@ clear_bridge() {
     sudo ovs-vsctl del-br $OF_BRIDGE
 
     echo "Restarting bridged ifaces."
-    sudo ifdown $EXT_NIC
-    sudo ifup $EXT_NIC
-    sudo ifdown $IOT_NIC
-    sudo ifup $IOT_NIC
+    sudo ip link set $EXT_NIC down
+    sudo ip link set $EXT_NIC up
+    sudo ip link set $IOT_NIC down
+    sudo ip link set $IOT_NIC up
 }
 
 connect_interface() {
@@ -41,6 +38,8 @@ setup_nic_bridge() {
     local bridge_name="$1"
     local nic1_name="$2"
     local nic2_name="$3"
+    local local_ip="$4"
+    local bcast_ip="$5"
 
     echo "Setting up NIC OVS bridge $bridge_name"
     sudo ovs-vsctl add-br $bridge_name
@@ -57,28 +56,25 @@ setup_nic_bridge() {
     sudo ovs-vsctl set-controller $bridge_name ptcp:$OF_BRIDGE_PORT
     sudo ovs-vsctl set controller $bridge_name connection-mode=out-of-band
 
-    # Configure OVS DB to listen to remote commands on given TCP port.
-    sudo ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:$OVS_DB_PORT
-
-    sudo ip addr add ${IOT_NIC_IP}/24 dev $bridge_name
-    sudo ifconfig ovs-br broadcast ${IOT_NIC_BROADCAST}
-
+    # Attach the IP set up of the IOT network to the bridge.
+    sudo ip addr add ${local_ip}/24 broadcast ${bcast_ip} dev $bridge_name
 
     echo "Bridge setup complete"
  }
 
 setup_passthrough_bridge_rules() {
     local bridge_name="$1"
+    local local_ip="$2"
 
     # Rule to drop mDNS requests and IPv6 traffic.
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=160,udp,tp_dst=5353,actions=drop"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=160,ipv6,actions=drop"
 
     # Set rules to be able to process requests and responses to our own IP.
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,nw_src=${IOT_NIC_IP},actions=output:1"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,in_port=1,nw_dst=${IOT_NIC_IP},actions=normal"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,ip_src=${IOT_NIC_IP},actions=normal"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,in_port=1,ip_dst=${IOT_NIC_IP},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,nw_src=${local_ip},actions=output:1"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,in_port=1,nw_dst=${local_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,ip_src=${local_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,in_port=1,ip_dst=${local_ip},actions=normal"
 
     # Set up default rules to connect bridges together.
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=50,in_port=1,actions=output:2"
@@ -90,7 +86,16 @@ setup_passthrough_bridge_rules() {
 echo "Beginning switches setup..."
 
 clear_bridge
-setup_nic_bridge $OF_BRIDGE $IOT_NIC $EXT_NIC
-setup_passthrough_bridge_rules $OF_BRIDGE
 
-echo "OVS switches ready"
+# Getting IP and brodcast IP for the IoT NIC.
+IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
+IOT_NIC_BROADCAST=$(ip addr show ovs-br | grep -Po 'brd \K[\d.]+')
+
+setup_nic_bridge $OF_BRIDGE $IOT_NIC $EXT_NIC $IOT_NIC_IP $IOT_NIC_BROADCAST
+setup_passthrough_bridge_rules $OF_BRIDGE $IOT_NIC_IP
+
+# Configure OVS DB to listen to remote commands on given TCP port.
+sudo ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:$OVS_DB_PORT
+
+echo "OVS switch ready"
+
