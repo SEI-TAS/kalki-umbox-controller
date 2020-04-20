@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+CONTROL_NIC=eth0
+IOT_NIC=enp2s0f1
+EXT_NIC=enp2s0f0
+
+CONTROL_NET_PREFIX=10.27.153

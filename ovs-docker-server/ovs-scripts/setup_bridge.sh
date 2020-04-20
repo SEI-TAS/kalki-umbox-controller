@@ -2,12 +2,11 @@
 
 MODE="$1"
 
-IOT_NIC=enp2s0f1
-EXT_NIC=enp2s0f0
-
 OF_BRIDGE=ovs-br
 OF_BRIDGE_PORT=6653
 OVS_DB_PORT=6654
+
+source ../config.sh
 
 clear_bridge() {
     echo "Removing bridge in case it existed already."
