@@ -32,31 +32,23 @@ Parameters that will usually need to be configured:
  - <b>db_port</b>: Usually the default port can be used.
  - <b>db_name, db_user, db_password</b>: need to be consistent with the actual DB information being used.
  - <b>db_recreate, db_root_password</b>: only needed if we want DNI to forcefully drop and recreate the DB.
-
-The following parameters do not need to be changed, if the Data Node is configured with default values:
- - <b>control_bridge</b>: name of the virtual bridge on the Data Node that the control plane and back end of
-   umboxes are connected to.
- - <b>ovs_bridge</b>: name of the OVS virtual bridge on the Data Node that is acting as the gateway to the 
-   IoT devices on the data plane.
- - <b>ovs_devices_network_port, ovs_external_network_port</b>: ports on the OVS virtual bridge on the 
- Data Node that are used to connect to the devices and to the external network, respectively.
  
 ## Usage
 The simplest way to use this component is by creating a Docker container. First the component
 needs to be compiled and a Docker image be created from it. By default, this controller is configured
 to handle Docker-based umboxes. To create this image, execute the following command:
 
-`bash build_container.sh`
+`bash build_docker_version.sh`
 
 To execute a container from that image, execute the following command:
 
-`bash run_container.sh`  
+`bash run_docker_version.sh`  
 
 A version of this component that supports VM-based umboxes can also be built on demand. This will create a parallel
 image that will allow to easily start either version of the component. To do this, execute the following command:
 
-`bash build_vm.sh`
+`bash build_vm_version.sh`
 
 To execute a container from that image then, execute the following command:
 
-`bash run_vm.sh`
+`bash run_vm_version.sh`

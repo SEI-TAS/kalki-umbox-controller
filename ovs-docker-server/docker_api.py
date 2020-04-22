@@ -23,10 +23,10 @@ ESC_PORTID_KEY = "esc_port_id"
 
 # Docker and OVS commands.
 RUN_CMD = "docker run --rm -dit --network {} --hostname {} --name {} {} {}"
-OVS_ADD_PORT_CMD = "sudo ovs-docker add-port {} {} {}"
-GET_PORT_ID_CMD = 'sudo ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 STOP_CMD = "docker container stop {}"
-OVS_CLEAR_CMD = "sudo ovs-docker del-ports {} {}"
+OVS_ADD_PORT_CMD = "bash ./ovs-scripts/ovs-docker.sh add-port {} {} {}"
+OVS_CLEAR_CMD = "bash ./ovs-scripts/ovs-docker.sh del-ports {} {}"
+GET_PORT_ID_CMD = 'ovs-vsctl --data=bare --no-heading --columns=ofport find interface external_ids:container_id="{}" external_ids:container_iface="{}"'
 
 
 def run_command(command):
@@ -37,17 +37,20 @@ def run_command(command):
     tool_process = subprocess.Popen(command, shell=True, stdin=tool_pipe, stdout=tool_pipe, stderr=tool_pipe)
     normal_output, error_output = tool_process.communicate()
 
+    # Show output, if any.
+    if len(normal_output) > 0:
+        print(normal_output)
+        sys.stdout.flush()
+
     # Show errors, if any.
     if len(error_output) > 0:
         error_msg = "Error executing command: " + error_output
         print(error_msg)
+        sys.stdout.flush()
         raise Exception(error_msg)
 
-    # Show output, if any.
-    if len(normal_output) > 0:
-        print(normal_output)
-
     print("Finished executing command")
+    sys.stdout.flush()
     return normal_output
 
 
@@ -55,6 +58,7 @@ class DockerContainer(Resource):
     """Resource for handling OVS-connected docker images."""
 
     def post(self, image_name, container_name, ip_address):
+        """Receives the image name, the name to give the container, and the IP of the device being monitored."""
         try:
             # Start docker instance.
             print("Starting container")

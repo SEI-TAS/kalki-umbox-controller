@@ -1,18 +1,19 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.ttg.kalki.database.Postgres;
-import edu.cmu.sei.ttg.kalki.models.Device;
-import edu.cmu.sei.ttg.kalki.models.UmboxImage;
-import edu.cmu.sei.ttg.kalki.models.UmboxInstance;
+import edu.cmu.sei.kalki.db.daos.UmboxInstanceDAO;
+import edu.cmu.sei.kalki.db.models.Device;
+import edu.cmu.sei.kalki.db.models.UmboxImage;
+import edu.cmu.sei.kalki.db.models.UmboxInstance;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 public abstract class Umbox
 {
     private static final int MAX_INSTANCES = 1000;
 
-    public static String umboxClass;
+    public static Class umboxClass;
 
     protected int umboxId;
     protected Device device;
@@ -24,32 +25,34 @@ public abstract class Umbox
     protected String ovsOutPortId = "";
     protected String ovsRepliesPortId = "";
 
-    public static void setUmboxClass(String classPath)
+    public static void setUmboxClass(Class umboxClassToUse)
     {
-        umboxClass = classPath;
+        umboxClass = umboxClassToUse;
+    }
+
+    public static void setUmboxClass(String umboxClassToUse) throws ClassNotFoundException {
+        umboxClass = Class.forName(umboxClassToUse);
     }
 
     public static Umbox createUmbox(UmboxImage image, Device device)
     {
         try {
-            Constructor con = Class.forName(umboxClass).getConstructor(UmboxImage.class, Device.class);
+            Constructor con = umboxClass.getConstructor(UmboxImage.class, Device.class);
             return (Umbox) con.newInstance(image, device);
-        } catch (Exception e){
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e){
             e.printStackTrace();
-            System.out.println("Error creating umbox: " + e.getMessage());
-            return null;
+            throw new RuntimeException("Could not create umbox for the given image and device: " + e.getMessage());
         }
     }
 
-    public static Umbox createUmbox(UmboxImage image, int instanceId)
+    public static Umbox createUmbox(UmboxImage image, Device device, int instanceId)
     {
         try {
-            Constructor con = Class.forName(umboxClass).getConstructor(UmboxImage.class, Integer.TYPE);
-            return (Umbox) con.newInstance(image, instanceId);
-        } catch (Exception e){
+            Constructor con = umboxClass.getConstructor(UmboxImage.class, Device.class, Integer.TYPE);
+            return (Umbox) con.newInstance(image, device, instanceId);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e){
             e.printStackTrace();
-            System.out.println("Error creating umbox: " + e.getMessage());
-            return null;
+            throw new RuntimeException("Could not create umbox for the given image and device: " + e.getMessage());
         }
     }
 
@@ -76,17 +79,17 @@ public abstract class Umbox
                 throw new RuntimeException("Can't allocate an ID for a new umbox; all of them seem to be allocated.");
             }
         }
-        while(Postgres.findUmboxInstance(String.valueOf(umboxId)) != null);
+        while(UmboxInstanceDAO.findUmboxInstance(String.valueOf(umboxId)) != null);
     }
 
     /***
      * Constructor for existing umboxes.
      * @param instanceId
      */
-    protected Umbox(UmboxImage image, int instanceId)
+    protected Umbox(UmboxImage image, Device device, int instanceId)
     {
         this.image = image;
-        this.device = null;
+        this.device = device;
         this.umboxId = instanceId;
     }
 
@@ -114,7 +117,7 @@ public abstract class Umbox
             {
                 if (instance != null)
                 {
-                    Postgres.deleteUmboxInstance(instance.getId());
+                    UmboxInstanceDAO.deleteUmboxInstance(instance.getId());
                 }
             }
             catch(Exception ex)
@@ -136,9 +139,9 @@ public abstract class Umbox
             System.out.println("Stopping umbox.");
             boolean success = stop();
 
-            UmboxInstance umboxInstance = Postgres.findUmboxInstance(String.valueOf(umboxId));
+            UmboxInstance umboxInstance = UmboxInstanceDAO.findUmboxInstance(String.valueOf(umboxId));
             System.out.println("Deleting umbox instance from DB.");
-            Postgres.deleteUmboxInstance(umboxInstance.getId());
+            UmboxInstanceDAO.deleteUmboxInstance(umboxInstance.getId());
             return success;
         }
         catch (RuntimeException e)

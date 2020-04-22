@@ -4,7 +4,7 @@ FROM i386/openjdk:8
 RUN apt-get update
 RUN apt-get -yqq install openvswitch-common openvswitch-switch
 
-ENV PROJECT_NAME umbox_controller
+ENV PROJECT_NAME kalki-umbox-controller
 ENV DIST_NAME $PROJECT_NAME-1.0-SNAPSHOT
 
 # AlertServer is listening here.
@@ -17,4 +17,4 @@ RUN tar -xvf $DIST_NAME.tar
 COPY config.json /app/$DIST_NAME
 
 WORKDIR /app/$DIST_NAME
-ENTRYPOINT ["bash", "bin/umbox_controller"]
+ENTRYPOINT ["bash", "bin/kalki-umbox-controller"]

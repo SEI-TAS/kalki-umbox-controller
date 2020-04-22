@@ -1,9 +1,9 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.kalki.uc.utils.CommandExecutor;
-import edu.cmu.sei.kalki.uc.utils.Config;
-import edu.cmu.sei.ttg.kalki.models.Device;
-import edu.cmu.sei.ttg.kalki.models.UmboxImage;
+import edu.cmu.sei.kalki.db.utils.CommandExecutor;
+import edu.cmu.sei.kalki.db.utils.Config;
+import edu.cmu.sei.kalki.db.models.Device;
+import edu.cmu.sei.kalki.db.models.UmboxImage;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,9 +23,9 @@ public class VMUmbox extends Umbox
         setupCommand();
     }
 
-    public VMUmbox(UmboxImage image, int instanceId)
+    public VMUmbox(UmboxImage image, Device device, int instanceId)
     {
-        super(image, instanceId);
+        super(image, device, instanceId);
         setupCommand();
     }
 
@@ -34,9 +34,7 @@ public class VMUmbox extends Umbox
      */
     private void setupCommand()
     {
-        String dataNodeIP = Config.data.get("data_node_ip");
-        String ovsDataBridge = Config.data.get("ovs_data_bridge");
-        String controlBridge = Config.data.get("control_bridge");
+        String dataNodeIP = device.getDataNode().getIpAddress();
 
         commandWorkingDir = Paths.get(System.getProperty("user.dir"), UMBOX_TOOL_PATH).toString();
 
@@ -57,10 +55,6 @@ public class VMUmbox extends Umbox
             commandInfo.add("-f");
             commandInfo.add(image.getFileName());
         }
-        commandInfo.add("-bc");
-        commandInfo.add(controlBridge);
-        commandInfo.add("-bd");
-        commandInfo.add(ovsDataBridge);
     }
 
     /**

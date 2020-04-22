@@ -1,8 +1,8 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.kalki.uc.utils.Config;
-import edu.cmu.sei.ttg.kalki.models.Device;
-import edu.cmu.sei.ttg.kalki.models.UmboxImage;
+import edu.cmu.sei.kalki.db.utils.Config;
+import edu.cmu.sei.kalki.db.models.Device;
+import edu.cmu.sei.kalki.db.models.UmboxImage;
 
 import org.json.JSONObject;
 
@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 
 public class DockerUmbox extends Umbox
 {
@@ -37,15 +36,15 @@ public class DockerUmbox extends Umbox
         setupDockerVars();
     }
 
-    public DockerUmbox(UmboxImage image, int instanceId)
+    public DockerUmbox(UmboxImage image, Device device, int instanceId)
     {
-        super(image, instanceId);
+        super(image, device, instanceId);
         setupDockerVars();
     }
 
     private void setupDockerVars()
     {
-        fullBaseURL = "http://" + Config.data.get("data_node_ip") + ":" + API_PORT + API_BASE_URL;
+        fullBaseURL = "http://" + device.getDataNode().getIpAddress() + ":" + API_PORT + API_BASE_URL;
         containerName = PREFIX + this.umboxId;
         apiURL = "/" + image.getName() + "/" + containerName + "/" + device.getIp();
     }
