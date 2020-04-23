@@ -4,7 +4,7 @@ FROM python:3.8-alpine
 RUN pip install pipenv
 
 # Install ovs switch tools and docker dependencies
-RUN apk add openvswitch docker
+RUN apk update && apk add bash iproute2 openvswitch docker
 
 # ovs-docker-server is listening here.
 EXPOSE 5500
