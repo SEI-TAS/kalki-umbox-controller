@@ -68,9 +68,9 @@ class DockerContainer(Resource):
             run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth3", container_name))
 
             # Get port names.
-            eth1_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth1")).rstrip(b'\n')
-            eth2_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth2")).rstrip(b'\n')
-            eth3_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth3")).rstrip(b'\n')
+            eth1_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth1")).rstrip(b'\n').decode()
+            eth2_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth2")).rstrip(b'\n').decode()
+            eth3_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth3")).rstrip(b'\n').decode()
             print("OVS connection successful", flush=True)
 
             # Return OVS port names.
