@@ -5,7 +5,7 @@ RUN pip install pipenv
 
 # Install ovs switch tools and docker dependencies
 RUN apt-get update && apt-get install -y \
-    openvswitch-common openvswitch-switch
+    openvswitch-common openvswitch-switch \
     lsb-release apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 
 # Install docker.
