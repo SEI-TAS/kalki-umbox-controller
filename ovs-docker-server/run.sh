@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python docker_api.py
+exec python docker_api.py
