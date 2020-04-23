@@ -4,19 +4,7 @@ FROM python:3.8-alpine
 RUN pip install pipenv
 
 # Install ovs switch tools and docker dependencies
-RUN apt-get update && apt-get install -y \
-    openvswitch-common openvswitch-switch \
-    lsb-release apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-
-# Install docker.
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
-    add-apt-repository "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
-    apt-get update && apt-get install -y docker-ce-cli
-
-# Remove docker installation dependencies.
-RUN apt-get purge -y lsb-release apt-transport-https ca-certificates curl gnupg-agent software-properties-common && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add openvswitch docker
 
 # ovs-docker-server is listening here.
 EXPOSE 5500
