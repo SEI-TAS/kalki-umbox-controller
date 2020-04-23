@@ -22,6 +22,7 @@ RUN apt-get purge -y lsb-release apt-transport-https ca-certificates curl gnupg-
 EXPOSE 5500
 
 # Installing Python deps without a venv (not needed in container).
+COPY Pipfile /app/
 COPY Pipfile.lock /app/
 WORKDIR /app
 RUN pipenv install --system --deploy --ignore-pipfile
