@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'edu.cmu.sei.ttg.kalki'
-version '1.0-SNAPSHOT'
+version '1.4'
 
 apply plugin: 'java'
 apply plugin: 'application'

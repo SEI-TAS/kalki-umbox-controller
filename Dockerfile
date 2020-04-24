@@ -1,11 +1,12 @@
-FROM i386/openjdk:8
+#FROM i386/openjdk:8
+FROM openjdk:8-alpine
 
 # Install ovs-tools
-RUN apt-get update
-RUN apt-get -yqq install openvswitch-common openvswitch-switch
+RUN apk --no-cache add bash iproute2 openvswitch
 
-ENV PROJECT_NAME kalki-umbox-controller
-ENV DIST_NAME $PROJECT_NAME-1.0-SNAPSHOT
+ARG PROJECT_NAME=kalki-umbox-controller
+ARG PROJECT_VERSION=1.4
+ARG DIST_NAME=$PROJECT_NAME-$PROJECT_VERSION
 
 # AlertServer is listening here.
 EXPOSE 6060
