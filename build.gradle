@@ -1,15 +1,10 @@
-plugins {
-    id 'com.palantir.docker' version '0.24.0'
-}
+apply plugin: 'java'
+apply plugin: 'application'
 
 group 'edu.cmu.sei.ttg.kalki'
 version '1.4'
 
-apply plugin: 'java'
-apply plugin: 'application'
-
 mainClassName = 'edu.cmu.sei.kalki.uc.Program'
-
 sourceCompatibility = 1.8
 
 repositories {
@@ -28,19 +23,4 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-
-// Set default value for container name.
-ext.container_name = project.hasProperty('container_name') ? container_name : 'kalki/kalki-uc'
-
-docker {
-    name container_name
-    dockerfile file('Dockerfile.tmp')
-    files tasks.distTar.outputs, "config.json"
-    copySpec.with {
-        from('.') {
-            include 'vm-umbox-tool/**'
-            into '.'
-        }
-    }
 }
