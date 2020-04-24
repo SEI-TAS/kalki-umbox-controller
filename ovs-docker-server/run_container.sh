@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # Stop container, if running.
-bash stop.sh
-
-# Clear previous umboxes.
-bash clear_umboxes.sh
+bash stop_container.sh
 
 # Reset bridge.
 cd ./ovs-scripts
