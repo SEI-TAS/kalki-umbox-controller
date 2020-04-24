@@ -38,16 +38,16 @@ def run_command(command):
 
     # Show output, if any.
     if len(normal_output) > 0:
-        print(normal_output, flush=True)
+        print(normal_output.decode(), flush=True)
 
     # Show errors, if any.
     if len(error_output) > 0:
-        error_msg = "Error executing command: " + error_output
+        error_msg = "Error executing command: " + error_output.decode()
         print(error_msg, flush=True)
         raise Exception(error_msg)
 
     print("Finished executing command", flush=True)
-    return normal_output
+    return normal_output.decode()
 
 
 class DockerContainer(Resource):
@@ -68,9 +68,9 @@ class DockerContainer(Resource):
             run_command(OVS_ADD_PORT_CMD.format(OVS_BRIDGE, "eth3", container_name))
 
             # Get port names.
-            eth1_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth1")).rstrip(b'\n').decode()
-            eth2_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth2")).rstrip(b'\n').decode()
-            eth3_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth3")).rstrip(b'\n').decode()
+            eth1_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth1")).rstrip("\n")
+            eth2_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth2")).rstrip("\n")
+            eth3_portid = run_command(GET_PORT_ID_CMD.format(container_name, "eth3")).rstrip("\n")
             print("OVS connection successful", flush=True)
 
             # Return OVS port names.
