@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export CONTROL_NIC=enp0s31f6
+#export CONTROL_NIC=enp0s31f6
+export CONTROL_NIC=br-control
 export IOT_NIC=enp2s0f1
 export EXT_NIC=enp2s0f0
 
