@@ -11,4 +11,4 @@ bash clear_umboxes.sh
 (cd ./ovs-scripts && bash setup_bridge.sh)
 
 # Start service and control network.
-docker-compose up --build
+docker-compose up
