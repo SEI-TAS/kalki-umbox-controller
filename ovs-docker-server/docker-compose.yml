@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 services:
   ovs-docker-server:
     build: .
@@ -14,5 +14,5 @@ networks:
     ipam:
       config:
         - subnet: ${CONTROL_IP_NET}
-        - gateway: ${CONTROL_GATEWAY}
-        - ip_range: ${UMBOX_IP_RANGE}
+          gateway: ${CONTROL_GATEWAY}
+          ip_range: ${UMBOX_IP_RANGE}
