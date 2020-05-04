@@ -18,6 +18,7 @@ RUN pipenv install --system --deploy --ignore-pipfile
 # Copy the actual code and helped scripts
 COPY ovs-scripts/ovs-docker.sh /app/ovs-scripts/ovs-docker.sh
 COPY run.sh /app/
+COPY config.sh /app/
 COPY docker_api.py /app/
 
 # Calling directly.
