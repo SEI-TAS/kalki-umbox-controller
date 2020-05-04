@@ -7,6 +7,11 @@ services:
     network_mode: "host"
     environment:
       - TZ=${HOST_TZ}
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/openvswitch/db.sock:/var/run/openvswitch/db.sock
+      - /proc:/host_proc
   control-net-dummy:
     image: busybox:latest
     networks:
