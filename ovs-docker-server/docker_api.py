@@ -101,7 +101,7 @@ def main():
         print("Did not receive IP to bind to; exiting")
         exit(-1)
     binding_ip = sys.argv[1]
-    print("Will bind to host " + binding_ip)
+    print("Will bind to host " + binding_ip, flush=True)
 
     app = Flask(__name__)
     api = Api(app)
