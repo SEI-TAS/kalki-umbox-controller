@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 
-# Set env variables.
-source config.sh
-export HOST_TZ=$(cat /etc/timezone)
-
 # Clear running umboxes, if any.
 bash clear_umboxes.sh
 
 # Set up bridge.
-cd ./ovs-scripts && source setup_bridge.sh && cd ..
+cd ./ovs-scripts && bash setup_bridge.sh && cd ..
 
 # Start service and control network.
+source config.sh
 docker-compose up -d
-source compose_logs.sh
+bash compose_logs.sh
