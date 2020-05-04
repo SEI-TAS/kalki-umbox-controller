@@ -8,7 +8,7 @@ export HOST_TZ=$(cat /etc/timezone)
 bash clear_umboxes.sh
 
 # Set up bridge.
-(cd ./ovs-scripts && bash setup_bridge.sh)
+cd ./ovs-scripts && source setup_bridge.sh && cd ..
 
 # Start service and control network.
 docker-compose up -d
