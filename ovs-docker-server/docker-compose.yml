@@ -3,15 +3,17 @@ services:
   ovs-docker-server:
     build: .
     image: kalki/kalki-ovs-docker-server
+    container_name: kalki-ovs-docker-server
     network_mode: "host"
     environment:
       - TZ=${HOST_TZ}
   control-net-dummy:
-    image: hello-world:latest
+    image: busybox:latest
     networks:
       - control-net
 networks:
   control-net:
+    name: control-net
     driver: macvlan
     driver_opts:
       parent: ${CONTROL_NIC}
