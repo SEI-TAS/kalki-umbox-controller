@@ -5,7 +5,7 @@ from flask import Flask
 from flask_restful import Api, Resource
 
 # Existing networks and bridges.
-CONTROL_NETWORK = "control-net"
+CONTROL_NETWORK = "ovsdockerserver_control-net"
 OVS_BRIDGE = "ovs-br"
 
 # API info.
@@ -97,10 +97,15 @@ class DockerContainer(Resource):
 def main():
     print("Loading ovs-docker server", flush=True)
 
+    if len(sys.argv) != 2:
+        print("Did not receive IP to bind to; exiting")
+        exit(-1)
+    binding_ip = sys.argv[1]
+
     app = Flask(__name__)
     api = Api(app)
     api.add_resource(DockerContainer, API_BASE_URL + "/<string:image_name>/<string:container_name>/<string:ip_address>")
-    app.run(host="0.0.0.0", port=API_PORT, debug=True)
+    app.run(host=binding_ip, port=API_PORT, debug=False)
 
 
 if __name__ == "__main__":
