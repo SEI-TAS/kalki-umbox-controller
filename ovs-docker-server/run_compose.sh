@@ -12,4 +12,4 @@ cd ./ovs-scripts && source setup_bridge.sh && cd ..
 
 # Start service and control network.
 docker-compose up -d
-docker-compose logs -f
+source compose_logs.sh
