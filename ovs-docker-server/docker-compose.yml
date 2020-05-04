@@ -13,12 +13,10 @@ services:
       - control-net
 networks:
   control-net:
-    name: control-net
     driver: macvlan
     driver_opts:
       parent: ${CONTROL_NIC}
     ipam:
       config:
         - subnet: ${CONTROL_IP_NET}
-          gateway: ${CONTROL_GATEWAY}
           ip_range: ${UMBOX_IP_RANGE}
