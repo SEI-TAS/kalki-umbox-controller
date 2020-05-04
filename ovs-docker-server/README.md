@@ -20,13 +20,15 @@ All commands have to be executed from the ovs-docker-server folder to work prope
 Before using the server, some steps need to be performed:
  - Create a Docker image of the server. This needs to be done only once, unless the components of the server change. To do this, run `bash build_container.sh`.
 
+Note that all OVS network rules and running docker umboxes will be reset each time the server is started.
+
 To start this server in a Docker container using Docker-Compose, execute the following:
 
 `bash run_compose.sh`  
 
-Note that all OVS network rules and running docker umboxes will be reset each time the server is started.
+When exiting the log view after running this, containers will continue running in the background. 
 
-If the console window is exited, the logs can be still monitored with this command:
+If the log window is exited, the logs can be still monitored with this command:
 
 `bash compose_logs.sh`
 
