@@ -12,7 +12,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/run/openvswitch/db.sock:/var/run/openvswitch/db.sock
       - /proc:/host_proc
-  control-net-dummy:
+  control-net-startup:
     image: busybox:latest
     networks:
       - control-net
