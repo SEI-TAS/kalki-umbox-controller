@@ -106,7 +106,11 @@ def main():
     app = Flask(__name__)
     api = Api(app)
     api.add_resource(DockerContainer, API_BASE_URL + "/<string:image_name>/<string:container_name>/<string:ip_address>")
-    app.run(host=binding_ip, port=API_PORT, debug=False)
+
+    try:
+        app.run(host=binding_ip, port=API_PORT, debug=False)
+    except Exception as e:
+        print("Could not bind to listen on given address (" + binding_ip + "): " + str(e))
 
 
 if __name__ == "__main__":
