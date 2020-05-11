@@ -27,7 +27,7 @@ To start this server in a Docker container using Docker-Compose, execute the fol
 `bash run_compose.sh`  
 
 When exiting the log view after running this, containers will continue running in the background. 
-
+ 
 If the log window is exited, the logs can be still monitored with this command:
 
 `bash compose_logs.sh`
