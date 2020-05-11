@@ -8,6 +8,11 @@ if [ -z "${DIST_PATH}" ]; then
 fi
 
 # Copy startup script, and ovs bridge scripts.
-cp *.sh ${DIST_PATH}
+cp clear_umboxes.sh ${DIST_PATH}
+cp config.sh ${DIST_PATH}
+cp install_packages.sh ${DIST_PATH}
+cp prepare_env.sh ${DIST_PATH}
+cp teardown_env.sh ${DIST_PATH}
+
 mkdir -p ${DIST_PATH}/ovs-scripts/
 cp ovs-scripts/*.sh ${DIST_PATH}/ovs-scripts/
