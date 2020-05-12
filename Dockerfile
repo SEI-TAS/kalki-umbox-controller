@@ -1,5 +1,12 @@
-#FROM i386/openjdk:8
-FROM openjdk:8-alpine
+# First stage: build.
+FROM kalki/kalki-db-env AS build_env
+COPY --chown=gradle:gradle . /home/gradle/src
+RUN cp /home/gradle/kalki-db/gradle.properties /home/gradle/src/
+WORKDIR /home/gradle/src
+RUN gradle build --no-daemon
+
+# Second stage: actual run environment.
+FROM openjdk:8-jre-alpine
 
 # Install ovs-tools
 RUN apk --no-cache add bash iproute2 openvswitch
@@ -11,10 +18,10 @@ ARG PROJECT_NAME=kalki-umbox-controller
 ARG PROJECT_VERSION=1.4
 ARG DIST_NAME=$PROJECT_NAME-$PROJECT_VERSION
 
-COPY build/distributions/$DIST_NAME.tar /
-RUN tar -xvf $DIST_NAME.tar
-RUN rm $DIST_NAME.tar
-RUN mv /$DIST_NAME /$PROJECT_NAME
+COPY --from=build_env /home/gradle/src/build/distributions/$DIST_NAME.tar /
+RUN tar -xvf $DIST_NAME.tar && \
+    rm $DIST_NAME.tar && \
+    mv /$DIST_NAME /$PROJECT_NAME
 
 COPY config.json /$PROJECT_NAME/
 

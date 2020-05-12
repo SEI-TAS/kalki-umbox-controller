@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-./gradlew build
-docker build -t kalki/kalki-uc .
+docker build --network=host -t kalki/kalki-umbox-controller .
