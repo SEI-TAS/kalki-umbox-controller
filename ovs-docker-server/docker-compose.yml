@@ -1,7 +1,6 @@
 version: '2'
 services:
   ovs-docker-server:
-    build: .
     image: kalki/kalki-ovs-docker-server
     container_name: kalki-ovs-docker-server
     network_mode: "host"
