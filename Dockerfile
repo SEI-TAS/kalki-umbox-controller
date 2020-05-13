@@ -15,7 +15,7 @@ RUN apk --no-cache add bash iproute2 openvswitch
 EXPOSE 6060
 
 ARG PROJECT_NAME=kalki-umbox-controller
-ARG PROJECT_VERSION=1.4
+ARG PROJECT_VERSION=1.5.0
 ARG DIST_NAME=$PROJECT_NAME-$PROJECT_VERSION
 
 COPY --from=build_env /home/gradle/src/build/distributions/$DIST_NAME.tar /
