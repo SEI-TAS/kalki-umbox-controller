@@ -6,3 +6,11 @@ services:
     environment:
       - TZ=${HOST_TZ}
     command: ${CMD_PARAMS}
+    depends_on:
+      - kalki-postgres
+  kalki-postgres:
+    image: kalki/kalki-postgres
+    container_name: kalki-postgres
+    environment:
+      - TZ=${HOST_TZ}
+    network_mode: "host"

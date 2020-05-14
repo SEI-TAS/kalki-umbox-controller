@@ -17,3 +17,5 @@ gradlew.*
 clone-image-server
 ovs-docker-server
 vm-umbox-tool
+
+!wait_for_postgres.sh

@@ -24,6 +24,7 @@ RUN tar -xvf $DIST_NAME.tar && \
     mv /$DIST_NAME /$PROJECT_NAME
 
 COPY config.json /$PROJECT_NAME/
+COPY wait_for_postgres.sh /$PROJECT_NAME/
 
 WORKDIR /$PROJECT_NAME
-ENTRYPOINT ["bash", "bin/kalki-umbox-controller"]
+ENTRYPOINT ["bash", "wait_for_postgres.sh", "kalki-postgres", "bin/kalki-umbox-controller"]
