@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build -t kalki/kalki-umbox-controller .
+docker build --network=host -t kalki/kalki-umbox-controller .
