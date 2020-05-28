@@ -1,7 +1,7 @@
 FROM python:3.8-alpine
 
 # Install pipenv
-RUN pip install pipenv
+RUN pip install pipenv==2018.11.26
 
 # Install ovs switch tools and docker dependencies
 RUN apk --no-cache add bash iproute2 util-linux openvswitch docker
