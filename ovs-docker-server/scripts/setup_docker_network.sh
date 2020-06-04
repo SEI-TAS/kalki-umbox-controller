@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
 source config.sh
+DOCKER_CONTROL_NET=ovsdockerserver_control-net
 
-DOCKER_CONTROL_NET=control-net
-GATEWAY=${CONTROL_NET_PREFIX}.1
-
-docker network create -d macvlan --subnet=${CONTROL_NET} \
-                                 --gateway=${GATEWAY} \
+docker network create -d macvlan --subnet=${CONTROL_IP_NET} \
+                                 --gateway=${CONTROL_GATEWAY} \
                                  --ip-range=${UMBOX_IP_RANGE} \
                                  -o parent=${CONTROL_NIC} \
                                  ${DOCKER_CONTROL_NET}

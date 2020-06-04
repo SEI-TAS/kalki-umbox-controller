@@ -1,0 +1,9 @@
+version: '2.3'
+services:
+  kalki-umbox-controller:
+    image: kalki/kalki-umbox-controller
+    container_name: kalki-umbox-controller
+    network_mode: "host"
+    environment:
+      - TZ=${HOST_TZ}
+    command: ${CMD_PARAMS}

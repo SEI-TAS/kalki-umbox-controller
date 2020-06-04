@@ -1,0 +1,10 @@
+docker-compose.yml
+Dockerfile
+*.md
+tests
+scripts
+
+*.sh
+!config.sh
+!run.sh
+!ovs-scripts/*.sh

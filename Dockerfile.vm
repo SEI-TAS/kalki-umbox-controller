@@ -7,8 +7,9 @@ RUN apt-get -yqq install python python-pip
 RUN pip install pipenv
 RUN apt-get -yqq install libvirt-dev
 
-ENV PROJECT_NAME umbox_controller
-ENV DIST_NAME $PROJECT_NAME-1.0-SNAPSHOT
+ARG PROJECT_NAME=kalki-umbox-controller
+ARG PROJECT_VERSION=1.4
+ARG DIST_NAME=$PROJECT_NAME-$PROJECT_VERSION
 
 # Setup pipenv for VM Umbox tool
 COPY vm-umbox-tool/ /app/$DIST_NAME/vm-umbox-tool/

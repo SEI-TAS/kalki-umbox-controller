@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-python docker_api.py
+source config.sh
+exec python docker_api.py "${IP_ON_CONTROL_NIC}"

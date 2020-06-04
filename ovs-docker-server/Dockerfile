@@ -1,20 +1,10 @@
-FROM python:2.7
-
-RUN apt-get update
+FROM python:3.8-alpine
 
 # Install pipenv
-RUN pip install pipenv
+RUN pip install pipenv==2018.11.26
 
-# Install docker tools
-RUN apt-get install -yqq lsb-release
-RUN apt-get install -yqq apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-RUN add-apt-repository "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-RUN apt-get update
-RUN apt-get install -yqq docker-ce-cli
-
-# Instal ovs tools
-RUN apt-get -yqq install openvswitch-common openvswitch-switch
+# Install ovs switch tools and docker dependencies
+RUN apk --no-cache add bash iproute2 util-linux openvswitch docker
 
 # ovs-docker-server is listening here.
 EXPOSE 5500
@@ -25,10 +15,11 @@ COPY Pipfile.lock /app/
 WORKDIR /app
 RUN pipenv install --system --deploy --ignore-pipfile
 
-# Copy the actual code
-COPY run.sh /app/
-COPY docker_api.py /app/
+# Copy the actual code and helped scripts
 COPY ovs-scripts/ovs-docker.sh /app/ovs-scripts/ovs-docker.sh
+COPY run.sh /app/
+COPY config.sh /app/
+COPY docker_api.py /app/
 
 # Calling directly.
 ENTRYPOINT ["bash", "run.sh"]
