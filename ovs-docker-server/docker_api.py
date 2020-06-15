@@ -22,7 +22,7 @@ OUT_PORTID_KEY = "out_port_id"
 ESC_PORTID_KEY = "esc_port_id"
 
 # Docker and OVS commands.
-RUN_CMD = "docker run --rm -dit --network {} --hostname {} --name {} {} {}"
+RUN_CMD = "docker run --rm -dit --network {} --hostname {} --cap-add NET_ADMIN --name {} {} {}"
 STOP_CMD = "docker container stop {}"
 OVS_ADD_PORT_CMD = "bash ./ovs-scripts/ovs-docker.sh add-port {} {} {}"
 OVS_CLEAR_CMD = "bash ./ovs-scripts/ovs-docker.sh del-ports {} {}"
