@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /***
  * Represents a remove OVS DB. Communicates to it through OpenFlow using the ovs-vsctl local command line
@@ -18,6 +19,8 @@ public class RemoteOVSDB
     private static final String GET_PORT_COMMAND = "get Interface {0} ofport";
 
     private static final int DEFAULT_PORT = 6654;
+
+    protected static final Logger logger = Logger.getLogger(RemoteOVSDB.class.getName());
 
     private String serverIp;
     private int port;
@@ -57,14 +60,14 @@ public class RemoteOVSDB
             throw new RuntimeException("Server IP has not been configured!");
         }
 
-        System.out.print("Preparing command to OVS DB.");
+        logger.info("Preparing command to OVS DB.");
         List<String> commandInfo = new ArrayList<>();
         commandInfo.add(TOOL_COMMAND);
         commandInfo.add(MessageFormat.format(SERVER_PARAM, serverIp, port));
         commandInfo.addAll(Arrays.asList(command.split(" ")));
         commandInfo.addAll(arguments);
 
-        System.out.print("Sending command to OVS DB: " + commandInfo.toString());
+        logger.info("Sending command to OVS DB: " + commandInfo.toString());
         List<String> output = CommandExecutor.executeCommand(commandInfo, "./");
         return output;
     }

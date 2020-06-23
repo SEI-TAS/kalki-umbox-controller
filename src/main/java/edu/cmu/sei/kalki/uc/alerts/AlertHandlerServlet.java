@@ -1,6 +1,7 @@
 package edu.cmu.sei.kalki.uc.alerts;
 
 import java.io.BufferedReader;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,6 +32,8 @@ public class AlertHandlerServlet extends HttpServlet
 
     // Special alert used to store logging info.
     private static final String UMBOX_LOG_ALERT = "log-info";
+
+    protected static final Logger logger = Logger.getLogger(AlertHandlerServlet.class.getName());
 
     /**
      * Process a POST request.
@@ -83,9 +86,9 @@ public class AlertHandlerServlet extends HttpServlet
         String umboxId = String.valueOf(alertData.getInt("umbox"));
         String alertTypeName = alertData.getString("alert");
         String alertDetails = alertData.getString("details");
-        System.out.println("umboxId: " + umboxId);
-        System.out.println("alert: " + alertTypeName);
-        System.out.println("alertDetails: " + alertDetails);
+        logger.info("umboxId: " + umboxId);
+        logger.info("alert: " + alertTypeName);
+        logger.info("alertDetails: " + alertDetails);
 
         // Handle special alert cases which won't be stored in the alert table.
         if(alertTypeName.equals(UMBOX_READY_ALERT))
@@ -94,7 +97,7 @@ public class AlertHandlerServlet extends HttpServlet
             UmboxInstance umbox = UmboxInstanceDAO.findUmboxInstance(umboxId);
             if(umbox == null)
             {
-                System.out.println("Error processing alert: umbox instance with id " + umboxId + " was not found in DB.");
+                logger.warning("Error processing alert: umbox instance with id " + umboxId + " was not found in DB.");
                 return;
             }
             Device device = DeviceDAO.findDevice(umbox.getDeviceId());

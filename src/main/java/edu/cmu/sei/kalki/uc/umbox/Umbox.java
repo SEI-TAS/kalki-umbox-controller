@@ -8,10 +8,13 @@ import edu.cmu.sei.kalki.db.models.UmboxInstance;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
+import java.util.logging.Logger;
 
 public abstract class Umbox
 {
     private static final int MAX_INSTANCES = 1000;
+
+    protected static final Logger logger = Logger.getLogger(Umbox.class.getName());
 
     public static Class umboxClass;
 
@@ -105,12 +108,12 @@ public abstract class Umbox
             instance = new UmboxInstance(String.valueOf(umboxId), image.getId(), device.getId());
             instance.insert();
 
-            System.out.println("Starting umbox.");
+            logger.info("Starting umbox.");
             return start();
         }
         catch (RuntimeException e)
         {
-            System.out.println("Error starting umbox: " + e.toString());
+            logger.warning("Error starting umbox: " + e.toString());
             e.printStackTrace();
 
             try
@@ -122,7 +125,7 @@ public abstract class Umbox
             }
             catch(Exception ex)
             {
-                System.out.println("Error removing instance not properly created: " + ex.toString());
+                logger.severe("Error removing instance not properly created: " + ex.toString());
             }
 
             return false;
@@ -136,17 +139,17 @@ public abstract class Umbox
     {
         try
         {
-            System.out.println("Stopping umbox.");
+            logger.info("Stopping umbox.");
             boolean success = stop();
 
             UmboxInstance umboxInstance = UmboxInstanceDAO.findUmboxInstance(String.valueOf(umboxId));
-            System.out.println("Deleting umbox instance from DB.");
+            logger.info("Deleting umbox instance from DB.");
             UmboxInstanceDAO.deleteUmboxInstance(umboxInstance.getId());
             return success;
         }
         catch (RuntimeException e)
         {
-            System.out.println("Error stopping umbox: " + e.toString());
+            logger.warning("Error stopping umbox: " + e.toString());
             e.printStackTrace();
             return false;
         }

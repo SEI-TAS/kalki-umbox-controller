@@ -1,18 +1,20 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
 import edu.cmu.sei.kalki.db.utils.CommandExecutor;
-import edu.cmu.sei.kalki.db.utils.Config;
 import edu.cmu.sei.kalki.db.models.Device;
 import edu.cmu.sei.kalki.db.models.UmboxImage;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class VMUmbox extends Umbox
 {
     private static final String UMBOX_TOOL_PATH = "./vm-umbox-tool";
     private static final String UMBOX_TOOL_FILE = "umbox.py";
+
+    protected static final Logger logger = Logger.getLogger(VMUmbox.class.getName());
 
     private ArrayList<String> commandInfo;
     private String commandWorkingDir;
@@ -74,7 +76,7 @@ public class VMUmbox extends Umbox
 
             // Assuming the port name was the last thing printed in the output, get it and process it.
             String ovsPortNames = output.get(output.size() - 1);
-            System.out.println("Umbox port names: " + ovsPortNames);
+            logger.info("Umbox port names: " + ovsPortNames);
             if (ovsPortNames == null)
             {
                 throw new RuntimeException("Could not get umbox OVS ports!");
@@ -112,7 +114,7 @@ public class VMUmbox extends Umbox
 
         try
         {
-            System.out.println("Executing stop command.");
+            logger.info("Executing stop command.");
             CommandExecutor.executeCommand(command, commandWorkingDir);
             return true;
         }
