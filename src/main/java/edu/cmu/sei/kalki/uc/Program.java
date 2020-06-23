@@ -2,6 +2,7 @@ package edu.cmu.sei.kalki.uc;
 
 import edu.cmu.sei.kalki.db.database.Postgres;
 import edu.cmu.sei.kalki.db.utils.Config;
+import edu.cmu.sei.kalki.db.utils.LoggerSetup;
 import edu.cmu.sei.kalki.db.utils.TestDB;
 
 /**
@@ -18,6 +19,7 @@ public class Program
     {
         try
         {
+            LoggerSetup.setup();
             Config.load("config.json");
 
             if(args.length >= 2 && args[0].equals("test"))

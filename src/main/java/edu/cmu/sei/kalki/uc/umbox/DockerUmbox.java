@@ -1,6 +1,5 @@
 package edu.cmu.sei.kalki.uc.umbox;
 
-import edu.cmu.sei.kalki.db.utils.Config;
 import edu.cmu.sei.kalki.db.models.Device;
 import edu.cmu.sei.kalki.db.models.UmboxImage;
 
@@ -11,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Logger;
 
 public class DockerUmbox extends Umbox
 {
@@ -25,6 +25,8 @@ public class DockerUmbox extends Umbox
     private static final String IN_PORTID_KEY = "in_port_id";
     private static final String OUT_PORTID_KEY = "out_port_id";
     private static final String ESC_PORTID_KEY = "esc_port_id";
+
+    protected static final Logger logger = Logger.getLogger(DockerUmbox.class.getName());
 
     private String fullBaseURL;
     private String containerName;
@@ -62,7 +64,7 @@ public class DockerUmbox extends Umbox
         }
         catch (Exception e)
         {
-            System.out.println("Error creating docker container: " + e.getMessage());
+            logger.warning("Error creating docker container: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -78,7 +80,7 @@ public class DockerUmbox extends Umbox
         }
         catch (Exception e)
         {
-            System.out.println("Error stopping docker container: " + e.getMessage());
+            logger.warning("Error stopping docker container: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -90,7 +92,7 @@ public class DockerUmbox extends Umbox
 
         try {
             URL url = new URL(fullBaseURL + URL);
-            System.out.println("Sending command to: " + url.toString());
+            logger.info("Sending command to: " + url.toString());
             HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
             httpCon.setRequestMethod(method);
             int responseCode = httpCon.getResponseCode();
@@ -104,15 +106,15 @@ public class DockerUmbox extends Umbox
                 }
                 in.close();
 
-                System.out.println("Response: " + response.toString());
+                logger.info("Response: " + response.toString());
             }
             else
             {
-                System.out.println("GET request was unsuccessful: " + responseCode);
+                logger.warning("GET request was unsuccessful: " + responseCode);
                 throw new RuntimeException("Problem sending request to server: " + responseCode);
             }
         } catch (Exception e) {
-            System.out.println("Error sending HTTP command: " + e.getMessage());
+            logger.warning("Error sending HTTP command: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -122,7 +124,7 @@ public class DockerUmbox extends Umbox
             String status = reply.getString(STATUS_KEY);
             if(OK_VALUE.equals(status))
             {
-                System.out.println("Request returned with OK status.");
+                logger.info("Request returned with OK status.");
                 return reply;
             }
             else
@@ -130,7 +132,7 @@ public class DockerUmbox extends Umbox
                 throw new RuntimeException("Problem processing request in server (error status): " + reply.getString(ERROR_DETAILS_KEY));
             }
         } catch (Exception e) {
-            System.out.println("Error parsing JSON reply: " + e.getMessage());
+            logger.warning("Error parsing JSON reply: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -144,17 +146,17 @@ public class DockerUmbox extends Umbox
             UmboxImage image = new UmboxImage();
             image.setName("hello-world");
 
-            System.out.println("Starting container");
+            logger.info("Starting container");
             DockerUmbox u = new DockerUmbox(image, dev);
             u.start();
 
-            System.out.println("Waiting for a bit.");
+            logger.info("Waiting for a bit.");
             Thread.sleep(5000);
 
-            System.out.println("Stopping and removing container.");
+            logger.info("Stopping and removing container.");
             u.stop();
 
-            System.out.println("Finished");
+            logger.info("Finished");
         }
         catch (Exception e)
         {
