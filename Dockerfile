@@ -23,6 +23,7 @@ RUN tar -xvf $DIST_NAME.tar && \
     mv /$DIST_NAME /$PROJECT_NAME
 
 COPY config.json /$PROJECT_NAME/
+RUN mkdir -p /logs/
 
 WORKDIR /$PROJECT_NAME
 ENTRYPOINT ["bash", "bin/kalki-umbox-controller"]
