@@ -1,5 +1,19 @@
 # Umbox Controller
 
+The Kalki Umbox Controller is a component of the Control Node of Kalki which handles deployment of umboxes on the Data Node. It also contains the ovs-docker-server Data Node component, which receives commands from Umbox Controller, and maintains both umboxes and the OVS virtual switch they connect to on the Data Node.
+
+Kalki is an IoT platform for allowing untrusted IoT devices to connect to a network in a secure way, protecting both the IoT device and the network from malicious attackers.
+
+Kalki comprises a total of 8 GitHub projects:
+- kalki-node-setup (Kalki Main Repository, composes all non-UI components)
+- kalki-controller (Kalki Main Controller)
+- kalki-umbox-controller (Kalki Umbox Controller)
+- kalki-device-controller (Kalki Device Controller)
+- kalki-dashboard (Kalki Dashboard)
+- kalki-db (Kalki Database Library)
+- kalki-iot-interface (Kalki IoT Interface)
+- kalki-umboxes (Kalki Umboxes, sample umboxes and umboxes components)
+
 ## Prerequisites
  - Docker is required to compile and run this program.
  - The Kalki-db build env image should be created before compiling this program. You can find more details here: https://github.com/SEI-TTG/kalki-db
