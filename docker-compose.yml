@@ -9,3 +9,4 @@ services:
     command: ${CMD_PARAMS}
     volumes:
       - ./logs:/logs
+      - ./tests:/tests
