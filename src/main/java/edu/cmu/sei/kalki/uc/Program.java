@@ -55,7 +55,7 @@ public class Program
 
             if(args.length >= 2 && args[0].equals("test"))
             {
-                // Test file will be executed on main DB.
+                // Test file will be executed on main DB. Assumes DB just initialized.
                 String testFile = args[1];
                 Postgres.initializeFromConfig();
                 Postgres.executeSQLFile(testFile);

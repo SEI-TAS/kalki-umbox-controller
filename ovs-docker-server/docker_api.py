@@ -88,9 +88,9 @@ class DockerContainer(Resource):
     def post(self, image_name, container_name, ip_address):
         """Receives the image name, the name to give the container, and the IP of the device being monitored."""
         try:
-            image_name = urllib.parse.unquote(image_name)
-            container_name = urllib.parse.unquote(container_name)
-            ip_address = urllib.parse.unquote(ip_address)
+            image_name = urllib.parse.unquote(image_name).replace("--", "/")
+            container_name = urllib.parse.unquote(container_name).replace("--", "/")
+            ip_address = urllib.parse.unquote(ip_address).replace("--", "/")
 
             # Start docker instance.
             print("Starting container", flush=True)

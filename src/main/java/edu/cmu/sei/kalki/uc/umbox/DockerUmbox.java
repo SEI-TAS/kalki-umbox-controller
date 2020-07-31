@@ -80,7 +80,8 @@ public class DockerUmbox extends Umbox
 
     private String encodeValue(String value) {
         try {
-            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+            String escapedBackslashes = value.replace("/", "--");
+            return URLEncoder.encode(escapedBackslashes, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return "";
