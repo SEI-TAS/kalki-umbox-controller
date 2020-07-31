@@ -55,10 +55,10 @@ public class Program
 
             if(args.length >= 2 && args[0].equals("test"))
             {
+                // Test file will be executed on main DB.
                 String testFile = args[1];
-                TestDB.recreateTestDB();
-                TestDB.initialize();
-                TestDB.insertTestData(testFile);
+                Postgres.initializeFromConfig();
+                Postgres.executeSQLFile(testFile);
             }
             else
             {
