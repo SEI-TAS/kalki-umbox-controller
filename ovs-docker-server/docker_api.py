@@ -37,7 +37,7 @@ from flask import Flask
 from flask_restful import Api, Resource
 
 # Existing networks and bridges.
-CONTROL_NETWORK = "ovsdockerserver_control-net"
+CONTROL_NETWORK = "control-net"
 OVS_BRIDGE = "ovs-br"
 
 # API info.
