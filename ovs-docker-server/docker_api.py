@@ -116,11 +116,11 @@ class DockerContainer(Resource):
             print(error_msg, flush=True)
             return {STATUS_KEY: ERROR_VALUE, ERROR_DETAILS_KEY: error_msg}
 
-    def delete(self, image_name, instance_name, ip_address):
+    def delete(self, image_name, container_name, ip_address):
         """Remove an existing docker instance and its OVS connections."""
         try:
             image_name = urllib.parse.unquote(image_name)
-            instance_name = urllib.parse.unquote(instance_name)
+            instance_name = urllib.parse.unquote(container_name)
 
             print("Stopping container", flush=True)
             run_command(OVS_CLEAR_CMD.format(OVS_BRIDGE, instance_name))
