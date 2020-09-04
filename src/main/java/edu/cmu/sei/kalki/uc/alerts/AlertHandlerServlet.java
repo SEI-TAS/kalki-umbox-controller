@@ -152,11 +152,13 @@ public class AlertHandlerServlet extends HttpServlet
         AlertType alertTypeFound = AlertTypeDAO.findAlertTypeByName(alertTypeName);
         if(alertTypeFound == null)
         {
-            throw new RuntimeException("Alert type received <" + alertTypeName + "> not found in DB.");
+            logger.warning("Alert type received <" + alertTypeName + "> not found in DB.");
+            return;
         }
 
         synchronized (this)
         {
+            // Actually store the alert in the DB.
             Alert currentAlert = new Alert(alertTypeName, umboxId, alertTypeFound.getId(), alertDetails);
             currentAlert.insert();
         }
