@@ -99,6 +99,7 @@ then
 fi
 
 # Getting IP and brodcast IP for the IoT NIC.
+echo "Command to get IOT IP: ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+'"
 IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
 IOT_NIC_BROADCAST=$(ip addr show ${IOT_NIC} | grep -Po 'brd \K[\d.]+')
 echo "IOT NIC (${IOT_NIC}) IP: ${IOT_NIC_IP}, IOT NIC BROADCAST: ${IOT_NIC_BROADCAST}"
