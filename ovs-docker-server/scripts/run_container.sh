@@ -3,7 +3,7 @@
 bash stop_container.sh
 
 # Reset bridge.
-(cd ./ovs-scripts && bash setup_bridge.sh)
+(cd ./ovs-scripts && bash setup_bridge.sh || exit 1)
 
 # Start container.
 HOST_TZ=$(cat /etc/timezone)
