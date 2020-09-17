@@ -98,11 +98,21 @@ then
   exit 0
 fi
 
-# Getting IP and brodcast IP for the IoT NIC.
-echo "Command to get IOT IP: ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+'"
-IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
-IOT_NIC_BROADCAST=$(ip addr show ${IOT_NIC} | grep -Po 'brd \K[\d.]+')
-echo "IOT NIC (${IOT_NIC}) IP: ${IOT_NIC_IP}, IOT NIC BROADCAST: ${IOT_NIC_BROADCAST}"
+IP_FOUND="false"
+while [ "${IP_FOUND}" == "false" ]; do
+  # Getting IP and brodcast IP for the IoT NIC.
+  echo "Command to get IOT IP: ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+'"
+  IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
+  IOT_NIC_BROADCAST=$(ip addr show ${IOT_NIC} | grep -Po 'brd \K[\d.]+')
+  echo "IOT NIC (${IOT_NIC}) IP: ${IOT_NIC_IP}, IOT NIC BROADCAST: ${IOT_NIC_BROADCAST}"
+
+  if [ -z "${IOT_NIC_IP}" ]; then
+    echo "Could not get IP address from IOT NIC ${IOT_NIC}. Will wait and retry."
+    sleep 2s
+  else
+    IP_FOUND="true"
+  fi
+done
 
 set -e
 setup_nic_bridge $OF_BRIDGE $IOT_NIC $EXT_NIC $IOT_NIC_IP $IOT_NIC_BROADCAST
