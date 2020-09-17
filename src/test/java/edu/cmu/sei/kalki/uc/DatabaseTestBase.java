@@ -119,7 +119,7 @@ public abstract class DatabaseTestBase
     protected Device insertTestDevice(int stateId, DeviceType deviceType) {
         DataNode dataNode = new DataNode("TestDN", "localhost");
         dataNode.insert();
-        Device device = new Device("Test Device", "device", deviceType, "127.0.0.1", 1, 1, dataNode);
+        Device device = new Device("Test Device", "device", deviceType, "127.0.0.1", 1, 1, dataNode, "");
         device.insert();
 
         DeviceSecurityState dss = new DeviceSecurityState(device.getId(), stateId);

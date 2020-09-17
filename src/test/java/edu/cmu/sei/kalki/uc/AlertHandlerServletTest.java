@@ -118,14 +118,4 @@ public class AlertHandlerServletTest extends DatabaseTestBase
         Assertions.assertEquals(alerterId, insertedAlerts.get(0).getAlerterId());
         Assertions.assertEquals(testAlertType.getName(), insertedAlerts.get(0).getName());
     }
-
-    @Test
-    public void testUmboxAlertInvalidAlertTypeName() {
-        String alerterId = "12314";
-        insertTestData(1, alerterId);
-
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            servlet.processAlert(createAlert(alerterId, "invalid-alert-type"));
-        });
-    }
 }
