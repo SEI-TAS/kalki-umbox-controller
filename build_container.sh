@@ -4,4 +4,8 @@ if [ "$1" == "--skip_tests" ]; then
   SKIP_TESTS_ARG=" -x test "
 fi
 
-docker build --network=host --build-arg SKIP_TESTS="${SKIP_TESTS_ARG}" -t kalki/kalki-umbox-controller .
+KALKI_DB_VER="1.7.0"
+docker build --network=host \
+             --build-arg SKIP_TESTS="${SKIP_TESTS_ARG}" \
+             --build-arg KALKI_DB_VER="${KALKI_DB_VER}" \
+             -t kalki/kalki-umbox-controller .
