@@ -18,7 +18,7 @@ RUN mkdir -p /logs/
 EXPOSE 6060
 
 ARG PROJECT_NAME=kalki-umbox-controller
-ARG PROJECT_VERSION=1.6.0
+ARG PROJECT_VERSION=1.7.0
 ARG DIST_NAME=$PROJECT_NAME-$PROJECT_VERSION
 
 COPY --from=build_env /home/gradle/src/build/distributions/$DIST_NAME.tar /

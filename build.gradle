@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 group 'edu.cmu.sei.ttg.kalki'
-version '1.6.0'
+version '1.7.0'
 
 mainClassName = 'edu.cmu.sei.kalki.uc.Program'
 sourceCompatibility = 1.8
