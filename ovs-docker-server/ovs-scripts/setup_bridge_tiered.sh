@@ -188,10 +188,10 @@ setup_passthrough_bridge_rules() {
 
     # Set rules to be able to process requests and responses to our own IP.
     echo "Setting up OF rules for Data Node's IP on IoT network: ${local_net_ip})"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,nw_src=${local_net_ip},actions=output:${net_port}"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,in_port=${net_port},nw_dst=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,nw_src=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,nw_dst=${local_net_ip},actions=normal"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,ip_src=${local_net_ip},actions=normal"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,in_port=${net_port},ip_dst=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,ip_dst=${local_net_ip},actions=normal"
 
     # Set up default rules to connect bridges together.
     echo "Setting up pass-through rules for non-device traffic"
