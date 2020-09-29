@@ -196,8 +196,10 @@ setup_passthrough_bridge_rules() {
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=160,ipv6,actions=drop"
 
     # ARP rules: process ARP requests/replies for us, send through NIC our ARP requests/replies, drop all others from this subnet
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,arp,in_port=${net_port},nw_dst=${local_net_ip},actions=normal"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=154,arp,nw_src=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,arp,nw_dst=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,arp,nw_src=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,ip,ip_src=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,ip,ip_dst=${local_net_ip},actions=normal"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=153,arp,in_port=${net_port},nw_dst=${local_net_ip}/24,actions=drop"
 
     # Set rules to be able to process requests and responses to our own IP.
