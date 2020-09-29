@@ -41,6 +41,8 @@ clear_all() {
 get_nic_ip() {
     local nic_name="$1"
 
+    RESULT_NIC_IP=""
+    RESULT_NIC_BDCAST=""
     IP_FOUND="false"
     while [ "${IP_FOUND}" == "false" ]; do
       echo "Getting IP and brodcast IP for the NIC ${nic_name}."
