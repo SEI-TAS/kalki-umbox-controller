@@ -43,7 +43,7 @@ get_nic_ip() {
 
     IP_FOUND="false"
     while [ "${IP_FOUND}" == "false" ]; do
-      # Getting IP and brodcast IP for the NIC.
+      echo "Getting IP and brodcast IP for the NIC ${nic_name}."
       RESULT_NIC_IP=$(ip addr show ${nic_name} | grep -Po 'inet \K[\d.]+')
       RESULT_NIC_BDCAST=$(ip addr show ${nic_name} | grep -Po 'brd \K[\d.]+')
       echo "NIC (${IOT_NIC}) IP: ${IOT_NIC_IP}, NIC BROADCAST: ${RESULT_NIC_BDCAST}"
