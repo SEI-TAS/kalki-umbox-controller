@@ -48,7 +48,7 @@ get_nic_ip() {
       echo "Getting IP and brodcast IP for the NIC ${nic_name}."
       RESULT_NIC_IP=$(ip addr show ${nic_name} | grep -Po 'inet \K[\d.]+')
       RESULT_NIC_BDCAST=$(ip addr show ${nic_name} | grep -Po 'brd \K[\d.]+')
-      echo "NIC (${IOT_NIC}) IP: ${IOT_NIC_IP}, NIC BROADCAST: ${RESULT_NIC_BDCAST}"
+      echo "NIC (${nic_name}) IP: ${RESULT_NIC_IP}, NIC BROADCAST: ${RESULT_NIC_BDCAST}"
 
       if [ -z "${RESULT_NIC_IP}" ]; then
         echo "Could not get IP address from NIC ${nic_name}. Will wait and retry."
