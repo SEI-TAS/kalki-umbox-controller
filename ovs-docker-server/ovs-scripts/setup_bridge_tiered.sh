@@ -153,6 +153,7 @@ setup_ovs_bridge() {
     EXT_NIC_IP=RESULT_NIC_IP
     EXT_NIC_BROADCAST=RESULT_NIC_BDCAST
 
+    set -e
     echo "Setting up NIC OVS bridge $bridge_name"
     sudo ovs-vsctl add-br $bridge_name
 
@@ -205,7 +206,6 @@ echo "Beginning switches setup..."
 clear_all
 
 # Sets up OVS bridge and subbridges, plus rules
-set -e
 setup_ovs_bridge $OF_BRIDGE $IOT_NIC $IOT_NIC_IP $IOT_NIC_BROADCAST
 setup_passthrough_bridge_rules $OF_BRIDGE $IOT_NIC_IP
 
