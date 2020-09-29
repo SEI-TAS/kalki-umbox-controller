@@ -145,13 +145,13 @@ setup_ovs_bridge() {
 
     # Get IOT NIC IP
     get_nic_ip ${IOT_NIC}
-    IOT_NIC_IP=RESULT_NIC_IP
-    IOT_NIC_BROADCAST=RESULT_NIC_BDCAST
+    IOT_NIC_IP=$RESULT_NIC_IP
+    IOT_NIC_BROADCAST=$RESULT_NIC_BDCAST
 
     # Get EXT NIC IP
     get_nic_ip ${EXT_NIC}
-    EXT_NIC_IP=RESULT_NIC_IP
-    EXT_NIC_BROADCAST=RESULT_NIC_BDCAST
+    EXT_NIC_IP=$RESULT_NIC_IP
+    EXT_NIC_BROADCAST=$RESULT_NIC_BDCAST
 
     set -e
     echo "Setting up NIC OVS bridge $bridge_name"
