@@ -116,7 +116,7 @@ setup_nic_bridge() {
     local nic_ip="$7"
     local bcast_ip="$8"
 
-    echo "Setting up NIC OVS bridge $bridge_name"
+    echo "Setting up NIC bridge $bridge_name"
     sudo ovs-vsctl add-br $bridge_name
 
     # Connect to NIC to the OVS switch in port 2, and transfer its IP to the bridge.
@@ -143,7 +143,7 @@ setup_nic_bridge() {
 setup_ovs_bridge() {
     local bridge_name="$1"
     local iot_nic="$2"
-    local ext_nic="$2"
+    local ext_nic="$3"
 
     # Get IOT NIC IP
     get_nic_ip ${IOT_NIC}
@@ -156,7 +156,7 @@ setup_ovs_bridge() {
     EXT_NIC_BROADCAST=$RESULT_NIC_BDCAST
 
     set -e
-    echo "Setting up NIC OVS bridge $bridge_name"
+    echo "Setting up OVS bridge $bridge_name"
     sudo ovs-vsctl add-br $bridge_name
 
     # Connect IOT NIC to the OVS switch in port 1.
@@ -208,7 +208,7 @@ echo "Beginning switches setup..."
 clear_all
 
 # Sets up OVS bridge and subbridges, plus rules
-setup_ovs_bridge $OF_BRIDGE $IOT_NIC $IOT_NIC_IP $IOT_NIC_BROADCAST
+setup_ovs_bridge $OF_BRIDGE $IOT_NIC $EXT_NIC
 setup_passthrough_bridge_rules $OF_BRIDGE $IOT_NIC_IP
 
 # Configure OVS DB to listen to remote commands on given TCP port.
