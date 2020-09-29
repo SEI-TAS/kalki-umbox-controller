@@ -201,8 +201,9 @@ setup_passthrough_bridge_rules() {
     # Process IP requests/replies as well.
     echo "Setting up OF rules for loca IP: ${local_net_ip})"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,arp,arp_tpa=${local_net_ip},actions=normal"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,arp,arp_tpa=${other_net_ip}/24,actions=output:${bridge_port}"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,arp,arp_tpa=${other_net_ip},actions=normal"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,arp,arp_spa=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=155,arp,arp_spa=${other_net_ip},actions=normal"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=154,ip,ip_src=${local_net_ip},actions=normal"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=154,ip,ip_dst=${local_net_ip},actions=normal"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=153,arp,in_port=${net_port},nw_dst=${local_net_ip}/24,actions=drop"
