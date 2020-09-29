@@ -133,7 +133,7 @@ setup_nic_bridge() {
     connect_patch_port $of_bridge_name $patch_peer_name $of_patch_port_num $patch_port_name
 
     # Setting default bridge rules.
-    setup_passthrough_bridge_rules $bridge_name $nic_ip
+    setup_passthrough_bridge_rules $bridge_name $nic_ip 2
 
     echo "NIC bridge $bridge_name setup complete"
 }
@@ -178,19 +178,20 @@ setup_ovs_bridge() {
 # Sets up basic rules for OVS bridge.
 setup_passthrough_bridge_rules() {
     local bridge_name="$1"
-    local local_iot_net_ip="$2"
+    local local_net_ip="$2"
+    local net_port="$3"
 
     # Rule to drop mDNS requests and IPv6 traffic.
-    echo "Setting up drop rules for UDP 5353 traffic and IPv6"
+    echo "Setting up drop rules for mDNS traffic and IPv6"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=160,udp,tp_dst=5353,actions=drop"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=160,ipv6,actions=drop"
 
     # Set rules to be able to process requests and responses to our own IP.
-    echo "Setting up OF rules for Data Node's IP on IoT network: ${local_iot_net_ip})"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,nw_src=${local_iot_net_ip},actions=output:1"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,in_port=1,nw_dst=${local_iot_net_ip},actions=normal"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,ip_src=${local_iot_net_ip},actions=normal"
-    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,in_port=1,ip_dst=${local_iot_net_ip},actions=normal"
+    echo "Setting up OF rules for Data Node's IP on IoT network: ${local_net_ip})"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,nw_src=${local_net_ip},actions=output:${net_port}"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,arp,in_port=${net_port},nw_dst=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,ip_src=${local_net_ip},actions=normal"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=150,ip,in_port=${net_port},ip_dst=${local_net_ip},actions=normal"
 
     # Set up default rules to connect bridges together.
     echo "Setting up pass-through rules for non-device traffic"
@@ -207,7 +208,7 @@ clear_all
 
 # Sets up OVS bridge and subbridges, plus rules
 setup_ovs_bridge $OF_BRIDGE $IOT_NIC $EXT_NIC
-setup_passthrough_bridge_rules $OF_BRIDGE $IOT_NIC_IP
+setup_passthrough_bridge_rules $OF_BRIDGE $IOT_NIC_IP 1
 
 # Configure OVS DB to listen to remote commands on given TCP port.
 sudo ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:$OVS_DB_PORT
