@@ -208,7 +208,7 @@ setup_passthrough_bridge_rules() {
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=154,ip,ip_dst=${local_net_ip},actions=normal"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=154,ip,ip_src=${other_net_ip},actions=normal"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=154,ip,ip_dst=${other_net_ip},actions=normal"
-    #sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=153,arp,in_port=${net_port},nw_dst=${local_net_ip}/24,actions=drop"
+    sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=153,arp,in_port=${net_port},nw_dst=${local_net_ip}/24,actions=normal"
 
     # Set up default rules to connect bridges together.
     echo "Setting up pass-through rules for non-device traffic"
