@@ -16,6 +16,7 @@ Kalki comprises a total of 8 GitHub projects:
 
 ## Prerequisites
  - Docker is required to compile and run this program.
+ - Docker-compose 1.18.0+ is required as well.
  - The Kalki-db build env image should be created before compiling this program. You can find more details here: https://github.com/SEI-TTG/kalki-db
  - The Kalki-db test Postgres image should be created and running before compiling this program. You can find more details here: https://github.com/SEI-TTG/kalki-db 
  - The Kalki-db Postgres container has to be running for this program to work. You can find more details here: https://github.com/SEI-TTG/kalki-db

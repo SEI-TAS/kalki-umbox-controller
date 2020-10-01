@@ -52,17 +52,13 @@ public class Program
         {
             LoggerSetup.setup();
             Config.load("config.json");
+            Postgres.initializeFromConfig();
 
             if(args.length >= 2 && args[0].equals("test"))
             {
+                // Test file will be executed on main DB. Assumes DB just initialized.
                 String testFile = args[1];
-                TestDB.recreateTestDB();
-                TestDB.initialize();
-                TestDB.insertTestData(testFile);
-            }
-            else
-            {
-                Postgres.initializeFromConfig();
+                Postgres.executeSQLFile(testFile);
             }
 
             UmboxController.startUpComponents();

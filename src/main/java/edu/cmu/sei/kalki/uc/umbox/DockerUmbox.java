@@ -39,9 +39,12 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Logger;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class DockerUmbox extends Umbox
 {
@@ -75,11 +78,21 @@ public class DockerUmbox extends Umbox
         setupDockerVars();
     }
 
+    private String encodeValue(String value) {
+        try {
+            String escapedBackslashes = value.replace("/", "--");
+            return URLEncoder.encode(escapedBackslashes, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     private void setupDockerVars()
     {
         fullBaseURL = "http://" + device.getDataNode().getIpAddress() + ":" + API_PORT + API_BASE_URL;
         containerName = PREFIX + this.umboxId;
-        apiURL = "/" + image.getName() + "/" + containerName + "/" + device.getIp();
+        apiURL = "/" + encodeValue(image.getName()) + "/" + encodeValue(containerName) + "/" + encodeValue(device.getIp());
     }
 
     @Override

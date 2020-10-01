@@ -17,7 +17,7 @@ BEGIN
     SELECT INTO attack id FROM security_state WHERE name='Attack';
     SELECT INTO dtype id FROM device_type WHERE name='Udoo Neo';
     INSERT INTO data_node(name, ip_address) VALUES('Hertz', '10.27.153.2') RETURNING id INTO dnodeid;
-    INSERT INTO device(name, description, type_id, ip_address, status_history_size, sampling_rate, default_sampling_rate, data_node_id) VALUES ('UNTS1', 'Test Udoo', dtype.id, '10.27.151.101', 1, 10000, 10000, dnodeid.id) RETURNING id INTO d;
+    INSERT INTO device(name, description, type_id, ip_address, status_history_size, sampling_rate, default_sampling_rate, data_node_id, credentials) VALUES ('UNTS1', 'Test Udoo', dtype.id, '10.27.151.101', 1, 10000, 10000, dnodeid.id, 'udooer:udooer') RETURNING id INTO d;
     INSERT INTO device_security_state (device_id, state_id, timestamp) VALUES (d.id, normal.id, current_timestamp) RETURNING id INTO dSS;
     INSERT INTO umbox_image(name, file_name) VALUES ('u6-udoo-brute-force', 'u6-udoo-brute-force.qcow2') RETURNING id INTO u6;
     INSERT INTO umbox_image(name, file_name) VALUES ('u7-udoo-brute-force-block', 'u7-udoo-brute-force-block.qcow2') RETURNING id INTO u7;

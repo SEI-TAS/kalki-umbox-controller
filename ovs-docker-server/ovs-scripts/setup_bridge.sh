@@ -58,6 +58,7 @@ setup_nic_bridge() {
     sudo ovs-vsctl set controller $bridge_name connection-mode=out-of-band
 
     # Attach the IP set up of the IOT network to the bridge.
+    echo "Attaching IP of IOT network (IP: ${local_ip}) to bridge"
     sudo ip addr add ${local_ip}/24 broadcast ${bcast_ip} dev $bridge_name
 
     echo "Bridge setup complete"
@@ -66,6 +67,8 @@ setup_nic_bridge() {
 setup_passthrough_bridge_rules() {
     local bridge_name="$1"
     local local_ip="$2"
+
+    echo "Setting up basic OF rules and special rules for Data Node's IP on IoT NIC: ${local_ip})"
 
     # Rule to drop mDNS requests and IPv6 traffic.
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=160,udp,tp_dst=5353,actions=drop"
@@ -81,6 +84,7 @@ setup_passthrough_bridge_rules() {
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=50,in_port=1,actions=output:2"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=50,in_port=2,actions=output:1"
     sudo ovs-ofctl -O OpenFlow13 add-flow $bridge_name "priority=0,actions=drop"
+
 }
 
 # Setup
@@ -94,10 +98,23 @@ then
   exit 0
 fi
 
-# Getting IP and brodcast IP for the IoT NIC.
-IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
-IOT_NIC_BROADCAST=$(ip addr show ${IOT_NIC} | grep -Po 'brd \K[\d.]+')
+IP_FOUND="false"
+while [ "${IP_FOUND}" == "false" ]; do
+  # Getting IP and brodcast IP for the IoT NIC.
+  echo "Command to get IOT IP: ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+'"
+  IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
+  IOT_NIC_BROADCAST=$(ip addr show ${IOT_NIC} | grep -Po 'brd \K[\d.]+')
+  echo "IOT NIC (${IOT_NIC}) IP: ${IOT_NIC_IP}, IOT NIC BROADCAST: ${IOT_NIC_BROADCAST}"
 
+  if [ -z "${IOT_NIC_IP}" ]; then
+    echo "Could not get IP address from IOT NIC ${IOT_NIC}. Will wait and retry."
+    sleep 2s
+  else
+    IP_FOUND="true"
+  fi
+done
+
+set -e
 setup_nic_bridge $OF_BRIDGE $IOT_NIC $EXT_NIC $IOT_NIC_IP $IOT_NIC_BROADCAST
 setup_passthrough_bridge_rules $OF_BRIDGE $IOT_NIC_IP
 

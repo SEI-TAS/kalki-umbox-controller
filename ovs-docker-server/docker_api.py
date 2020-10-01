@@ -31,12 +31,13 @@
 #
 import sys
 import subprocess
+import urllib.parse
 
 from flask import Flask
 from flask_restful import Api, Resource
 
 # Existing networks and bridges.
-CONTROL_NETWORK = "ovsdockerserver_control-net"
+CONTROL_NETWORK = "control-net"
 OVS_BRIDGE = "ovs-br"
 
 # API info.
@@ -87,6 +88,10 @@ class DockerContainer(Resource):
     def post(self, image_name, container_name, ip_address):
         """Receives the image name, the name to give the container, and the IP of the device being monitored."""
         try:
+            image_name = urllib.parse.unquote(image_name).replace("--", "/")
+            container_name = urllib.parse.unquote(container_name).replace("--", "/")
+            ip_address = urllib.parse.unquote(ip_address).replace("--", "/")
+
             # Start docker instance.
             print("Starting container", flush=True)
             run_command(RUN_CMD.format(CONTROL_NETWORK, container_name, container_name, image_name, ip_address))
@@ -111,9 +116,12 @@ class DockerContainer(Resource):
             print(error_msg, flush=True)
             return {STATUS_KEY: ERROR_VALUE, ERROR_DETAILS_KEY: error_msg}
 
-    def delete(self, image_name, instance_name, ip_address):
+    def delete(self, image_name, container_name, ip_address):
         """Remove an existing docker instance and its OVS connections."""
         try:
+            image_name = urllib.parse.unquote(image_name)
+            instance_name = urllib.parse.unquote(container_name)
+
             print("Stopping container", flush=True)
             run_command(OVS_CLEAR_CMD.format(OVS_BRIDGE, instance_name))
             run_command(STOP_CMD.format(instance_name))

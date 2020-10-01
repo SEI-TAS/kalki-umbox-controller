@@ -17,6 +17,7 @@ services:
       - control-net
 networks:
   control-net:
+    name: control-net
     driver: macvlan
     driver_opts:
       parent: ${CONTROL_NIC}
