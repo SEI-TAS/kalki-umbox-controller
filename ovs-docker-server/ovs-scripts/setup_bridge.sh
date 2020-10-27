@@ -101,7 +101,7 @@ fi
 IP_FOUND="false"
 while [ "${IP_FOUND}" == "false" ]; do
   # Getting IP and brodcast IP for the IoT NIC.
-  echo "Command to get IOT IP: ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+'"
+  #echo "Command to get IOT IP: ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+'"
   IOT_NIC_IP=$(ip addr show ${IOT_NIC} | grep -Po 'inet \K[\d.]+')
   IOT_NIC_BROADCAST=$(ip addr show ${IOT_NIC} | grep -Po 'brd \K[\d.]+')
   echo "IOT NIC (${IOT_NIC}) IP: ${IOT_NIC_IP}, IOT NIC BROADCAST: ${IOT_NIC_BROADCAST}"
@@ -122,4 +122,3 @@ setup_passthrough_bridge_rules $OF_BRIDGE $IOT_NIC_IP
 sudo ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:$OVS_DB_PORT
 
 echo "OVS switch ready"
-

@@ -7,4 +7,4 @@ source config.sh
 bash clear_umboxes.sh
 
 # Set up bridge.
-(cd ./ovs-scripts && bash setup_bridge.sh || exit 1)
+(cd ./ovs-scripts && bash setup_bridge_tiered.sh || exit 1)
