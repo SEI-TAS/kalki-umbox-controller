@@ -57,12 +57,12 @@ class DiskImage(object):
         # We need to use the qemu-img command line tool for this.
         # Note that we set the source file as its backing file. This is stored in the qcow2 file.
         # Note that we also use 4K as the cluster size, since it seems to be the best compromise.
-        print "Creating qcow2 image %s based on source image %s..." % (destination_disk_image_filepath, self.filepath)
+        print("Creating qcow2 image %s based on source image %s..." % (destination_disk_image_filepath, self.filepath))
         sys.stdout.flush()
         image_tool_command = 'qemu-img create -f qcow2 -o backing_file=%s,cluster_size=4096 %s' \
                            % (self.filepath, destination_disk_image_filepath)
         self.__run_image_creation_tool(image_tool_command)
-        print 'New disk image created.'
+        print('New disk image created.')
 
         cloned_disk_image = DiskImage(destination_disk_image_filepath)
         return cloned_disk_image
@@ -77,8 +77,8 @@ class DiskImage(object):
 
         # Show errors, if any.
         if len(error_output) > 0:
-            print error_output
+            print(error_output)
 
         # Show output, if any.
         if len(normal_output) > 0:
-            print normal_output
+            print(normal_output)
