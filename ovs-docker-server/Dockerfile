@@ -1,7 +1,8 @@
-FROM python:3.8-alpine
+FROM python:3.11-alpine
 
-# Install pipenv
-RUN pip install pipenv==2018.11.26
+# Trusted host configs used to avoid issues when running behind SSL proxies.
+RUN pip config set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org"
+RUN sed -ie "s/https/http/g" /etc/apk/repositories
 
 # Install ovs switch tools and docker dependencies
 RUN apk --no-cache add bash iproute2 util-linux openvswitch docker
@@ -10,10 +11,9 @@ RUN apk --no-cache add bash iproute2 util-linux openvswitch docker
 EXPOSE 5500
 
 # Installing Python deps without a venv (not needed in container).
-COPY Pipfile /app/
-COPY Pipfile.lock /app/
+COPY requirements.txt /app/
 WORKDIR /app
-RUN pipenv install --system --deploy --ignore-pipfile
+RUN pip install -r requirements.txt --default-timeout=100
 
 # Copy the actual code and helped scripts
 COPY ovs-scripts/ovs-docker.sh /app/ovs-scripts/ovs-docker.sh
