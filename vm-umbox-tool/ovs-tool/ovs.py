@@ -107,7 +107,7 @@ class RemoteVSwitch(object):
             output = subprocess.check_output(shlex.split(full_command))
             print("Output of command: " + output)
             return output.rstrip()
-        except subprocess.CalledProcessError, e:
+        except subprocess.CalledProcessError as e:
             print("Error executing command: " + str(e))
 
     def execute_show_command(self):
@@ -148,7 +148,7 @@ class RemoteOVSDB(object):
             output = subprocess.check_output(shlex.split(full_command))
             print("Output of command: " + output)
             return output.rstrip()
-        except subprocess.CalledProcessError, e:
+        except subprocess.CalledProcessError as e:
             print("Error executing command: " + str(e))
 
     def get_port_id(self, port_name):

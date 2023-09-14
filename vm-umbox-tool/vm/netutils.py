@@ -55,7 +55,7 @@ def get_adapter_ip_address(adapter_name, ip_position=0):
     connections = netifaces.ifaddresses(adapter_name)
     try:
         addr_info = connections[netifaces.AF_INET][ip_position]
-    except KeyError, e:
+    except KeyError as e:
         raise Exception("Adapter {} is not connected to a valid network.".format(adapter_name))
 
     return addr_info['addr']
@@ -63,26 +63,26 @@ def get_adapter_ip_address(adapter_name, ip_position=0):
 
 def find_ip_for_mac(mac, adapter, nmap='nmap', retry=5):
     if retry == 0:
-        print 'No more retries, IP not found.'
+        print('No more retries, IP not found.')
         return None
 
     # Get the ip range of the given adapter.
     addr_info = netifaces.ifaddresses(adapter)[netifaces.AF_INET][0]
     ip_range = str(netaddr.IPNetwork('%s/%s' % (addr_info['addr'], addr_info['netmask'])))
 
-    print 'Scanning range %s for MAC address %s' % (ip_range, mac)
+    print('Scanning range %s for MAC address %s' % (ip_range, mac))
     p = Popen(['sudo', nmap, '-sP', ip_range, '-oX', '-'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     out, err = p.communicate()
     rc = p.returncode
     if rc != 0:
-        print "Error executing nmap:\n%s" % err
+        print("Error executing nmap:\n%s" % err)
         raise Exception("Error executing nmap:\n%s" % err)
     xml = ElementTree.fromstring(out)
     try:
         ip = xml.find('./host/address[@addr="%s"]/../address[@addrtype="ipv4"]' % mac.upper()).get('addr')
-        print 'Found IP: ', ip
+        print('Found IP: ', ip)
     except:
-        print 'Failed to find IP, retrying...'
+        print('Failed to find IP, retrying...')
         time.sleep(1)
         ip = find_ip_for_mac(mac, adapter, nmap, retry=(retry - 1))
 
@@ -90,7 +90,7 @@ def find_ip_for_mac(mac, adapter, nmap='nmap', retry=5):
 
 
 def is_port_open(ip_address, port):
-    print 'Checking if port ' + str(port) + ' is open on IP ' + str(ip_address)
+    print('Checking if port ' + str(port) + ' is open on IP ' + str(ip_address))
     timeout = 0.2
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)

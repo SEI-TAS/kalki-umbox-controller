@@ -190,7 +190,7 @@ class VmUmbox(object):
             logger.info("VM with same name was already running; destroying it.")
             vm.destroy()
             logger.info("VM destroyed.")
-        except vmutils.VirtualMachineException, ex:
+        except vmutils.VirtualMachineException as ex:
             logger.warning("VM was not running.")
             vm = vmutils.VirtualMachine()
 
@@ -226,13 +226,13 @@ class VmUmbox(object):
 
             # Destroy instance image file.
             json_reply = self.__send_api_command(hypervisor_host_ip, API_CLEAN_METHOD, "{0}/{1}".format("non", self.instance_name))
-            print "Remote instance image deletion response: " + json_reply
+            print("Remote instance image deletion response: " + json_reply)
         except:
             logger.warning("VM not found.")
 
     def __send_api_command(self, host, method, command):
         remote_url = 'http://{0}:{1}/{2}/{3}'.format(host, API_CLONE_PORT, BASE_CLONE_API_URL, command)
-        print remote_url
+        print(remote_url)
 
         req = requests.Request(method, remote_url)
         prepared = req.prepare()
