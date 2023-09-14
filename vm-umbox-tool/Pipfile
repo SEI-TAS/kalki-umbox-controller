@@ -6,9 +6,9 @@ name = "pypi"
 [packages]
 #libvirt-python = "==1.3.1"  # Needed for Ubuntu 16.04
 libvirt-python = "==4.0.0"   # Needed for Ubuntu 18.04
-requests = "==2.25.1"
+requests = "==2.31.0"
 
 [dev-packages]
 
 [requires]
-python_version = "2.7"
+python_version = "3.9"

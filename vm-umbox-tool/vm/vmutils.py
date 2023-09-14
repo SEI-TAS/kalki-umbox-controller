@@ -79,7 +79,7 @@ class VirtualMachine(object):
             #print uri
             hypervisor = libvirt.open(uri)
             return hypervisor
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -103,7 +103,7 @@ class VirtualMachine(object):
     def connect_to_virtual_machine(self, uuid):
         try:
             self.vm = VirtualMachine.get_hypervisor_instance().lookupByUUIDString(uuid)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -112,7 +112,7 @@ class VirtualMachine(object):
     def connect_to_virtual_machine_by_name(self, name):
         try:
             self.vm = VirtualMachine.get_hypervisor_instance().lookupByName(name)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -121,7 +121,7 @@ class VirtualMachine(object):
     def get_running_vm_xml_string(self):
         try:
             return self.vm.XMLDesc(libvirt.VIR_DOMAIN_XML_SECURE)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -131,7 +131,7 @@ class VirtualMachine(object):
     def get_stored_vm_xml_string(saved_state_filename):
         try:
             return VirtualMachine.get_hypervisor_instance().saveImageGetXMLDesc(saved_state_filename, 0)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -140,7 +140,7 @@ class VirtualMachine(object):
     def create_and_start_vm(self, xml_descriptor):
         try:
             self.vm = VirtualMachine.get_hypervisor_instance().createXML(xml_descriptor, 0)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -155,7 +155,7 @@ class VirtualMachine(object):
             result = self.vm.save(vm_state_image_file)
             if result != 0:
                 raise VirtualMachineException("Cannot save memory state to file {}".format(vm_state_image_file))
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -177,7 +177,7 @@ class VirtualMachine(object):
             result = self.vm.suspend()
             was_suspend_successful = result == 0
             return was_suspend_successful
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -188,7 +188,7 @@ class VirtualMachine(object):
             result = self.vm.resume()
             was_resume_successful = result == 0
             return was_resume_successful
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -197,7 +197,7 @@ class VirtualMachine(object):
     def destroy(self):
         try:
             self.vm.destroy()
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
     ################################################################################################################
@@ -220,7 +220,7 @@ class VirtualMachine(object):
             # Migrate the state and memory (note that have to connect to the system-level libvirtd on the remote host).
             remote_hypervisor = VirtualMachine.connect_to_hypervisor(is_system_level=True, host_name=remote_host)
             self.vm.migrate(remote_hypervisor, flags, new_id, uri, bandwidth)
-        except libvirt.libvirtError, e:
+        except libvirt.libvirtError as e:
             raise VirtualMachineException(str(e))
 
 

@@ -241,7 +241,7 @@ class VirtualMachineDescriptor(object):
     def disable_vnc(self):
         vnc_node = self.xmlRoot.find("devices/graphics[@type='vnc']")
         if vnc_node is not None:
-            print 'Disabling VNC access.'
+            print('Disabling VNC access.')
             devices_node = self.xmlRoot.find("devices")
             devices_node.remove(vnc_node)
 
@@ -251,7 +251,7 @@ class VirtualMachineDescriptor(object):
     def remove_sec_label(self):
         sec_label = self.xmlRoot.find('seclabel')
         if sec_label is not None:
-            print 'Removing security label.'
+            print('Removing security label.')
             self.xmlRoot.remove(sec_label)
 
     ################################################################################################################
